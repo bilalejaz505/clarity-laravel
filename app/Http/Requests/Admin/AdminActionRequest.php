@@ -50,8 +50,8 @@ class AdminActionRequest extends FormRequest
                 'paypalSecret' => 'nullable|string|max:500',
                 'action' => 'required|in:settings',
             ],
-            'user-status' => ['action' => 'required|in:user-status', 'userId' => 'required|string', 'status' => 'required|in:active,suspended'],
-            'delete-secret' => ['action' => 'required|in:delete-secret', 'id' => 'required|in:openai,paypal'],
+            'user-status' => ['action' => 'required|in:user-status', 'userId' => 'required|integer|min:1', 'status' => 'required|in:active,suspended'],
+            'delete-secret' => ['action' => 'required|in:delete-secret', 'provider' => 'required|in:openai,paypal'],
             default => ['action' => 'required|in:settings,user-status,delete-secret'],
         };
     }

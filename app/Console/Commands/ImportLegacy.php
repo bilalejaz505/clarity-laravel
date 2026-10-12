@@ -65,7 +65,7 @@ class ImportLegacy extends Command
         }
 
         $fingerprint = hash_file('sha256', $file);
-        if (DB::table('legacy_imports')->where('id', $fingerprint)->exists()) {
+        if (DB::table('legacy_imports')->where('fingerprint', $fingerprint)->exists()) {
             $this->info('This snapshot has already been imported.');
 
             return self::SUCCESS;
@@ -83,15 +83,13 @@ class ImportLegacy extends Command
         try {
             DB::transaction(function () use ($rows, $root, $settings, $date, &$users, &$counters, $fingerprint, $summary) {
                 foreach ($rows['control_users'] as $row) {
-                    $id = Str::isUuid($row['id']) ? $row['id'] : (string) Str::uuid();
                     $user = User::create(['name' => $row['name'], 'email' => strtolower($row['email']), 'password' => Str::random(64)]);
-                    $createdId = $user->id;
-                    $user->forceFill(['id' => $id, 'legacy_id' => $row['id'], 'status' => $row['status'], 'email_verified_at' => null, 'trial_start' => $date($row['trial_start']), 'trial_end' => $date($row['trial_end']), 'last_seen' => $date($row['last_seen']), 'created_at' => $date($row['created_at'])])->save();
+                    $user->forceFill(['legacy_id' => $row['id'], 'status' => $row['status'], 'email_verified_at' => null, 'trial_start' => $date($row['trial_start']), 'trial_end' => $date($row['trial_end']), 'last_seen' => $date($row['last_seen']), 'created_at' => $date($row['created_at'])])->save();
                     $users[$row['id']] = $user->id;
                 }
 
                 foreach ($rows['control_config'] as $row) {
-                    DB::table('app_settings')->insert(['id' => $row['id'], 'data' => $row['data'], 'revision' => $row['revision'], 'created_at' => $date($row['updated_at']), 'updated_at' => $date($row['updated_at'])]);
+                    DB::table('app_settings')->insert(['key' => $row['id'], 'data' => $row['data'], 'revision' => $row['revision'], 'created_at' => $date($row['updated_at']), 'updated_at' => $date($row['updated_at'])]);
                 }
 
                 if ($rows['control_secrets']) {
@@ -117,15 +115,14 @@ class ImportLegacy extends Command
                     if (! isset($users[$row['user_id']])) {
                         continue;
                     }
-                    DB::table('subscriptions')->insert(['id' => $row['id'], 'user_id' => $users[$row['user_id']], 'provider_custom_id' => $row['user_id'], 'plan_key' => $row['plan_key'], 'status' => $row['status'], 'period_start' => $date($row['period_start']), 'paid_until' => $date($row['paid_until']), 'provider_updated_at' => $date($row['provider_updated_at'] ?? null), 'refund_cutoff' => $date($row['refund_cutoff'] ?? null), 'plan_snapshot' => $row['plan_snapshot'] ?? null, 'created_at' => $date($row['updated_at']), 'updated_at' => $date($row['updated_at'])]);
+                    DB::table('subscriptions')->insert(['paypal_id' => $row['id'], 'user_id' => $users[$row['user_id']], 'provider_custom_id' => $row['user_id'], 'plan_key' => $row['plan_key'], 'status' => $row['status'], 'period_start' => $date($row['period_start']), 'paid_until' => $date($row['paid_until']), 'provider_updated_at' => $date($row['provider_updated_at'] ?? null), 'refund_cutoff' => $date($row['refund_cutoff'] ?? null), 'plan_snapshot' => $row['plan_snapshot'] ?? null, 'created_at' => $date($row['updated_at']), 'updated_at' => $date($row['updated_at'])]);
                 }
 
                 foreach ($rows['control_counters'] as $row) {
                     foreach ($users as $legacy => $userId) {
                         if (str_starts_with($row['id'], $legacy.':')) {
                             $id = hash('sha256', $userId.':'.substr($row['id'], strlen($legacy) + 1));
-                            $counters[$row['id']] = $id;
-                            DB::table('usage_counters')->insert(['id' => $id, 'user_id' => $userId, 'messages' => $row['messages'], 'requests' => $row['requests'], 'created_at' => now(), 'updated_at' => now()]);
+                            $counters[$row['id']] = DB::table('usage_counters')->insertGetId(['bucket_key' => $id, 'user_id' => $userId, 'messages' => $row['messages'], 'requests' => $row['requests'], 'created_at' => now(), 'updated_at' => now()]);
                             break;
                         }
                     }
@@ -135,18 +132,18 @@ class ImportLegacy extends Command
                     if (! isset($users[$row['user_id']],$counters[$row['bucket']])) {
                         continue;
                     }
-                    DB::table('usage_reservations')->insert(['id' => $row['id'], 'user_id' => $users[$row['user_id']], 'counter_id' => $counters[$row['bucket']], 'product' => $row['product'], 'kind' => $row['kind'], 'messages' => $row['messages'], 'status' => $row['status'], 'created_at' => $date($row['created_at']), 'updated_at' => $date($row['created_at'])]);
+                    DB::table('usage_reservations')->insert(['user_id' => $users[$row['user_id']], 'counter_id' => $counters[$row['bucket']], 'product' => $row['product'], 'kind' => $row['kind'], 'messages' => $row['messages'], 'status' => $row['status'], 'created_at' => $date($row['created_at']), 'updated_at' => $date($row['created_at'])]);
                 }
 
                 foreach ($rows['control_audit'] as $row) {
-                    DB::table('audit_logs')->insert(['id' => $row['id'], 'actor' => $row['actor'], 'action' => $row['action'], 'detail' => $row['detail'], 'created_at' => $date($row['created_at'])]);
+                    DB::table('audit_logs')->insert(['actor' => (string) ($users[$row['actor']] ?? $row['actor']), 'action' => $row['action'], 'detail' => $row['detail'], 'created_at' => $date($row['created_at'])]);
                 }
 
                 foreach ($rows['control_events'] as $row) {
-                    DB::table('billing_events')->insert(['id' => $row['id'], 'type' => $row['type'], 'subscription_id' => $row['subscription_id'], 'status' => $row['status'], 'created_at' => $date($row['created_at']), 'updated_at' => $date($row['created_at'])]);
+                    DB::table('billing_events')->insert(['paypal_event_id' => $row['id'], 'type' => $row['type'], 'provider_subscription_id' => $row['subscription_id'], 'status' => $row['status'], 'created_at' => $date($row['created_at']), 'updated_at' => $date($row['created_at'])]);
                 }
 
-                DB::table('legacy_imports')->insert(['id' => $fingerprint, 'summary' => json_encode($summary), 'created_at' => now()]);
+                DB::table('legacy_imports')->insert(['fingerprint' => $fingerprint, 'summary' => json_encode($summary), 'created_at' => now()]);
             });
         } catch (\Throwable $e) {
             $this->error('Import rolled back: '.$e->getMessage());

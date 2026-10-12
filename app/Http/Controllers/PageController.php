@@ -38,7 +38,7 @@ class PageController extends Controller
             return response()->view('gate', ['reason' => $e['reason']], 403);
         }
 
-        return view('workspace', ['product' => $product, 'demo' => false, 'initialStore' => Workspace::find($request->user()->id)?->data]);
+        return view('workspace', ['product' => $product, 'demo' => false, 'initialStore' => Workspace::where('user_id', $request->user()->id)->first()?->data]);
     }
 
     public function account(): View|Response

@@ -12,12 +12,6 @@ class UsageCounter extends Model
 
     protected $table = 'usage_counters';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     protected function casts(): array

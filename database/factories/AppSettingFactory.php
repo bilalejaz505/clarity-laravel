@@ -11,6 +11,6 @@ class AppSettingFactory extends Factory
 {
     public function definition(): array
     {
-        return ['id' => 'application', 'data' => app(AppSettingsService::class)->defaults(), 'revision' => 0];
+        return ['key' => 'application', 'data' => app(AppSettingsService::class)->defaults(), 'revision' => 0];
     }
 }

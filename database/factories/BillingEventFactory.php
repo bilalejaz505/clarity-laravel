@@ -10,6 +10,6 @@ class BillingEventFactory extends Factory
 {
     public function definition(): array
     {
-        return ['id' => 'WH-'.fake()->uuid(), 'type' => 'BILLING.SUBSCRIPTION.ACTIVATED', 'subscription_id' => null, 'status' => 'processed'];
+        return ['paypal_event_id' => 'WH-'.fake()->uuid(), 'type' => 'BILLING.SUBSCRIPTION.ACTIVATED', 'provider_subscription_id' => null, 'status' => 'processed'];
     }
 }

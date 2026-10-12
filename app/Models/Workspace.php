@@ -12,12 +12,6 @@ class Workspace extends Model
 
     protected $table = 'workspaces';
 
-    protected $primaryKey = 'user_id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     protected function casts(): array

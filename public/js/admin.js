@@ -65,7 +65,9 @@ async function load(search = "") {
     $("admin-health").textContent =
         `Database: ${state.server.database} · Authentication: ${state.server.auth} · Encryption: ${state.server.encryption ? "Ready" : "Missing app key"}`;
     for (const id of ["openai", "paypal"])
-        $(id + "-saved").textContent = state.secrets.some((s) => s.id === id)
+        $(id + "-saved").textContent = state.secrets.some(
+            (s) => s.provider === id,
+        )
             ? "Encrypted credential is saved."
             : `No saved ${id === "openai" ? "OpenAI key" : "merchant secret"}.`;
     $("admin-subscriptions").innerHTML = table(state.subscriptions, [
@@ -88,7 +90,7 @@ async function load(search = "") {
     $("admin-users").innerHTML = state.users
         .map(
             (u) =>
-                `<article class="flex-between user-row"><div><strong>${escape(u.name)}</strong> <span class="badge ${u.is_admin ? "neutral" : "positive"}">${u.is_admin ? "Administrator" : "Member"}</span><p class="muted">${escape(u.email)} · ${escape(u.status)}</p></div><button class="${u.status === "active" ? "danger" : "secondary"}" data-user="${escape(u.id)}" data-status="${u.status === "active" ? "suspended" : "active"}" ${u.is_admin ? "disabled" : ""}>${u.status === "active" ? "Suspend" : "Restore"}</button></article>`,
+                `<article class="flex-between user-row"><div><strong>${escape(u.name)}</strong> <span class="badge ${u.is_admin ? "neutral" : "positive"}">${u.is_admin ? "Administrator" : "Member"}</span> <span class="badge neutral">ID ${Number(u.id)}</span><p class="muted">${escape(u.email)} · ${escape(u.status)}</p></div><button class="${u.status === "active" ? "danger" : "secondary"}" data-user="${escape(u.id)}" data-status="${u.status === "active" ? "suspended" : "active"}" ${u.is_admin ? "disabled" : ""}>${u.status === "active" ? "Suspend" : "Restore"}</button></article>`,
         )
         .join("");
     $("admin-users")
@@ -101,7 +103,7 @@ async function load(search = "") {
                     try {
                         await api("/api/admin", {
                             action: "user-status",
-                            userId: b.dataset.user,
+                            userId: Number(b.dataset.user),
                             status: b.dataset.status,
                         });
                         await load($("user-search").value);
@@ -182,7 +184,7 @@ document.querySelectorAll("[data-delete-secret]").forEach(
             try {
                 await api("/api/admin", {
                     action: "delete-secret",
-                    id: b.dataset.deleteSecret,
+                    provider: b.dataset.deleteSecret,
                 });
                 await load();
                 notice("Saved credential removed.");

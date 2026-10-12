@@ -12,12 +12,6 @@ class Subscription extends Model
 
     protected $table = 'subscriptions';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     protected function casts(): array

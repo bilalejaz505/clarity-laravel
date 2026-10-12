@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('audit_logs', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('actor');
             $table->string('action');
             $table->string('detail', 1000);

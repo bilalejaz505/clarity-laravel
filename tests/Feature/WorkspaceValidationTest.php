@@ -20,7 +20,7 @@ class WorkspaceValidationTest extends TestCase
 
         foreach (['bad root', array_replace($store, ['reviews' => 'bad collection']), array_replace($store, ['tasks' => [['id' => 'bad-task']]])] as $invalid) {
             $this->putJson('/api/workspace', ['store' => $invalid, 'product' => 'chat'])->assertUnprocessable();
-            $this->assertSame($store, Workspace::findOrFail($user->id)->data);
+            $this->assertSame($store, Workspace::where('user_id', $user->id)->firstOrFail()->data);
         }
     }
 

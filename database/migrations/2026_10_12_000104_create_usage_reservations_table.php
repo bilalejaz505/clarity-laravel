@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('usage_reservations', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
-            $table->uuid('user_id')->index();
-            $table->string('counter_id', 64);
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('counter_id')->constrained('usage_counters')->cascadeOnDelete();
             $table->string('product');
             $table->string('kind');
             $table->unsignedInteger('messages');

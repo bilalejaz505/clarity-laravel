@@ -9,9 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('billing_events', function (Blueprint $table): void {
-            $table->string('id', 100)->primary();
+            $table->id();
+            $table->string('paypal_event_id', 100)->unique();
             $table->string('type');
-            $table->string('subscription_id', 100)->nullable();
+            $table->string('provider_subscription_id', 100)->nullable();
             $table->string('status');
             $table->timestamps();
         });

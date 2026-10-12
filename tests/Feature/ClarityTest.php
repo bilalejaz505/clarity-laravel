@@ -103,7 +103,7 @@ class ClarityTest extends TestCase
         $settings->saveSecret('openai', 'sk-test-server-key');
         $s = $settings->defaults();
         $s['aiModel'] = 'test-model';
-        DB::table('app_settings')->insert(['id' => 'application', 'data' => json_encode($s), 'revision' => 1, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('app_settings')->insert(['key' => 'application', 'data' => json_encode($s), 'revision' => 1, 'created_at' => now(), 'updated_at' => now()]);
         Http::fake(['api.openai.com/*' => Http::response(['status' => 'completed', 'output' => [['content' => [['type' => 'output_text', 'text' => json_encode(['answer' => 'Unsupported answer', 'evidence' => ['invented-id']])]]]]])]);
         $user = User::factory()->create();
         $this->actingAs($user)->postJson('/api/account')->assertOk();
@@ -151,7 +151,7 @@ class ClarityTest extends TestCase
     {
         $u = User::factory()->create();
         $plan = app(AppSettingsService::class)->defaults()['plans'][0];
-        DB::table('subscriptions')->insert(['id' => 'I-test', 'user_id' => $u->id, 'plan_key' => 'chat', 'status' => 'CANCELLED', 'paid_until' => now()->addDay(), 'plan_snapshot' => json_encode($plan), 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('subscriptions')->insert(['paypal_id' => 'I-test', 'user_id' => $u->id, 'plan_key' => 'chat', 'status' => 'CANCELLED', 'paid_until' => now()->addDay(), 'plan_snapshot' => json_encode($plan), 'created_at' => now(), 'updated_at' => now()]);
         $e = app(EntitlementService::class)->entitlement($u, false);
         $this->assertTrue($e['allowed']);
         $this->assertSame(['chat'], $e['products']);

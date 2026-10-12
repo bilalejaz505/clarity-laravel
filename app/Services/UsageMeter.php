@@ -2,39 +2,44 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class UsageMeter
 {
     public function __construct(public EntitlementService $access) {}
 
-    public function counter(string $user, string $bucket): string
+    public function counter(int $user, string $bucket): string
     {
         return hash('sha256', $user.':'.$bucket);
     }
 
+    public function counterKeys(User $user, string $bucket): array
+    {
+        return [$this->counter($user->id, $bucket)];
+    }
+
     public function reserve(Request $request, string $product, string $kind, int $messages): array
     {
-        $e = $this->access->requireProduct($request, $product);
+        $entitlement = $this->access->requireProduct($request, $product);
         abort_unless($this->access->settings->get()['aiEnabled'], 403, 'AI processing is disabled.');
-        $counter = $this->counter($request->user()->id, $e['bucket']);
-        $id = (string) Str::uuid();
-        DB::transaction(function () use ($request, $e, $counter, $id, $product, $kind, $messages) {
-            DB::table('usage_counters')->insertOrIgnore(['id' => $counter, 'user_id' => $request->user()->id, 'messages' => 0, 'requests' => 0, 'created_at' => now(), 'updated_at' => now()]);
-            $row = DB::table('usage_counters')->where('id', $counter)->lockForUpdate()->first();
-            abort_if($row->messages + $messages > $e['messages'] || $row->requests + 1 > $e['requests'], 429, 'Your plan usage limit has been reached.');
-            DB::table('usage_counters')->where('id', $counter)->update(['messages' => $row->messages + $messages, 'requests' => $row->requests + 1, 'updated_at' => now()]);
-            DB::table('usage_reservations')->insert(['id' => $id, 'user_id' => $request->user()->id, 'counter_id' => $counter, 'product' => $product, 'kind' => $kind, 'messages' => $messages, 'status' => 'reserved', 'created_at' => now(), 'updated_at' => now()]);
-        }, 3);
+        $key = $this->counter($request->user()->id, $entitlement['bucket']);
 
-        return ['id' => $id, 'counter' => $counter, 'messages' => $messages];
+        return DB::transaction(function () use ($request, $entitlement, $key, $product, $kind, $messages): array {
+            DB::table('usage_counters')->insertOrIgnore(['bucket_key' => $key, 'user_id' => $request->user()->id, 'messages' => 0, 'requests' => 0, 'created_at' => now(), 'updated_at' => now()]);
+            $counter = DB::table('usage_counters')->where('bucket_key', $key)->where('user_id', $request->user()->id)->lockForUpdate()->first();
+            abort_if($counter->messages + $messages > $entitlement['messages'] || $counter->requests + 1 > $entitlement['requests'], 429, 'Your plan usage limit has been reached.');
+            DB::table('usage_counters')->where('id', $counter->id)->update(['messages' => $counter->messages + $messages, 'requests' => $counter->requests + 1, 'updated_at' => now()]);
+            $id = DB::table('usage_reservations')->insertGetId(['user_id' => $request->user()->id, 'counter_id' => $counter->id, 'product' => $product, 'kind' => $kind, 'messages' => $messages, 'status' => 'reserved', 'created_at' => now(), 'updated_at' => now()]);
+
+            return ['id' => $id, 'counter' => (int) $counter->id, 'messages' => $messages];
+        }, 3);
     }
 
     public function finish(array $reservation, bool $success): void
     {
-        DB::transaction(function () use ($reservation, $success) {
+        DB::transaction(function () use ($reservation, $success): void {
             $row = DB::table('usage_reservations')->where('id', $reservation['id'])->lockForUpdate()->first();
             if (! $row || $row->status !== 'reserved') {
                 return;

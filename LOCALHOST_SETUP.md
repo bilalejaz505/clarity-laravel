@@ -66,7 +66,7 @@ If port 8000 is occupied, stop the other server or choose another port and updat
 
 ## Current local accounts and administrator sign-in
 
-The initialized local MySQL database contains exactly one administrator (`admin@clarity.local`, Bilal) and one member (`user@clarity.local`, Sarah Khan). Both are active and email-verified. Passwords were generated separately and saved in the private `Clarity-Local-Accounts.txt` deliverable; they are not in source control. Administrator login is `/admin/login`; ordinary member login is `/login`. The admin form refuses regular, suspended, or unverified accounts.
+The initialized local MySQL database contains exactly one administrator (`admin@clarity.com`, Admin) and one member (`user@clarity.com`, User). Both are active and email-verified. Passwords were generated separately and saved in the private `Clarity-Local-Accounts.txt` deliverable; they are not in source control. Administrator login is `/admin/login`; ordinary member login is `/login`. The admin form refuses regular, suspended, or unverified accounts.
 
 Three configured plans are stored in the application settings: Chat Plus (USD 9/month), Freelance Pro (USD 15/month), and Clarity Complete (USD 19/month). PayPal checkout requires merchant credentials and real matching provider plan IDs; no payment records were fabricated. The member has a seven-day trial. Exact localhost continues to have the free development entitlement.
 
@@ -75,3 +75,5 @@ Both accounts have independent starter workspaces with a personal conversation, 
 The old 13 imported migration accounts and associated stale records were removed after a private SQL backup. Migrations and encrypted provider-secret storage were preserved. Automated test fixtures remain isolated from this application database.
 
 If you explicitly need to initialize the local database again, back it up first and run `php artisan clarity:reset-local-data --reset`. It creates new random passwords in `storage/app/private/local-access.txt`; choose a new `--credentials=ABSOLUTE_PRIVATE_PATH` if that file already exists. This command intentionally refuses non-local environments. Do not run it to deploy or update a live site.
+
+The current local accounts use integer IDs (Admin 1, User 2) with the owner-updated emails above. The database was rebuilt using the revised original migrations, then seeded with fresh starter records. Existing account password hashes and roles were preserved. Sessions were cleared, so sign in again. The private credential file has matching email addresses.

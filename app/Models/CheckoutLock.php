@@ -12,12 +12,6 @@ class CheckoutLock extends Model
 
     protected $table = 'checkout_locks';
 
-    protected $primaryKey = 'user_id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     public $timestamps = false;

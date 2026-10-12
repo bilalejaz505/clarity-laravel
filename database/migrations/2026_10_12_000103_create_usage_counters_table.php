@@ -9,8 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('usage_counters', function (Blueprint $table): void {
-            $table->string('id', 64)->primary();
-            $table->uuid('user_id')->index();
+            $table->id();
+            $table->string('bucket_key', 64)->unique();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->unsignedBigInteger('messages')->default(0);
             $table->unsignedBigInteger('requests')->default(0);
             $table->timestamps();

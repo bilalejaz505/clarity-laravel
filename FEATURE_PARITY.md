@@ -51,3 +51,11 @@ Local browser checks verify normal login, import review, MySQL snapshot save, an
 The current source was moved to `E:\laragon\www\clarity-laravel`. The earlier imported accounts described above are historical: they have now been replaced by exactly one administrator and one member, three enabled plans, and independent coherent starter workspaces. A private SQL backup precedes this reset. No test fixtures, fake settled payments, or fake provider subscriptions remain in the application database.
 
 Administration has a dedicated `/admin/login` page, with role/status/verification checks before session establishment; guests requesting `/admin` are redirected there. The public footer links to that page. The updated brand uses a blue/violet logo, cool neutral surfaces, a responsive product preview landing page, and a shared modern design system in `public/css/modern.css`.
+
+## Numeric database identifiers — 12 October 2026
+
+At the owner's request, the original 18 migrations were revised and the local database was rebuilt and reseeded. No additional conversion migrations are required. Internal application records now use auto-incrementing unsigned BIGINT IDs; administrator ID is 1 and member ID is 2. Updated account names/emails and existing password hashes were preserved. Relationship columns use matching integer types and ownership foreign keys.
+
+PayPal subscription/event identifiers remain in separate provider fields. Usage hashes are `bucket_key`, settings use `key`, provider secrets use `provider`, and legacy import fingerprints are separate from numeric row IDs. Workspace/message/term IDs inside JSON backups and framework session tokens remain opaque strings; they are not application database primary keys.
+
+This was an explicitly authorized local reset, preceded by a private SQL backup. `migrate:fresh` destroys data and remains inappropriate for routine deployment. Reusing an older populated UUID-schema database requires restoration or an explicit migration plan; running `migrate` against its already-completed original migrations does not change it. Existing sessions were invalidated; log in again with the same passwords.

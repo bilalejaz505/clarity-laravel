@@ -103,8 +103,9 @@ async function loadAccount() {
                     try {
                         await api("/api/billing", {
                             action: b.dataset.cancel ? "cancel" : "refresh",
-                            subscriptionId:
+                            subscriptionId: Number(
                                 b.dataset.cancel || b.dataset.refresh,
+                            ),
                         });
                         await loadAccount();
                     } catch (err) {

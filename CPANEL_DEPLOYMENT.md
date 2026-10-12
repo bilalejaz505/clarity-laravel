@@ -64,7 +64,7 @@ If Composer/SSH are unavailable, create a deployment copy locally using the same
 
 Back up MySQL and `APP_KEY`/encrypted settings before each release. Upload the new source and static assets, preserve `.env` and `storage`, run Composer install, `php artisan migrate --force`, and `php artisan optimize`. `migrate:fresh`, `db:wipe`, and key regeneration are not deployment commands. For rollback, restore the matching code/database backup rather than blindly rolling back populated tables.
 
-The current schema has one migration per table. The existing local draft database's migration metadata was rebaselined while preserving records; fresh deployments simply run the new migrations. Do not manually alter migration history on another server.
+The current schema has one migration per table. Its original migrations now define numeric application IDs and matching ownership references. A fresh database runs these migrations normally. Do not manually alter migration history on another server.
 
 ## Operations
 
@@ -73,3 +73,5 @@ Monitor `storage/logs`, MySQL backups, SMTP delivery, and webhook failures. Keep
 Maintain this guide whenever PHP requirements, schema, environment variables, paths, authentication, or billing behavior change.
 
 Administrator sign-in is `/admin/login`; regular member sign-in is `/login`. Initial local passwords/accounts are development-only and are never created by the production default seeder. Use `clarity:admin` to create your own production administrator with a private password. Do not deploy local credential files or the local-reset SQL backup.
+
+The current release's original migrations define numeric application record IDs and matching integer ownership references. This schema was installed through an explicitly requested fresh local reset. For a new cPanel database, run the original migrations normally. An older populated UUID-schema database cannot be upgraded by simply running these revised, already-recorded migrations; use a planned conversion or restore/recreate only with explicit authorization and a backup. Never run `migrate:fresh` as a routine production update.

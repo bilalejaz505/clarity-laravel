@@ -45,5 +45,5 @@
     </main>
 @endsection
 @section('scripts')
-    <script src="/js/public.js" defer></script>
+    <script src="{{ asset('js/public.js') }}?v={{ filemtime(public_path('js/public.js')) }}" defer></script>
 @endsection

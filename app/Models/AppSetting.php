@@ -11,12 +11,6 @@ class AppSetting extends Model
 
     protected $table = 'app_settings';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     protected function casts(): array

@@ -35,10 +35,10 @@ class BillingController extends Controller
             try {
                 $paypal->validatePlan($plan);
                 $origin = rtrim(config('app.url'), '/');
-                $remote = $paypal->request('/v1/billing/subscriptions', 'POST', ['plan_id' => $plan['paypalPlanId'], 'custom_id' => $u->id, 'application_context' => ['brand_name' => $s['appName'], 'user_action' => 'SUBSCRIBE_NOW', 'return_url' => $origin.'/account?checkout=returned', 'cancel_url' => $origin.'/pricing?checkout=cancelled']], $token);
+                $remote = $paypal->request('/v1/billing/subscriptions', 'POST', ['plan_id' => $plan['paypalPlanId'], 'custom_id' => (string) $u->id, 'application_context' => ['brand_name' => $s['appName'], 'user_action' => 'SUBSCRIBE_NOW', 'return_url' => $origin.'/account?checkout=returned', 'cancel_url' => $origin.'/pricing?checkout=cancelled']], $token);
                 $approval = collect($remote['links'] ?? [])->firstWhere('rel', 'approve')['href'] ?? null;
                 abort_unless(is_string($approval) && preg_match('~^https://(www\.)?(sandbox\.)?paypal\.com/~', $approval), 502, 'PayPal returned an invalid approval URL.');
-                DB::table('subscriptions')->insert(['id' => $remote['id'], 'user_id' => $u->id, 'plan_key' => $plan['key'], 'status' => $remote['status'], 'plan_snapshot' => json_encode($plan), 'created_at' => now(), 'updated_at' => now()]);
+                DB::table('subscriptions')->insert(['paypal_id' => $remote['id'], 'provider_custom_id' => (string) $u->id, 'user_id' => $u->id, 'plan_key' => $plan['key'], 'status' => $remote['status'], 'plan_snapshot' => json_encode($plan), 'created_at' => now(), 'updated_at' => now()]);
                 $settings->audit($u->id, 'subscription.created', $remote['id'].': '.$plan['key']);
 
                 return response()->json(['approvalUrl' => $approval]);
@@ -50,7 +50,7 @@ class BillingController extends Controller
         $sub = DB::table('subscriptions')->where('id', $request->subscriptionId)->where('user_id', $u->id)->first();
         abort_unless($sub, 404, 'Subscription not found.');
         if ($request->action === 'cancel') {
-            $paypal->request('/v1/billing/subscriptions/'.rawurlencode($sub->id).'/cancel', 'POST', ['reason' => 'Customer requested cancellation in Clarity.']);
+            $paypal->request('/v1/billing/subscriptions/'.rawurlencode($sub->paypal_id).'/cancel', 'POST', ['reason' => 'Customer requested cancellation in Clarity.']);
         }
 
         return response()->json($paypal->reconcile($sub->id));
@@ -73,18 +73,18 @@ class BillingController extends Controller
         $body['webhook_event'] = $event;
         abort_unless(($paypal->request('/v1/notifications/verify-webhook-signature', 'POST', $body)['verification_status'] ?? '') === 'SUCCESS', 401, 'Invalid signature.');
         $id = $event['resource']['billing_agreement_id'] ?? $event['resource']['supplementary_data']['related_ids']['subscription_id'] ?? (str_starts_with($event['event_type'], 'BILLING.SUBSCRIPTION.') ? ($event['resource']['id'] ?? null) : null);
-        if (DB::table('billing_events')->where('id', $event['id'])->value('status') === 'completed') {
+        if (DB::table('billing_events')->where('paypal_event_id', $event['id'])->value('status') === 'completed') {
             return response()->json(['ok' => true, 'duplicate' => true]);
         }
-        DB::table('billing_events')->insertOrIgnore(['id' => $event['id'], 'type' => $event['event_type'], 'subscription_id' => $id, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('billing_events')->insertOrIgnore(['paypal_event_id' => $event['id'], 'type' => $event['event_type'], 'provider_subscription_id' => $id, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
         try {
-            if ($id && DB::table('subscriptions')->where('id', $id)->exists()) {
-                $paypal->reconcile($id);
+            if ($id && DB::table('subscriptions')->where('paypal_id', $id)->exists()) {
+                $paypal->reconcile((int) DB::table('subscriptions')->where('paypal_id', $id)->value('id'));
                 if (in_array($event['event_type'], ['PAYMENT.SALE.REFUNDED', 'PAYMENT.SALE.REVERSED'])) {
-                    DB::table('subscriptions')->where('id', $id)->update(['status' => 'REVIEW_REQUIRED', 'paid_until' => null, 'refund_cutoff' => isset($event['create_time']) ? CarbonImmutable::parse($event['create_time']) : now(), 'updated_at' => now()]);
+                    DB::table('subscriptions')->where('paypal_id', $id)->update(['status' => 'REVIEW_REQUIRED', 'paid_until' => null, 'refund_cutoff' => isset($event['create_time']) ? CarbonImmutable::parse($event['create_time']) : now(), 'updated_at' => now()]);
                 }
             }
-            DB::table('billing_events')->where('id', $event['id'])->update(['status' => 'completed', 'updated_at' => now()]);
+            DB::table('billing_events')->where('paypal_event_id', $event['id'])->update(['status' => 'completed', 'updated_at' => now()]);
             $settings->audit('paypal', 'webhook.verified', $event['event_type'].': '.($id ?: 'unmapped'));
 
             return response()->json(['ok' => true]);

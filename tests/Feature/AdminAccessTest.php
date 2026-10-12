@@ -57,13 +57,13 @@ class AdminAccessTest extends TestCase
         $this->assertDatabaseCount('users', 2);
         $this->assertDatabaseCount('workspaces', 2);
         $this->assertDatabaseCount('subscriptions', 0);
-        $admin = User::where('email', 'admin@clarity.local')->firstOrFail();
-        $member = User::where('email', 'user@clarity.local')->firstOrFail();
+        $admin = User::where('email', 'admin@clarity.com')->firstOrFail();
+        $member = User::where('email', 'user@clarity.com')->firstOrFail();
         $this->assertTrue($admin->is_admin);
         $this->assertFalse($member->is_admin);
         $this->assertTrue($member->hasVerifiedEmail());
         $this->assertTrue($member->trial_end->isFuture());
-        $store = Workspace::findOrFail($member->id)->data;
+        $store = Workspace::where('user_id', $member->id)->firstOrFail()->data;
         $this->assertCount(2, $store['conversations']);
         $this->assertCount(2, $store['tasks']);
         $this->assertCount(2, $store['invoices']);

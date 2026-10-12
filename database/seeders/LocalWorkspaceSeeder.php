@@ -27,10 +27,10 @@ class LocalWorkspaceSeeder extends Seeder
             }
 
             $settings = app(AppSettingsService::class);
-            AppSetting::updateOrCreate(['id' => 'application'], ['data' => $settings->defaults(), 'revision' => $settings->revision() + 1]);
-            $admin = User::create(['name' => 'Bilal', 'email' => 'admin@clarity.local', 'password' => $this->adminPassword]);
+            AppSetting::updateOrCreate(['key' => 'application'], ['data' => $settings->defaults(), 'revision' => $settings->revision() + 1]);
+            $admin = User::create(['name' => 'Admin', 'email' => 'admin@clarity.com', 'password' => $this->adminPassword]);
             $admin->forceFill(['is_admin' => true, 'email_verified_at' => now()])->save();
-            $user = User::create(['name' => 'Sarah Khan', 'email' => 'user@clarity.local', 'password' => $this->userPassword]);
+            $user = User::create(['name' => 'User', 'email' => 'user@clarity.com', 'password' => $this->userPassword]);
             $user->forceFill(['email_verified_at' => now(), 'trial_start' => now(), 'trial_end' => now()->addDays(7)])->save();
 
             foreach ([$admin, $user] as $owner) {

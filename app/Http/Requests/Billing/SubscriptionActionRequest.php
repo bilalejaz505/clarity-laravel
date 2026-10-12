@@ -16,7 +16,7 @@ class SubscriptionActionRequest extends FormRequest
         return [
             'action' => 'required|in:checkout,refresh,cancel',
             'planKey' => 'nullable|in:chat,freelance,bundle',
-            'subscriptionId' => 'nullable|string|max:100',
+            'subscriptionId' => 'required_unless:action,checkout|nullable|integer|min:1',
         ];
     }
 }

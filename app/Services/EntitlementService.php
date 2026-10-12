@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class EntitlementService
 {
-    public function __construct(public AppSettingsService $settings) {}
+    public function __construct(public AppSettingsService $settings)
+    {
+    }
 
     public function local(Request $request): bool
     {
@@ -32,7 +34,7 @@ class EntitlementService
             return array_replace($none, ['reason' => 'This account is suspended. Contact the administrator.']);
         }
 
-        if (! $u->hasVerifiedEmail() && ! $local) {
+        if (!$u->hasVerifiedEmail() && !$local) {
             return array_replace($none, ['reason' => 'Verify your email to access your workspace.']);
         }
 
@@ -60,12 +62,12 @@ class EntitlementService
             $buckets = [];
             $expires = [];
             $names = [];
-            foreach ($plans as [$sub,$p]) {
+            foreach ($plans as [$sub, $p]) {
                 $products = array_merge($products, $p['products']);
                 $messages += $p['messages'];
                 $requests += $p['requests'];
                 $names[] = $p['name'];
-                $buckets[] = $sub->id.':'.($sub->period_start ?: $sub->paid_until);
+                $buckets[] = $sub->paypal_id . ':' . ($sub->period_start ?: $sub->paid_until);
                 $expires[] = CarbonImmutable::parse($sub->paid_until)->toISOString();
             }
             sort($buckets);
@@ -75,7 +77,7 @@ class EntitlementService
         }
 
         if ($u->trial_start && $u->trial_end && $u->trial_end->isFuture()) {
-            return ['allowed' => true, 'reason' => 'Time-limited trial', 'plan' => 'Trial', 'products' => ['chat', 'freelance'], 'messages' => $s['trialMessages'], 'requests' => $s['trialRequests'], 'bucket' => 'trial:'.$u->trial_start->toISOString(), 'expires' => $u->trial_end->toISOString()];
+            return ['allowed' => true, 'reason' => 'Time-limited trial', 'plan' => 'Trial', 'products' => ['chat', 'freelance'], 'messages' => $s['trialMessages'], 'requests' => $s['trialRequests'], 'bucket' => 'trial:' . $u->trial_start->toISOString(), 'expires' => $u->trial_end->toISOString()];
         }
 
         return array_replace($none, ['reason' => $u->trial_end ? 'Your trial has ended. Choose a paid plan to continue.' : $none['reason']]);

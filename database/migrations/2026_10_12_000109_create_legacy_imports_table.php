@@ -9,7 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('legacy_imports', function (Blueprint $table): void {
-            $table->string('id', 64)->primary();
+            $table->id();
+            $table->string('fingerprint', 64)->unique();
             $table->text('summary');
             $table->timestamp('created_at');
         });

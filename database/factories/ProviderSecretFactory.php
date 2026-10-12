@@ -10,6 +10,6 @@ class ProviderSecretFactory extends Factory
 {
     public function definition(): array
     {
-        return ['id' => 'openai', 'ciphertext' => 'fixture-only-never-a-real-key'];
+        return ['provider' => 'openai', 'ciphertext' => 'fixture-only-never-a-real-key'];
     }
 }

@@ -9,7 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('app_secrets', function (Blueprint $table): void {
-            $table->string('id')->primary();
+            $table->id();
+            $table->string('provider')->unique();
             $table->text('ciphertext');
             $table->timestamps();
         });

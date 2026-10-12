@@ -16,7 +16,7 @@ class AccountController extends Controller
     {
         $u = $request->user();
         $e = $access->entitlement($u, $access->local($request));
-        $c = DB::table('usage_counters')->where('id', $usage->counter($u->id, $e['bucket']))->first();
+        $c = DB::table('usage_counters')->where('user_id', $u->id)->whereIn('bucket_key', $usage->counterKeys($u, $e['bucket']))->first();
 
         return response()->json(['member' => ['id' => $u->id, 'name' => $u->name, 'email' => $u->email], 'admin' => $access->admin($u), 'local' => $access->local($request), 'entitlement' => $e, 'usage' => ['messages' => $c->messages ?? 0, 'requests' => $c->requests ?? 0], 'trialAvailable' => $access->settings->get()['trialEnabled'] && ! $u->trial_start, 'subscriptions' => DB::table('subscriptions')->where('user_id', $u->id)->orderByDesc('updated_at')->get()]);
     }

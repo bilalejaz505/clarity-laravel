@@ -11,6 +11,6 @@ class UsageCounterFactory extends Factory
 {
     public function definition(): array
     {
-        return ['id' => hash('sha256', fake()->uuid()), 'user_id' => User::factory(), 'messages' => 0, 'requests' => 0];
+        return ['bucket_key' => hash('sha256', fake()->uuid()), 'user_id' => User::factory(), 'messages' => 0, 'requests' => 0];
     }
 }

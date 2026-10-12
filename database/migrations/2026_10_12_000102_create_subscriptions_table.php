@@ -9,8 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subscriptions', function (Blueprint $table): void {
-            $table->string('id', 100)->primary();
-            $table->uuid('user_id')->index();
+            $table->id();
+            $table->string('paypal_id', 100)->unique();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('provider_custom_id')->nullable();
             $table->string('plan_key');
             $table->string('status')->index();

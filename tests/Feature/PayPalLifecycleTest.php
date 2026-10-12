@@ -22,7 +22,7 @@ class PayPalLifecycleTest extends TestCase
         $this->subscription($user, $plan);
         $remote = $this->remote($user, $plan);
         $this->fakeProvider($remote);
-        $this->actingAs($user)->postJson('/api/billing', ['action' => 'refresh', 'subscriptionId' => 'I-fixture'])->assertOk()->assertJsonPath('status', 'ACTIVE');
+        $this->actingAs($user)->postJson('/api/billing', ['action' => 'refresh', 'subscriptionId' => DB::table('subscriptions')->where('paypal_id', 'I-fixture')->value('id')])->assertOk()->assertJsonPath('status', 'ACTIVE');
         $e = app(EntitlementService::class)->entitlement($user, false);
         $this->assertTrue($e['allowed']);
         $this->assertSame(['chat'], $e['products']);
@@ -36,7 +36,7 @@ class PayPalLifecycleTest extends TestCase
         $plan = $this->merchant();
         $this->subscription($user, $plan);
         Http::preventStrayRequests();
-        $this->actingAs($other)->postJson('/api/billing', ['action' => 'cancel', 'subscriptionId' => 'I-fixture'])->assertNotFound();
+        $this->actingAs($other)->postJson('/api/billing', ['action' => 'cancel', 'subscriptionId' => DB::table('subscriptions')->where('paypal_id', 'I-fixture')->value('id')])->assertNotFound();
         Http::assertNothingSent();
     }
 
@@ -49,7 +49,7 @@ class PayPalLifecycleTest extends TestCase
         $remote = $this->remote($user, $plan);
         $remote['custom_id'] = 'another-account';
         $this->fakeProvider($remote);
-        $this->actingAs($user)->postJson('/api/billing', ['action' => 'refresh', 'subscriptionId' => 'I-fixture'])->assertStatus(422);
+        $this->actingAs($user)->postJson('/api/billing', ['action' => 'refresh', 'subscriptionId' => DB::table('subscriptions')->where('paypal_id', 'I-fixture')->value('id')])->assertStatus(422);
         $this->assertFalse(app(EntitlementService::class)->entitlement($user, false)['allowed']);
     }
 
@@ -62,10 +62,10 @@ class PayPalLifecycleTest extends TestCase
         $this->fakeProvider($this->remote($user, $plan));
         $event = ['id' => 'refund-fixture', 'event_type' => 'PAYMENT.SALE.REFUNDED', 'create_time' => now()->toISOString(), 'resource' => ['billing_agreement_id' => 'I-fixture']];
         $this->withHeaders($this->signature())->postJson('/api/paypal/webhook', $event)->assertOk();
-        $this->assertDatabaseHas('subscriptions', ['id' => 'I-fixture', 'status' => 'REVIEW_REQUIRED', 'paid_until' => null]);
+        $this->assertDatabaseHas('subscriptions', ['paypal_id' => 'I-fixture', 'status' => 'REVIEW_REQUIRED', 'paid_until' => null]);
         $event['id'] = 'late-activation';
         $event['event_type'] = 'BILLING.SUBSCRIPTION.ACTIVATED';
-        $event['resource'] = ['id' => 'I-fixture'];
+        $event['resource'] = ['paypal_id' => 'I-fixture'];
         $this->postJson('/api/paypal/webhook', $event)->assertOk();
         $this->assertFalse(app(EntitlementService::class)->entitlement($user, false)['allowed']);
         $this->postJson('/api/paypal/webhook', $event)->assertJsonPath('duplicate', true);
@@ -88,7 +88,7 @@ class PayPalLifecycleTest extends TestCase
         $s['paypalClientId'] = 'fake-client';
         $s['paypalWebhookId'] = 'fake-webhook';
         $s['plans'][0]['paypalPlanId'] = 'P-fixture';
-        DB::table('app_settings')->insert(['id' => 'application', 'data' => json_encode($s), 'revision' => 1, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('app_settings')->insert(['key' => 'application', 'data' => json_encode($s), 'revision' => 1, 'created_at' => now(), 'updated_at' => now()]);
         $settings->saveSecret('paypal', 'fake-merchant-secret');
 
         return $s['plans'][0];
@@ -96,12 +96,12 @@ class PayPalLifecycleTest extends TestCase
 
     private function subscription(User $user, array $plan): void
     {
-        DB::table('subscriptions')->insert(['id' => 'I-fixture', 'user_id' => $user->id, 'plan_key' => 'chat', 'status' => 'APPROVAL_PENDING', 'plan_snapshot' => json_encode($plan), 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('subscriptions')->insert(['paypal_id' => 'I-fixture', 'user_id' => $user->id, 'plan_key' => 'chat', 'status' => 'APPROVAL_PENDING', 'plan_snapshot' => json_encode($plan), 'created_at' => now(), 'updated_at' => now()]);
     }
 
     private function remote(User $user, array $plan): array
     {
-        return ['status' => 'ACTIVE', 'plan_id' => $plan['paypalPlanId'], 'custom_id' => $user->id, 'billing_info' => ['last_payment' => ['time' => now()->subDay()->toISOString(), 'amount' => ['value' => '9.00', 'currency_code' => 'USD']], 'next_billing_time' => now()->addDays(28)->toISOString()]];
+        return ['status' => 'ACTIVE', 'plan_id' => $plan['paypalPlanId'], 'custom_id' => (string) $user->id, 'billing_info' => ['last_payment' => ['time' => now()->subDay()->toISOString(), 'amount' => ['value' => '9.00', 'currency_code' => 'USD']], 'next_billing_time' => now()->addDays(28)->toISOString()]];
     }
 
     private function fakeProvider(array $remote): void

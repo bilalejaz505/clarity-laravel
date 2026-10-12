@@ -11,12 +11,6 @@ class LegacyImport extends Model
 
     protected $table = 'legacy_imports';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     public const UPDATED_AT = null;

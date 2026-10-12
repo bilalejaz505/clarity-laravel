@@ -12,12 +12,6 @@ class UsageReservation extends Model
 
     protected $table = 'usage_reservations';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     protected function casts(): array

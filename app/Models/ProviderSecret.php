@@ -11,12 +11,6 @@ class ProviderSecret extends Model
 
     protected $table = 'app_secrets';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     protected $hidden = [

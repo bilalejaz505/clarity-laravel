@@ -27,7 +27,7 @@ class ResetLocalData extends Command
         }
         $adminPassword = Str::password(22, symbols: false);
         $userPassword = Str::password(22, symbols: false);
-        $text = 'Clarity local access — generated on '.now()->format('Y-m-d')."\n\nAdministrator: admin@clarity.local\nPassword: $adminPassword\nLogin: ".url('/admin/login')."\n\nMember: user@clarity.local\nPassword: $userPassword\nLogin: ".url('/login')."\n\nLocal setup credentials. Change them before any public deployment. Keep this file private.\n";
+        $text = 'Clarity local access — generated on '.now()->format('Y-m-d')."\n\nAdministrator: admin@clarity.com\nPassword: $adminPassword\nLogin: ".url('/admin/login')."\n\nMember: user@clarity.com\nPassword: $userPassword\nLogin: ".url('/login')."\n\nLocal setup credentials. Change them before any public deployment. Keep this file private.\n";
         if (file_put_contents($path, $text, LOCK_EX) === false) {
             $this->error('Unable to save the private credentials file. No database changes made.');
 

@@ -1,4 +1,9 @@
 /* Clarity's shared design system: public site, member workspace, and administration. */
+.user-row strong {
+    color: var(--ink);
+    font-size: 14px;
+    margin-bottom: 6px;
+}
 .daily-column {
     max-width: 38px;
 }

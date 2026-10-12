@@ -26,3 +26,5 @@ OpenAI keys and PayPal secrets are encrypted using Laravel `APP_KEY`. Keep that 
 ## Activation status
 
 Local authentication, settings, snapshots, entitlements, metering, and provider lifecycle logic are implemented. Automated tests use simulated OpenAI/PayPal responses. Real provider requests and payment settlement have not been tested because merchant credentials and an OpenAI key have not been supplied. cPanel/SMTP deployment is also pending hosting configuration. PayPal processing fees depend on the merchant account; this app requires no Supabase subscription.
+
+Application subscriptions and billing events now have numeric row IDs. Keep `subscriptions.paypal_id` and `billing_events.paypal_event_id` as unique provider identifiers, and use `provider_subscription_id` for the raw webhook reference. Browser billing actions submit the internal integer subscription ID; ownership is checked before the server calls PayPal using its provider ID. Quota counters/reservations have numeric IDs, while `bucket_key` remains a unique period hash. Provider `custom_id` is sent as a string, independent of integer MySQL IDs.

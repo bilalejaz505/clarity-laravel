@@ -11,12 +11,6 @@ class AuditLog extends Model
 
     protected $table = 'audit_logs';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $guarded = [];
 
     public const UPDATED_AT = null;

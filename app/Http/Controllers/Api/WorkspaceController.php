@@ -13,7 +13,7 @@ class WorkspaceController extends Controller
 {
     public function get(Request $request): JsonResponse
     {
-        return response()->json(['store' => Workspace::find($request->user()->id)?->data]);
+        return response()->json(['store' => Workspace::where('user_id', $request->user()->id)->first()?->data]);
     }
 
     public function save(SnapshotRequest $request, EntitlementService $access): JsonResponse
