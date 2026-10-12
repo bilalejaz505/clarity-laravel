@@ -28,7 +28,7 @@ class AuthController extends Controller
 
     private function next(?string $next): string
     {
-        return in_array($next, ['/account', '/admin', '/chats', '/agreements', '/pricing'], true) ? $next : '/account';
+        return in_array($next, ['/account', '/admin', '/chats', '/contracts', '/agreements', '/pricing'], true) ? $next : '/account';
     }
 
     public function login(LoginRequest $request): Response

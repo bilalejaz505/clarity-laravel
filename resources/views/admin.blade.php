@@ -5,8 +5,6 @@
             <h1>System administration</h1>
             <p>Manage people, providers, plans, and application settings.</p>
         </div>
-        <div id="admin-error" class="error-banner" hidden role="alert"></div>
-        <div id="admin-notice" class="progress-banner" hidden role="status"></div>
         <div class="admin-tabs toolbar"><button class="secondary" data-tab="overview">Overview</button><button
                 class="secondary" data-tab="users">Users</button><button class="secondary"
                 data-tab="ai">OpenAI</button><button class="secondary" data-tab="paypal">PayPal & plans</button><button

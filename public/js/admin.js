@@ -28,12 +28,10 @@ async function api(url, body) {
     return d;
 }
 function error(e) {
-    $("admin-error").hidden = false;
-    $("admin-error").textContent = e.message;
+    window.ClarityFeedback.notify("error", e.message);
 }
 function notice(text) {
-    $("admin-notice").hidden = false;
-    $("admin-notice").textContent = text;
+    window.ClarityFeedback.notify("success", text);
 }
 function tab(name) {
     document
@@ -98,7 +96,11 @@ async function load(search = "") {
         .forEach(
             (b) =>
                 (b.onclick = async () => {
-                    if (!confirm(`Set this account to ${b.dataset.status}?`))
+                    if (
+                        !(await window.ClarityFeedback.confirm(
+                            `Set this account to ${b.dataset.status}?`,
+                        ))
+                    )
                         return;
                     try {
                         await api("/api/admin", {
@@ -180,7 +182,12 @@ $("admin-settings-form").onsubmit = async (e) => {
 document.querySelectorAll("[data-delete-secret]").forEach(
     (b) =>
         (b.onclick = async () => {
-            if (!confirm("Remove this saved provider credential?")) return;
+            if (
+                !(await window.ClarityFeedback.confirm(
+                    "Remove this saved provider credential?",
+                ))
+            )
+                return;
             try {
                 await api("/api/admin", {
                     action: "delete-secret",

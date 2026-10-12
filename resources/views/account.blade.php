@@ -5,7 +5,6 @@
             <h1>Your account</h1>
             <p>Manage access, usage, and subscriptions.</p>
         </div>
-        <div id="public-error" class="error-banner" hidden role="alert"></div>
         @if (!auth()->user()->hasVerifiedEmail())
             <div class="progress-banner">Verify your email for hosted access. <a href="/email/verify">Send a verification
                     email</a></div>

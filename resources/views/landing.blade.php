@@ -5,7 +5,7 @@
             <div class="hero-copy">
                 <span class="hero-kicker"><span class="status-dot"></span> YOUR NEXT STEP, MADE CLEAR</span>
                 <h1>Less guesswork.<br><span>More clarity.</span></h1>
-                <p>Turn conversations into perspective. Turn client agreements into a plan. Two thoughtful tools, one
+                <p>Turn conversations into perspective. Turn client contracts into a plan. Two thoughtful tools, one
                     organized workspace.</p>
                 <div class="toolbar">
                     <a href="/register" class="primary">Create your workspace <span aria-hidden="true">↗</span></a>
@@ -31,7 +31,7 @@
                         <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
                     </div>
                 </div>
-                <div class="preview-agreement"><span class="preview-check">✓</span>
+                <div class="preview-contract"><span class="preview-check">✓</span>
                     <div><strong>Scope confirmed</strong><span>Four pages · Two revision rounds</span></div><span
                         class="badge positive">Reviewed</span>
                 </div>
@@ -57,8 +57,8 @@
                     <h2>Keep client work on track.</h2>
                     <p>Bring scope, deadlines, milestones, and invoices together. Know what was agreed, and what still needs
                         a decision.</p>
-                    <div class="feature-tags"><span>Agreements</span><span>Milestones</span><span>Document studio</span>
-                    </div><a href="/agreements" class="text-btn">Open Freelance Tracker <span>→</span></a>
+                    <div class="feature-tags"><span>Contracts</span><span>Milestones</span><span>Document studio</span>
+                    </div><a href="/contracts" class="text-btn">Open Freelance Tracker <span>→</span></a>
                 </article>
             </div>
         </section>

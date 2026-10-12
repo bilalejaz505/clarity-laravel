@@ -11,8 +11,8 @@ Clarity is now a Laravel 13 / MySQL / Blade application. Source is `E:\laragon\w
 | Import review | Sender aliases and renaming, approximate contact redaction, date order, preview and deduplication |
 | Chat analysis | Local observations, evidence views, participation/words/activity/reply-gap statistics, comparison, search/filter/explorer |
 | AI | Server-side OpenAI Responses, structured reports, evidence-ID validation, chunked analysis, retrieved-excerpt Q&A, reply coaching |
-| Freelance | Candidate agreement review and history, scope/change items, task statuses/dates, ICS export, invoice records with currency-separated totals and CSV |
-| Document studio | Editable SOW, proposal, agreement summary, change request and follow-up drafts; TXT and browser print/PDF |
+| Freelance | Candidate contract review and history, scope/change items, task statuses/dates, ICS export, invoice records with currency-separated totals and CSV |
+| Document studio | Editable SOW, proposal, contract summary, change request and follow-up drafts; TXT and browser print/PDF |
 | Storage | Memory by default, optional account-scoped device storage, version-one JSON backup/restore, owner-only MySQL snapshots |
 | Administration | Users/status, settings revision conflict checks, encrypted provider secrets, OpenAI setup/test, PayPal plans/settings, quotas/trials, application settings, audit records |
 | Billing | Paid/trial entitlements, authenticated localhost-only free plan, checkout locks, immutable plan snapshot, verified provider reconciliation/webhook deduplication, cancellation/refund rules |
@@ -42,7 +42,7 @@ A private SQL backup was saved before restructuring in `E:\db-backups`. The loca
 
 ## Verification and remaining activation
 
-Backend tests cover authentication, password resets, admin isolation, encrypted settings/revision checks, trials/expiry, product access, snapshots, failed AI credits/evidence validation, usage reservations and verified PayPal lifecycle events. They run on SQLite and a separate MySQL test database. Parser/document regression tests cover WhatsApp dates, CSV escaping, JSON imports, deduplication, bounded reply gaps, conservative agreement detection, formula-safe CSV and document/calendar exports.
+Backend tests cover authentication, password resets, admin isolation, encrypted settings/revision checks, trials/expiry, product access, snapshots, failed AI credits/evidence validation, usage reservations and verified PayPal lifecycle events. They run on SQLite and a separate MySQL test database. Parser/document regression tests cover WhatsApp dates, CSV escaping, JSON imports, deduplication, bounded reply gaps, conservative contract detection, formula-safe CSV and document/calendar exports.
 
 Local browser checks verify normal login, import review, MySQL snapshot save, and the preserved interfaces. Real OpenAI requests, PayPal transactions and cPanel SMTP/deployment still require your credentials and hosting, and are not claimed as live-tested.
 
@@ -59,3 +59,7 @@ At the owner's request, the original 18 migrations were revised and the local da
 PayPal subscription/event identifiers remain in separate provider fields. Usage hashes are `bucket_key`, settings use `key`, provider secrets use `provider`, and legacy import fingerprints are separate from numeric row IDs. Workspace/message/term IDs inside JSON backups and framework session tokens remain opaque strings; they are not application database primary keys.
 
 This was an explicitly authorized local reset, preceded by a private SQL backup. `migrate:fresh` destroys data and remains inappropriate for routine deployment. Reusing an older populated UUID-schema database requires restoration or an explicit migration plan; running `migrate` against its already-completed original migrations does not change it. Existing sessions were invalidated; log in again with the same passwords.
+
+## Notifications
+
+SweetAlert2 11.26.25 is served locally from public/vendor with its license. Public, member and admin pages share styled toast notifications and confirmation dialogs. Errors remain until dismissed; routine success messages close automatically. Messages are rendered as plain text. The contracts workspace is available at /contracts; /agreements remains compatible with existing links and older document backups.

@@ -369,7 +369,7 @@ textarea:focus,
     color: #9faac1;
     margin-top: 10px;
 }
-.preview-agreement {
+.preview-contract {
     display: flex;
     align-items: center;
     gap: 11px;
@@ -384,17 +384,17 @@ textarea:focus,
     color: #40a68a;
     padding: 7px 10px;
 }
-.preview-agreement strong {
+.preview-contract strong {
     display: block;
     font-size: 11px;
 }
-.preview-agreement div > span {
+.preview-contract div > span {
     display: block;
     color: #98a2b6;
     font-size: 9px;
     margin-top: 5px;
 }
-.preview-agreement .badge {
+.preview-contract .badge {
     margin-left: auto;
     font-size: 8px;
 }

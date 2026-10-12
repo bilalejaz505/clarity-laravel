@@ -1,6 +1,6 @@
 # Clarity
 
-Conversation insights and freelance agreement tracking, built with Laravel 13, MySQL and Blade. Source on this computer: `E:\laragon\www\clarity-laravel`.
+Conversation insights and freelance contract tracking, built with Laravel 13, MySQL and Blade. Source on this computer: `E:\laragon\www\clarity-laravel`.
 
 No Node/npm, Next.js, React, Livewire, Inertia or Supabase is required. Browser scripts and styles are served directly from `public`. PHP libraries live in Composer's standard `vendor` directory. This lockfile needs PHP 8.4.
 

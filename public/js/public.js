@@ -30,9 +30,7 @@ async function api(url, body) {
     return data;
 }
 function showError(e) {
-    const box = document.querySelector("#public-error");
-    box.hidden = false;
-    box.textContent = e.message;
+    window.ClarityFeedback.notify("error", e.message);
 }
 document.querySelectorAll("[data-checkout]").forEach(
     (button) =>
@@ -64,7 +62,7 @@ async function loadAccount() {
                 ? '<a href="/chats" class="primary">Open Chat Insights</a>'
                 : "") +
             (e.products.includes("freelance")
-                ? '<a href="/agreements" class="secondary">Open Freelance Tracker</a>'
+                ? '<a href="/contracts" class="secondary">Open Freelance Tracker</a>'
                 : "") +
             (d.trialAvailable && !e.allowed
                 ? '<button id="start-trial" class="primary">Start one-time trial</button>'
@@ -94,9 +92,9 @@ async function loadAccount() {
                 (b.onclick = async () => {
                     if (
                         b.dataset.cancel &&
-                        !confirm(
+                        !(await window.ClarityFeedback.confirm(
                             "Cancel future renewals? Already-paid access remains until verified expiry.",
-                        )
+                        ))
                     )
                         return;
                     b.disabled = true;

@@ -119,9 +119,9 @@
             </label><button class="text-btn" type="button" id="copy-reply">Copy reply</button>
         </form>
     </section>
-    <section data-panel="agreements" hidden>
+    <section data-panel="contracts" hidden>
         <div class="page-heading">
-            <h1>Agreement tracker</h1>
+            <h1>Contract tracker</h1>
             <p>Review proposed, accepted, unclear, and rejected terms against the original conversation.</p>
         </div>
         <div class="filters"><select id="term-filter" aria-label="Term status">
@@ -189,7 +189,7 @@
         <div class="toolbar"><select id="document-kind" aria-label="Document template">
                 <option>Statement of work</option>
                 <option>Project proposal</option>
-                <option>Agreement summary</option>
+                <option>Contract summary</option>
                 <option>Change request</option>
                 <option>Follow-up email</option>
             </select><button class="primary" id="generate-document">Create draft</button><button class="secondary"

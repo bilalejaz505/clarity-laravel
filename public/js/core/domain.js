@@ -378,7 +378,7 @@ function localAnalysis(messages) {
         });
     }
     return {
-        summary: `${messages.length.toLocaleString()} messages across ${new Set(messages.map((m) => m.sender)).size} participants. Local results identify explicit phrases and candidate terms. Review the evidence; agreement and intent are not inferred.`,
+        summary: `${messages.length.toLocaleString()} messages across ${new Set(messages.map((m) => m.sender)).size} participants. Local results identify explicit phrases and candidate terms. Review the evidence; mutual acceptance and intent are not inferred.`,
         insights,
         terms,
         engine: "local",

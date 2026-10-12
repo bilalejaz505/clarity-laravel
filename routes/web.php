@@ -39,6 +39,7 @@ Route::middleware('private')->group(function () {
         Route::post('/api/account', [AccountController::class, 'trial'])->middleware('throttle:5,1');
         Route::middleware('active')->group(function () {
             Route::get('/chats', [PageController::class, 'workspace']);
+            Route::get('/contracts', [PageController::class, 'workspace'])->name('contracts');
             Route::get('/agreements', [PageController::class, 'workspace']);
             Route::get('/api/workspace', [WorkspaceController::class, 'get']);
             Route::put('/api/workspace', [WorkspaceController::class, 'save']);

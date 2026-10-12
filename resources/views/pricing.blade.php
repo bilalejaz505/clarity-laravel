@@ -5,7 +5,6 @@
             <h1>Pay for useful clarity.</h1>
             <p>Choose one app or get both. Monthly limits keep AI usage predictable.</p>
         </div>
-        <div id="public-error" class="error-banner" role="alert" hidden></div>
         <div class="pricing-grid">
             @foreach ($settings['plans'] as $plan)
                 @if ($plan['enabled'])
@@ -23,7 +22,7 @@
                             <li>✓ Private workspace and exports</li>
                         </ul>
                         @if ($local)
-                            <a class="primary full" href="{{ $plan['key'] === 'freelance' ? '/agreements' : '/chats' }}">Use
+                            <a class="primary full" href="{{ $plan['key'] === 'freelance' ? '/contracts' : '/chats' }}">Use
                             localhost free plan</a>@else<button class="primary full" data-checkout="{{ $plan['key'] }}"
                                 @disabled(!$plan['paypalPlanId'] || !$settings['paypalClientId'])>{{ $plan['paypalPlanId'] && $settings['paypalClientId'] ? 'Continue to PayPal' : 'Checkout coming soon' }}</button>
                         @endif

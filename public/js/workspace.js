@@ -8,9 +8,12 @@ import {
     exportCSV,
     uid,
     displayTime,
-} from "./core/domain.js";
+} from "./core/domain.js?v=contracts-1";
 import { importFiles, screenshotText } from "./core/imports.js";
-import { documentDraft, calendarExport } from "./core/documents.js";
+import {
+    documentDraft,
+    calendarExport,
+} from "./core/documents.js?v=contracts-1";
 import { workspaceSchema } from "./core/validation.js";
 const boot = window.clarityBootstrap,
     $ = (id) => document.getElementById(id),
@@ -64,12 +67,15 @@ const relevant = () =>
     current = () =>
         relevant().find((c) => c.id === mem.selected) || relevant()[0];
 function error(message) {
-    $("workspace-error").textContent = message;
-    $("workspace-error").hidden = !message;
+    if (message) window.ClarityFeedback.notify("error", message);
 }
 function notice(message) {
-    $("workspace-notice").textContent = message;
-    $("workspace-notice").hidden = !message;
+    window.ClarityFeedback.notify(
+        /…|\.\.\.|Stopping|Answering|Analyzing/i.test(message)
+            ? "info"
+            : "success",
+        message,
+    );
 }
 function save() {
     if (boot.demo) return;
@@ -200,7 +206,7 @@ function render() {
     $("statistics-metrics").innerHTML = metrics(stats);
     $("overview-summary").textContent =
         analysis?.summary ||
-        "Import a conversation to begin reviewing patterns and agreements.";
+        "Import a conversation to begin reviewing patterns and contracts.";
     $("overview-chart").innerHTML = chart(stats.days);
     $("stats-chart").innerHTML = chart(stats.days);
     $("conversation-library").innerHTML =
@@ -217,7 +223,7 @@ function render() {
         .querySelectorAll("[data-select]")
         .forEach(
             (b) =>
-                (b.onclick = () => {
+                (b.onclick = async () => {
                     mem.selected = b.dataset.select;
                     render();
                     show("overview");
@@ -227,7 +233,7 @@ function render() {
         .querySelectorAll("[data-rename]")
         .forEach(
             (b) =>
-                (b.onclick = () => {
+                (b.onclick = async () => {
                     const v = mem.store.conversations.find(
                             (c) => c.id === b.dataset.rename,
                         ),
@@ -243,9 +249,9 @@ function render() {
         .querySelectorAll("[data-delete]")
         .forEach(
             (b) =>
-                (b.onclick = () => {
+                (b.onclick = async () => {
                     if (
-                        confirm(
+                        await window.ClarityFeedback.confirm(
                             "Delete this device conversation? Export a backup first if needed. The server snapshot is separate.",
                         )
                     ) {
@@ -357,7 +363,7 @@ function renderMessages() {
         .querySelectorAll("[data-edit-message]")
         .forEach(
             (b) =>
-                (b.onclick = () => {
+                (b.onclick = async () => {
                     const m = current().messages.find(
                             (m) => m.id === b.dataset.editMessage,
                         ),
@@ -486,8 +492,12 @@ function renderTasks() {
         .querySelectorAll("[data-delete-task]")
         .forEach(
             (b) =>
-                (b.onclick = () => {
-                    if (confirm("Delete this task?")) {
+                (b.onclick = async () => {
+                    if (
+                        await window.ClarityFeedback.confirm(
+                            "Delete this task?",
+                        )
+                    ) {
                         mem.store.tasks = mem.store.tasks.filter(
                             (t) => t.id !== b.dataset.deleteTask,
                         );
@@ -541,8 +551,12 @@ function renderInvoices() {
         .querySelectorAll("[data-delete-invoice]")
         .forEach(
             (b) =>
-                (b.onclick = () => {
-                    if (confirm("Delete this invoice record?")) {
+                (b.onclick = async () => {
+                    if (
+                        await window.ClarityFeedback.confirm(
+                            "Delete this invoice record?",
+                        )
+                    ) {
                         mem.store.invoices = mem.store.invoices.filter(
                             (i) => i.id !== b.dataset.deleteInvoice,
                         );
@@ -563,6 +577,7 @@ function renderAnswers() {
     bindEvidence($("answers-list"));
 }
 function show(view) {
+    if (view === "agreements") view = "contracts";
     if (!document.querySelector(`[data-panel="${view}"]`)) view = "overview";
     mem.view = view;
     document
@@ -968,7 +983,12 @@ $("restore-backup").onchange = async (e) => {
             throw Error("Backups are limited to 10 MB.");
         const decoded = JSON.parse(await file.text()),
             store = workspaceSchema.parse(decoded.store || decoded);
-        if (!confirm("Replace the device workspace with this backup?")) return;
+        if (
+            !(await window.ClarityFeedback.confirm(
+                "Replace the device workspace with this backup?",
+            ))
+        )
+            return;
         mem.store = store;
         save();
         render();
@@ -977,10 +997,10 @@ $("restore-backup").onchange = async (e) => {
         error("Backup could not be restored: " + err.message);
     }
 };
-$("clear-device").onclick = () => {
+$("clear-device").onclick = async () => {
     if (boot.demo) return;
     if (
-        confirm(
+        await window.ClarityFeedback.confirm(
             "Delete this device workspace? The server snapshot is separate.",
         )
     ) {
@@ -992,10 +1012,12 @@ $("clear-device").onclick = () => {
         notice("Device workspace cleared.");
     }
 };
-$("reset-samples").onclick = () => {
+$("reset-samples").onclick = async () => {
     if (
         !boot.demo &&
-        confirm("Replace the device workspace with sample data?")
+        (await window.ClarityFeedback.confirm(
+            "Replace the device workspace with sample data?",
+        ))
     ) {
         mem.store = sampleStore();
         save();
@@ -1015,7 +1037,12 @@ $("save-cloud").onclick = async () => {
     }
 };
 $("load-cloud").onclick = async () => {
-    if (boot.demo || !confirm("Replace device data with your server snapshot?"))
+    if (
+        boot.demo ||
+        !(await window.ClarityFeedback.confirm(
+            "Replace device data with your server snapshot?",
+        ))
+    )
         return;
     try {
         const d = await api("/api/workspace");
@@ -1030,7 +1057,11 @@ $("load-cloud").onclick = async () => {
     }
 };
 $("delete-cloud").onclick = async () => {
-    if (boot.demo || !confirm("Delete your server snapshot?")) return;
+    if (
+        boot.demo ||
+        !(await window.ClarityFeedback.confirm("Delete your server snapshot?"))
+    )
+        return;
     try {
         await api("/api/workspace", { method: "DELETE" });
         notice("Server snapshot deleted.");
@@ -1079,7 +1110,7 @@ document.querySelectorAll("[data-switch-product]").forEach(
             const url = new URL(location.href);
             if (!boot.demo)
                 url.pathname =
-                    product === "freelance" ? "/agreements" : "/chats";
+                    product === "freelance" ? "/contracts" : "/chats";
             else url.searchParams.set("product", product);
             history.replaceState({}, "", url);
             mem.selected = "";

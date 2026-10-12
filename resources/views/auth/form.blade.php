@@ -8,7 +8,7 @@
             <h1>{{ $adminLogin ?? false ? 'Admin sign in.' : ['login' => 'Welcome back.', 'register' => 'Create your account.', 'forgot' => 'Reset your password.', 'reset' => 'Choose a new password.'][$mode] }}
             </h1>
             <p class="muted">
-                {{ $adminLogin ?? false ? 'Manage your platform, people, plans, and connections.' : ($mode === 'login' ? 'Log in with your email and password to continue.' : ($mode === 'register' ? 'One account for chat insights and freelance agreements.' : 'Use your email to recover access to your workspace.')) }}
+                {{ $adminLogin ?? false ? 'Manage your platform, people, plans, and connections.' : ($mode === 'login' ? 'Log in with your email and password to continue.' : ($mode === 'register' ? 'One account for chat insights and freelance contracts.' : 'Use your email to recover access to your workspace.')) }}
             </p>
             <form method="POST"
                 action="{{ $adminLogin ?? false ? route('admin.login.submit') : ['login' => '/login', 'register' => '/register', 'forgot' => '/forgot-password', 'reset' => '/reset-password'][$mode] }}"

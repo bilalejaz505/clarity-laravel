@@ -51,7 +51,7 @@ class ValidWorkspace implements ValidationRule
                 }
 
                 foreach ($analysis['terms'] as $term) {
-                    $this->require(is_array($term), 'Invalid agreement term.');
+                    $this->require(is_array($term), 'Invalid contract term.');
                     $this->strings($term, ['id' => 100, 'category' => 30, 'title' => 1000, 'detail' => 100000, 'status' => 30, 'due' => 100, 'currency' => 20, 'note' => 100000]);
                     $this->require(in_array($term['category'], ['scope', 'payment', 'deadline', 'revision', 'change', 'other'], true) && in_array($term['status'], ['proposed', 'accepted', 'unclear', 'rejected'], true), 'Invalid term status/category.');
                     $this->require(is_bool($term['completed'] ?? null) && (($term['amount'] ?? null) === null || is_numeric($term['amount']) && $term['amount'] >= 0), 'Invalid term amount/completion.');

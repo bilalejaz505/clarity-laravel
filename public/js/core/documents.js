@@ -1,4 +1,5 @@
 function documentDraft(kind, c) {
+    if (kind === "Agreement summary") kind = "Contract summary";
     const terms = c.analysis?.terms || [],
         accepted = terms.filter((t) => t.status === "accepted"),
         pending = terms.filter(
@@ -98,9 +99,9 @@ ${details(dates)}
 ${open}
 
 NEXT STEP
-Please confirm the deliverables, budget, and timeline before formalizing the agreement.`
+Please confirm the deliverables, budget, and timeline before formalizing the contract.`
         );
-    if (kind === "Agreement summary")
+    if (kind === "Contract summary")
         return (
             header +
             `REVIEWED TERMS
@@ -155,10 +156,12 @@ function calendarExport(tasks) {
             .flatMap((t) => [
                 "BEGIN:VEVENT",
                 `UID:${t.id}@clarity.local`,
-                `DTSTAMP:${/* @__PURE__ */ new Date()
-                    .toISOString()
-                    .replace(/[-:]/g, "")
-                    .replace(/\.\d+Z/, "Z")}`,
+                `DTSTAMP:${
+                    /* @__PURE__ */ new Date()
+                        .toISOString()
+                        .replace(/[-:]/g, "")
+                        .replace(/\.\d+Z/, "Z")
+                }`,
                 `DTSTART;VALUE=DATE:${t.due.replace(/-/g, "")}`,
                 `SUMMARY:${esc(t.title)}`,
                 `DESCRIPTION:${esc(t.note)}`,

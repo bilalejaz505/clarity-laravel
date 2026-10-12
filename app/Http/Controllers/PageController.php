@@ -32,7 +32,7 @@ class PageController extends Controller
 
     public function workspace(Request $request): View|Response
     {
-        $product = $request->is('agreements') ? 'freelance' : 'chat';
+        $product = $request->is('contracts', 'agreements') ? 'freelance' : 'chat';
         $e = $this->access->entitlement($request->user(), $this->access->local($request));
         if (! $e['allowed'] || ! in_array($product, $e['products'])) {
             return response()->view('gate', ['reason' => $e['reason']], 403);

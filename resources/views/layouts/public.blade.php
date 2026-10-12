@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Clarity — Conversation Insights & Freelance Agreements')</title>
+    <title>@yield('title', 'Clarity — Conversation Insights & Freelance Contracts')</title>
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/clarity.css">
     <link rel="stylesheet" href="{{ asset('css/blade.css') }}?v={{ filemtime(public_path('css/blade.css')) }}">
@@ -20,19 +20,11 @@
                 class="secondary">My account ↗</a>@else<a href="/login" class="secondary">Log in ↗</a>@endauth
         </nav>
     </header>
-    @if (session('status'))
-        <div class="public-content">
-            <div class="progress-banner" role="status">{{ session('status') }}</div>
-        </div>
-    @endif
-    @if ($errors->any())
-        <div class="public-content">
-            <div class="error-banner" role="alert">{{ $errors->first() }}</div>
-        </div>
-    @endif
     @yield('content')<footer class="public-footer"><span>Clarity <span class="footer-separator">/</span> A clearer
             way forward.</span><a href="{{ route('admin.login') }}">Admin access</a></footer>
-</div>@yield('scripts')
+</div>
+<x-feedback />
+@yield('scripts')
 </body>
 
 </html>

@@ -33,7 +33,7 @@
     {
       "key": "freelance",
       "name": "Freelance Pro",
-      "description": "Agreements, scope, milestones, and documents",
+      "description": "Contracts, scope, milestones, and documents",
       "price": 15,
       "currency": "USD",
       "messages": 40000,

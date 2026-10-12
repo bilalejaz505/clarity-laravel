@@ -13,12 +13,12 @@
 </head>
 
 <body>
-    @php $items=$product==='freelance'?['overview'=>'Overview','library'=>'Client conversations','agreements'=>'Agreement tracker','scope'=>'Scope & changes','tasks'=>'Tasks & milestones','payments'=>'Invoices & payments','documents'=>'Document studio','ask'=>'Ask your project']:['overview'=>'Overview','library'=>'Conversations','insights'=>'Conversation insights','stats'=>'Chat statistics','explorer'=>'Message explorer','compare'=>'Compare conversations','ask'=>'Ask your chat','coach'=>'Reply coach']; @endphp
+    @php $items=$product==='freelance'?['overview'=>'Overview','library'=>'Client conversations','contracts'=>'Contract tracker','scope'=>'Scope & changes','tasks'=>'Tasks & milestones','payments'=>'Invoices & payments','documents'=>'Document studio','ask'=>'Ask your project']:['overview'=>'Overview','library'=>'Conversations','insights'=>'Conversation insights','stats'=>'Chat statistics','explorer'=>'Message explorer','compare'=>'Compare conversations','ask'=>'Ask your chat','coach'=>'Reply coach']; @endphp
     <aside class="sidebar" id="sidebar"><a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a><button
             class="mobile-nav-close" id="nav-close" aria-label="Close navigation">×</button>
         <div class="product-switch"><a data-switch-product="chat" href="{{ $demo ? '/demo?product=chat' : '/chats' }}"
                 class="{{ $product === 'chat' ? 'active' : '' }}">Chat Insights</a><a data-switch-product="freelance"
-                href="{{ $demo ? '/demo?product=freelance' : '/agreements' }}"
+                href="{{ $demo ? '/demo?product=freelance' : '/contracts' }}"
                 class="{{ $product === 'freelance' ? 'active' : '' }}">Freelance Tracker</a></div><span
             class="eyebrow">{{ $product === 'chat' ? 'YOUR CONVERSATIONS' : 'YOUR CLIENT WORK' }}</span>
         <nav data-product-nav="chat" @if ($product !== 'chat') hidden @endif><a href="?view=overview"
@@ -31,8 +31,8 @@
                 class="nav-link">Reply coach</a></nav>
         <nav data-product-nav="freelance" @if ($product !== 'freelance') hidden @endif><a href="?view=overview"
                 data-view="overview" class="nav-link">Overview</a><a href="?view=library" data-view="library"
-                class="nav-link">Client conversations</a><a href="?view=agreements" data-view="agreements"
-                class="nav-link">Agreement tracker</a><a href="?view=scope" data-view="scope" class="nav-link">Scope &
+                class="nav-link">Client conversations</a><a href="?view=contracts" data-view="contracts"
+                class="nav-link">Contract tracker</a><a href="?view=scope" data-view="scope" class="nav-link">Scope &
                 changes</a><a href="?view=tasks" data-view="tasks" class="nav-link">Tasks & milestones</a><a
                 href="?view=payments" data-view="payments" class="nav-link">Invoices & payments</a><a
                 href="?view=documents" data-view="documents" class="nav-link">Document studio</a><a href="?view=ask"
@@ -60,8 +60,6 @@
                     id="open-import" @disabled($demo)>Import chat +</button></div>
         </header>
         <main class="main-content">
-            <div id="workspace-error" class="error-banner" role="alert" hidden></div>
-            <div id="workspace-notice" class="progress-banner" role="status" hidden></div>
             @if ($demo)
                 <div class="sample-banner">Sample demo · personal imports, persistent storage, and live AI are
                     disabled. <a href="/pricing">View plans →</a></div>
@@ -126,6 +124,7 @@
         window.clarityBootstrap =
             {{ Illuminate\Support\Js::from(['product' => $product, 'demo' => $demo, 'userId' => auth()->id(), 'initialStore' => $initialStore ?? null]) }};
     </script>
+    <x-feedback />
     <script type="module" src="{{ asset('js/workspace.js') }}?v={{ filemtime(public_path('js/workspace.js')) }}"></script>
 </body>
 
