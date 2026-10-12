@@ -1,0 +1,63 @@
+{
+  "appName": "Clarity",
+  "maintenance": false,
+  "notice": "",
+  "maxUploadMB": 20,
+  "maxImportMessages": 100000,
+  "demoEnabled": true,
+  "trialEnabled": true,
+  "trialDays": 7,
+  "trialMessages": 1000,
+  "trialRequests": 15,
+  "aiEnabled": true,
+  "aiModel": "",
+  "aiMaxOutput": 6000,
+  "paypalEnvironment": "sandbox",
+  "paypalClientId": "",
+  "paypalWebhookId": "",
+  "plans": [
+    {
+      "key": "chat",
+      "name": "Chat Plus",
+      "description": "Conversation insights and reply coaching",
+      "price": 9,
+      "currency": "USD",
+      "messages": 20000,
+      "requests": 250,
+      "products": [
+        "chat"
+      ],
+      "paypalPlanId": "",
+      "enabled": true
+    },
+    {
+      "key": "freelance",
+      "name": "Freelance Pro",
+      "description": "Agreements, scope, milestones, and documents",
+      "price": 15,
+      "currency": "USD",
+      "messages": 40000,
+      "requests": 500,
+      "products": [
+        "freelance"
+      ],
+      "paypalPlanId": "",
+      "enabled": true
+    },
+    {
+      "key": "bundle",
+      "name": "Clarity Complete",
+      "description": "Both apps in one subscription",
+      "price": 19,
+      "currency": "USD",
+      "messages": 60000,
+      "requests": 750,
+      "products": [
+        "chat",
+        "freelance"
+      ],
+      "paypalPlanId": "",
+      "enabled": true
+    }
+  ]
+}
