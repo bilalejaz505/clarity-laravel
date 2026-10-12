@@ -9,12 +9,13 @@
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/clarity.css">
     <link rel="stylesheet" href="{{ asset('css/blade.css') }}?v={{ filemtime(public_path('css/blade.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/modern.css') }}?v={{ filemtime(public_path('css/modern.css')) }}">
 </head>
 
 <body>
     <div class="public-site">
-        <header class="public-header"><a href="/" class="public-brand"><span
-                    class="brand-mark">▤</span>{{ strtolower($settings['appName'] ?? config('app.name', 'Clarity')) }}.</a>
+        <header class="public-header"><a href="/"
+                class="public-brand"><x-brand-mark />{{ $settings['appName'] ?? config('app.name', 'Clarity') }}</a>
             <nav><a href="/demo">Try the demo</a><a href="/pricing">Plans</a>@auth<a href="/account"
                 class="secondary">My account ↗</a>@else<a href="/login" class="secondary">Log in ↗</a>@endauth
         </nav>
@@ -29,8 +30,8 @@
             <div class="error-banner" role="alert">{{ $errors->first() }}</div>
         </div>
     @endif
-    @yield('content')<footer class="public-footer"><span>Clarity · Evidence first. Always.</span><a
-            href="/admin">Admin access</a></footer>
+    @yield('content')<footer class="public-footer"><span>Clarity <span class="footer-separator">/</span> A clearer
+            way forward.</span><a href="{{ route('admin.login') }}">Admin access</a></footer>
 </div>@yield('scripts')
 </body>
 

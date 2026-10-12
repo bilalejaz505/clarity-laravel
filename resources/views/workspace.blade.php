@@ -3,8 +3,8 @@
     <section data-panel="overview">
         <div class="welcome">
             <div><span class="eyebrow">YOUR WORKSPACE, WITH PERSPECTIVE</span>
-                <h1>Make sense of<br><span>what was said.</span></h1>
-                <p>Explore the patterns. Review the evidence. Decide your next step.</p>
+                <h1 id="overview-heading">Your conversations.<br><span>A clearer perspective.</span></h1>
+                <p id="overview-description">Explore the patterns. Review the evidence. Decide your next step.</p>
             </div>
         </div>
         <div class="metrics" id="overview-metrics"></div>

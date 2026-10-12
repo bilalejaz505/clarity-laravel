@@ -1,6 +1,6 @@
 # Run Clarity on localhost
 
-Source: `E:\clarity-laravel`. The old Node application in `E:\conversation-suite` is a reference copy; run the Laravel folder.
+Source: `E:\laragon\www\clarity-laravel`. The old Node application in `E:\conversation-suite` is a reference copy; run the Laravel folder.
 
 This application uses Laravel 13, MySQL, Blade, plain browser JavaScript, and static CSS. Node, npm, Supabase, Livewire, and Inertia are not required. Composer manages PHP dependencies. The installed lockfile requires PHP 8.4.
 
@@ -63,3 +63,15 @@ php artisan optimize:clear
 Tests use an isolated in-memory SQLite database by default, not your MySQL application records. Optional browser-domain regression tests use `node --test tests/frontend/*.test.mjs`; Node is only needed for that optional developer check, never to run the app.
 
 If port 8000 is occupied, stop the other server or choose another port and update `APP_URL`, then clear cached configuration. A SQL connection error means MySQL is stopped or `.env` credentials/database are wrong. A 419 response means the session/CSRF token expired; reload the form. Keep `storage` and `bootstrap/cache` writable.
+
+## Current local accounts and administrator sign-in
+
+The initialized local MySQL database contains exactly one administrator (`admin@clarity.local`, Bilal) and one member (`user@clarity.local`, Sarah Khan). Both are active and email-verified. Passwords were generated separately and saved in the private `Clarity-Local-Accounts.txt` deliverable; they are not in source control. Administrator login is `/admin/login`; ordinary member login is `/login`. The admin form refuses regular, suspended, or unverified accounts.
+
+Three configured plans are stored in the application settings: Chat Plus (USD 9/month), Freelance Pro (USD 15/month), and Clarity Complete (USD 19/month). PayPal checkout requires merchant credentials and real matching provider plan IDs; no payment records were fabricated. The member has a seven-day trial. Exact localhost continues to have the free development entitlement.
+
+Both accounts have independent starter workspaces with a personal conversation, a Northstar Studio freelance project, reviewed terms, two milestones and two draft invoices. These are editable examples, clearly marked as starter/sample conversations. Saved server snapshots now load automatically into the owning account's workspace; optional saved device data takes precedence. Changes remain in memory until you save them explicitly.
+
+The old 13 imported migration accounts and associated stale records were removed after a private SQL backup. Migrations and encrypted provider-secret storage were preserved. Automated test fixtures remain isolated from this application database.
+
+If you explicitly need to initialize the local database again, back it up first and run `php artisan clarity:reset-local-data --reset`. It creates new random passwords in `storage/app/private/local-access.txt`; choose a new `--credentials=ABSOLUTE_PRIVATE_PATH` if that file already exists. This command intentionally refuses non-local environments. Do not run it to deploy or update a live site.

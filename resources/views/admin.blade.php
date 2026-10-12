@@ -94,4 +94,4 @@
         </section>
 </main>@endsection
 @section('scripts')
-<script type="module" src="/js/admin.js"></script>@endsection
+<script type="module" src="{{ asset('js/admin.js') }}?v={{ filemtime(public_path('js/admin.js')) }}"></script>@endsection

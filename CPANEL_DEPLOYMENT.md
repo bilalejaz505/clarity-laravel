@@ -1,6 +1,6 @@
 # Deploy Clarity to cPanel
 
-Updated for the Laravel/MySQL/Blade source in `E:\clarity-laravel`. The previous `chatgpt.site` deployment still runs the old application; this PHP version needs your cPanel hosting. No cPanel server has been deployed or verified yet.
+Updated for the Laravel/MySQL/Blade source in `E:\laragon\www\clarity-laravel`. The previous `chatgpt.site` deployment still runs the old application; this PHP version needs your cPanel hosting. No cPanel server has been deployed or verified yet.
 
 ## Hosting requirements
 
@@ -71,3 +71,5 @@ The current schema has one migration per table. The existing local draft databas
 Monitor `storage/logs`, MySQL backups, SMTP delivery, and webhook failures. Keep secrets and backups outside the web root. The app currently sends auth mail synchronously and has no scheduled billing jobs: access is time-bound from verified payment data, refreshed by signed PayPal webhooks or account reconciliation. A queue worker is optional if asynchronous jobs are introduced later; document that change at the same time.
 
 Maintain this guide whenever PHP requirements, schema, environment variables, paths, authentication, or billing behavior change.
+
+Administrator sign-in is `/admin/login`; regular member sign-in is `/login`. Initial local passwords/accounts are development-only and are never created by the production default seeder. Use `clarity:admin` to create your own production administrator with a private password. Do not deploy local credential files or the local-reset SQL backup.

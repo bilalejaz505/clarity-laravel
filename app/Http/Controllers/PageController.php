@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Workspace;
 use App\Services\AppSettingsService;
 use App\Services\EntitlementService;
 use Illuminate\Contracts\View\View;
@@ -37,7 +38,7 @@ class PageController extends Controller
             return response()->view('gate', ['reason' => $e['reason']], 403);
         }
 
-        return view('workspace', ['product' => $product, 'demo' => false]);
+        return view('workspace', ['product' => $product, 'demo' => false, 'initialStore' => Workspace::find($request->user()->id)?->data]);
     }
 
     public function account(): View|Response

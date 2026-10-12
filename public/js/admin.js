@@ -88,7 +88,7 @@ async function load(search = "") {
     $("admin-users").innerHTML = state.users
         .map(
             (u) =>
-                `<article class="flex-between user-row"><div><strong>${escape(u.name)}</strong><p class="muted">${escape(u.email)} · ${escape(u.status)}</p></div><button class="${u.status === "active" ? "danger" : "secondary"}" data-user="${escape(u.id)}" data-status="${u.status === "active" ? "suspended" : "active"}" ${u.is_admin ? "disabled" : ""}>${u.status === "active" ? "Suspend" : "Restore"}</button></article>`,
+                `<article class="flex-between user-row"><div><strong>${escape(u.name)}</strong> <span class="badge ${u.is_admin ? "neutral" : "positive"}">${u.is_admin ? "Administrator" : "Member"}</span><p class="muted">${escape(u.email)} · ${escape(u.status)}</p></div><button class="${u.status === "active" ? "danger" : "secondary"}" data-user="${escape(u.id)}" data-status="${u.status === "active" ? "suspended" : "active"}" ${u.is_admin ? "disabled" : ""}>${u.status === "active" ? "Suspend" : "Restore"}</button></article>`,
         )
         .join("");
     $("admin-users")

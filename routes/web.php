@@ -5,12 +5,15 @@ use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AiController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\WorkspaceController;
+use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('private')->group(function () {
+    Route::get('/admin/login', [AdminLoginController::class, 'form'])->name('admin.login');
+    Route::post('/admin/login', [AdminLoginController::class, 'login'])->middleware('throttle:6,1')->name('admin.login.submit');
     Route::get('/', [PageController::class, 'landing']);
     Route::get('/pricing', [PageController::class, 'pricing']);
     Route::get('/demo', [PageController::class, 'demo']);
@@ -44,7 +47,7 @@ Route::middleware('private')->group(function () {
             Route::post('/api/billing', [BillingController::class, 'action'])->middleware('throttle:10,1');
         });
         Route::middleware('admin')->group(function () {
-            Route::get('/admin', [PageController::class, 'admin']);
+            Route::get('/admin', [PageController::class, 'admin'])->name('admin.dashboard');
             Route::get('/api/admin', [AdminController::class, 'index']);
             Route::post('/api/admin', [AdminController::class, 'save']);
             Route::post('/api/connection', [AdminController::class, 'connection'])->middleware('throttle:6,1');

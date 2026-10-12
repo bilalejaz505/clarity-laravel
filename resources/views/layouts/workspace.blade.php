@@ -8,12 +8,13 @@
     <title>Clarity · {{ $product === 'freelance' ? 'Freelance Tracker' : 'Chat Insights' }}</title>
     <link rel="stylesheet" href="/css/clarity.css">
     <link rel="stylesheet" href="{{ asset('css/blade.css') }}?v={{ filemtime(public_path('css/blade.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/modern.css') }}?v={{ filemtime(public_path('css/modern.css')) }}">
     <link rel="icon" href="/favicon.svg">
 </head>
 
 <body>
     @php $items=$product==='freelance'?['overview'=>'Overview','library'=>'Client conversations','agreements'=>'Agreement tracker','scope'=>'Scope & changes','tasks'=>'Tasks & milestones','payments'=>'Invoices & payments','documents'=>'Document studio','ask'=>'Ask your project']:['overview'=>'Overview','library'=>'Conversations','insights'=>'Conversation insights','stats'=>'Chat statistics','explorer'=>'Message explorer','compare'=>'Compare conversations','ask'=>'Ask your chat','coach'=>'Reply coach']; @endphp
-    <aside class="sidebar" id="sidebar"><a href="/" class="sidebar-brand">▤ clarity.</a><button
+    <aside class="sidebar" id="sidebar"><a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a><button
             class="mobile-nav-close" id="nav-close" aria-label="Close navigation">×</button>
         <div class="product-switch"><a data-switch-product="chat" href="{{ $demo ? '/demo?product=chat' : '/chats' }}"
                 class="{{ $product === 'chat' ? 'active' : '' }}">Chat Insights</a><a data-switch-product="freelance"
@@ -54,8 +55,9 @@
             <div class="breadcrumb"><button id="nav-open" class="mobile-menu"
                     aria-label="Open navigation">☰</button><span>Clarity /</span><strong
                     id="view-title">Overview</strong></div>
-            <div class="topbar-right"><span class="badge">{{ $demo ? 'Sample demo' : auth()->user()->name }}</span><button
-                    class="primary" id="open-import" @disabled($demo)>Import chat +</button></div>
+            <div class="topbar-right"><span
+                    class="badge">{{ $demo ? 'Sample demo' : auth()->user()->name }}</span><button class="primary"
+                    id="open-import" @disabled($demo)>Import chat +</button></div>
         </header>
         <main class="main-content">
             <div id="workspace-error" class="error-banner" role="alert" hidden></div>
@@ -122,9 +124,9 @@
     </dialog>
     <script>
         window.clarityBootstrap =
-            {{ Illuminate\Support\Js::from(['product' => $product, 'demo' => $demo, 'userId' => auth()->id()]) }};
+            {{ Illuminate\Support\Js::from(['product' => $product, 'demo' => $demo, 'userId' => auth()->id(), 'initialStore' => $initialStore ?? null]) }};
     </script>
-    <script type="module" src="/js/workspace.js"></script>
+    <script type="module" src="{{ asset('js/workspace.js') }}?v={{ filemtime(public_path('js/workspace.js')) }}"></script>
 </body>
 
 </html>

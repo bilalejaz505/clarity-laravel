@@ -28,7 +28,9 @@ const boot = window.clarityBootstrap,
         );
 const CACHE = "clarity.workspace.v1." + (boot.userId || "demo"),
     mem = {
-        store: sampleStore(),
+        store: boot.initialStore
+            ? workspaceSchema.parse(boot.initialStore)
+            : sampleStore(),
         selected: "",
         view: "overview",
         config: {
@@ -169,6 +171,14 @@ function evidenceButton(ids) {
     );
 }
 function render() {
+    $("overview-heading").innerHTML =
+        boot.product === "freelance"
+            ? "Clear scope.<br><span>Confident delivery.</span>"
+            : "Your conversations.<br><span>A clearer perspective.</span>";
+    $("overview-description").textContent =
+        boot.product === "freelance"
+            ? "See what is agreed, what is due, and what needs your attention."
+            : "Explore the patterns. Review the evidence. Decide your next step.";
     const c = current(),
         messages = c?.messages || [],
         stats = statistics(messages),
@@ -1050,7 +1060,9 @@ document.querySelectorAll("[data-switch-product]").forEach(
             boot.product = product;
             document.title = `Clarity · ${product === "freelance" ? "Freelance Tracker" : "Chat Insights"}`;
             document.querySelector(".sidebar > .eyebrow").textContent =
-                product === "freelance" ? "YOUR CLIENT WORK" : "YOUR CONVERSATIONS";
+                product === "freelance"
+                    ? "YOUR CLIENT WORK"
+                    : "YOUR CONVERSATIONS";
             document
                 .querySelectorAll("[data-product-nav]")
                 .forEach(

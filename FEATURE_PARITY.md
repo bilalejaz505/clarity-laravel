@@ -1,6 +1,6 @@
 # Migration and feature inventory
 
-Clarity is now a Laravel 13 / MySQL / Blade application. Source is `E:\clarity-laravel`. The prior Next/Vinext/Cloudflare source is retained separately in `E:\conversation-suite`; archived draft build files are outside the Laravel project in `E:\clarity-migration-tools`.
+Clarity is now a Laravel 13 / MySQL / Blade application. Source is `E:\laragon\www\clarity-laravel`. The prior Next/Vinext/Cloudflare source is retained separately in `E:\conversation-suite`; archived draft build files are outside the Laravel project in `E:\clarity-migration-tools`.
 
 ## Preserved features
 
@@ -45,3 +45,9 @@ A private SQL backup was saved before restructuring in `E:\db-backups`. The loca
 Backend tests cover authentication, password resets, admin isolation, encrypted settings/revision checks, trials/expiry, product access, snapshots, failed AI credits/evidence validation, usage reservations and verified PayPal lifecycle events. They run on SQLite and a separate MySQL test database. Parser/document regression tests cover WhatsApp dates, CSV escaping, JSON imports, deduplication, bounded reply gaps, conservative agreement detection, formula-safe CSV and document/calendar exports.
 
 Local browser checks verify normal login, import review, MySQL snapshot save, and the preserved interfaces. Real OpenAI requests, PayPal transactions and cPanel SMTP/deployment still require your credentials and hosting, and are not claimed as live-tested.
+
+## Owner-requested local reset — 12 October 2026
+
+The current source was moved to `E:\laragon\www\clarity-laravel`. The earlier imported accounts described above are historical: they have now been replaced by exactly one administrator and one member, three enabled plans, and independent coherent starter workspaces. A private SQL backup precedes this reset. No test fixtures, fake settled payments, or fake provider subscriptions remain in the application database.
+
+Administration has a dedicated `/admin/login` page, with role/status/verification checks before session establishment; guests requesting `/admin` are redirected there. The public footer links to that page. The updated brand uses a blue/violet logo, cool neutral surfaces, a responsive product preview landing page, and a shared modern design system in `public/css/modern.css`.

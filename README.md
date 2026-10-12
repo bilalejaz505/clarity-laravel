@@ -1,6 +1,6 @@
 # Clarity
 
-Conversation insights and freelance agreement tracking, built with Laravel 13, MySQL and Blade. Source on this computer: `E:\clarity-laravel`.
+Conversation insights and freelance agreement tracking, built with Laravel 13, MySQL and Blade. Source on this computer: `E:\laragon\www\clarity-laravel`.
 
 No Node/npm, Next.js, React, Livewire, Inertia or Supabase is required. Browser scripts and styles are served directly from `public`. PHP libraries live in Composer's standard `vendor` directory. This lockfile needs PHP 8.4.
 
@@ -15,6 +15,8 @@ php artisan serve --host=127.0.0.1 --port=8000
 Open http://127.0.0.1:8000. Register and log in normally. Grant your account administration using `php artisan clarity:admin your-email@example.com`, then manage settings and provider credentials at `/admin`.
 
 ## Guides
+
+The local database is initialized with one administrator and one member. Use `/admin/login` for administration and `/login` for member access; generated passwords are in the private `Clarity-Local-Accounts.txt` deliverable. See the current-account section in the localhost guide for plans and starter records.
 
 - [Localhost setup](LOCALHOST_SETUP.md): existing/fresh setup, authentication, email and troubleshooting.
 - [cPanel deployment](CPANEL_DEPLOYMENT.md): PHP/MySQL requirements, secure public root, releases and backups.
