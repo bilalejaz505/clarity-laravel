@@ -44,11 +44,11 @@ php artisan serve --host=127.0.0.1 --port=8000
 
 Seeding creates application defaults, never a shared login. `composer dev` also starts the server. There is no frontend build step.
 
-## Email, AI, and PayPal
+## Admin-Managed Configuration
 
-Local `MAIL_MAILER=log` writes verification/reset emails to `storage/logs/laravel.log`; it does not deliver email. Configure your hosting SMTP to deliver them. Console-created admins are verified. Localhost no longer grants a special entitlement; access follows the same trial and package-subscription rules used by the deployed application.
+Site identity, maintenance mode, customer notices, usage limits, trials, SMTP, OpenAI, PayPal, and packages are configured in `/admin`. They are stored in MySQL; OpenAI, PayPal, and SMTP passwords are encrypted and never returned to the browser. When SMTP delivery is disabled, verification and reset messages use Laravel's log mailer and appear in `storage/logs/laravel.log`. Enable SMTP and use **Send Test Email** before relying on email delivery. Console-created admins are verified. Localhost follows the same trial and package-subscription rules used by the deployed application.
 
-In `/admin`, save the OpenAI key and model, then test the connection. Keys are encrypted in MySQL and never returned to the browser. The app's local observations and statistics work without a key; AI requests require one.
+In `/admin`, save the OpenAI key and model, then test the connection. The app's local observations and statistics work without a key; AI requests require one.
 
 PayPal settings remain inactive until you supply a Business account's sandbox or live credentials, webhook ID, and matching monthly plan IDs. Use sandbox first. Packages priced at zero activate without PayPal. See [Billing architecture](BILLING_ARCHITECTURE.md).
 

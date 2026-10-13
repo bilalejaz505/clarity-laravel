@@ -326,18 +326,38 @@ class ClarityTest extends TestCase
             'revision' => 0,
             'config' => $settings->defaults(),
             'openaiKey' => 'sk-abcdefghijklmnopqrstuv',
+            'paypalSecret' => 'paypal-private-secret',
+            'smtpPassword' => 'smtp-private-password',
         ];
         $this->actingAs($admin)->postJson('/api/admin', $body)->assertOk();
         $this->getJson('/api/admin')
             ->assertDontSee('sk-abcdefghijklmnopqrstuv')
+            ->assertDontSee('paypal-private-secret')
+            ->assertDontSee('smtp-private-password')
             ->assertJsonPath('revision', 1);
-        $this->assertStringNotContainsString(
-            'sk-abcdefghijklmnopqrstuv',
-            DB::table('app_secrets')->value('ciphertext'),
-        );
+        $ciphertexts = DB::table('app_secrets')
+            ->pluck('ciphertext')
+            ->implode(' ');
+        foreach (
+            [
+                'sk-abcdefghijklmnopqrstuv',
+                'paypal-private-secret',
+                'smtp-private-password',
+            ] as $secret
+        ) {
+            $this->assertStringNotContainsString($secret, $ciphertexts);
+        }
         $this->assertSame(
             'sk-abcdefghijklmnopqrstuv',
             $settings->secret('openai'),
+        );
+        $this->assertSame(
+            'paypal-private-secret',
+            $settings->secret('paypal'),
+        );
+        $this->assertSame(
+            'smtp-private-password',
+            $settings->secret('smtp'),
         );
         $this->postJson('/api/admin', $body)->assertStatus(409);
     }

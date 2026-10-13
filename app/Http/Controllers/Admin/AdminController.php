@@ -163,7 +163,11 @@ class AdminController extends Controller
         AppSettingsService $settings,
         MailSettingsService $mail,
     ): Response {
-        if ($request->input('provider') === 'smtp') {
+        $provider = $request->validate([
+            'provider' => ['required', 'in:openai,smtp'],
+        ])['provider'];
+
+        if ($provider === 'smtp') {
             $config = $settings->get();
             abort_unless(
                 $config['smtpEnabled'] &&

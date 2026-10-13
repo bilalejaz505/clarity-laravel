@@ -36,16 +36,9 @@ Use PHP **8.4** for this Composer lockfile, MySQL 8, Apache rewriting, HTTPS, an
    SESSION_DRIVER=database
    SESSION_SECURE_COOKIE=true
    CACHE_STORE=database
-   MAIL_MAILER=smtp
-   MAIL_HOST=YOUR_SMTP_HOST
-   MAIL_PORT=587
-   MAIL_USERNAME=YOUR_SMTP_USERNAME
-   MAIL_PASSWORD="YOUR_SMTP_PASSWORD"
-   MAIL_FROM_ADDRESS=accounts@your-domain.example
-   MAIL_FROM_NAME="Clarity"
    ```
 
-   Configure SMTP encryption according to your host's Laravel mail settings. Keep `.env` private and out of archives shared publicly.
+   Keep `.env` private and out of archives shared publicly. It contains infrastructure configuration only: the application key and URL, runtime mode, database, session, cache, queue, logging, and filesystem settings. Site identity, maintenance, SMTP, OpenAI, PayPal, packages, trials, limits, and customer notices are managed in the administrator panel and stored in MySQL. Provider and SMTP passwords are encrypted with `APP_KEY`.
 6. Finish setup:
 
    ```sh
@@ -55,7 +48,7 @@ Use PHP **8.4** for this Composer lockfile, MySQL 8, Apache rewriting, HTTPS, an
    ```
 
    Use directory ownership/group permissions appropriate to your hosting account, commonly 755 directories and 644 files, with write access for the PHP user to `storage` and `bootstrap/cache`. Do not make the entire app world-writable.
-7. Visit `/`, `/login`, `/register`, `/account`, and `/admin`. Verify email delivery, password reset, ordinary-user admin denial, private snapshot ownership, trial expiry, zero-price package activation, and HTTPS cookies. Configure provider settings in `/admin`. Test PayPal sandbox subscription creation, verified webhooks, cancellation and refund handling before enabling live paid checkout.
+7. Sign in at `/admin/login`, then configure **System & Site**, **Email & SMTP**, **OpenAI**, and **PayPal & Plans**. Send an SMTP test email and test the OpenAI connection. Visit `/`, `/login`, `/register`, `/account`, and `/admin`. Verify member/admin route separation, role-specific logout, maintenance mode, email delivery, password reset, private snapshot ownership, trial expiry, zero-price package activation, and HTTPS cookies. Test PayPal sandbox subscription creation, verified webhooks, cancellation and refund handling before enabling live paid checkout.
 
 If Composer/SSH are unavailable, create a deployment copy locally using the same PHP version, run `composer install --no-dev --optimize-autoloader` there, and upload its `vendor` folder with the app. Do not remove developer dependencies from your working source just to prepare that copy. Use the hosting terminal or host support to run Artisan migrations; do not create a public migration/key-generation endpoint.
 
@@ -71,7 +64,7 @@ Monitor `storage/logs`, MySQL backups, SMTP delivery, and webhook failures. Keep
 
 Maintain this guide whenever PHP requirements, schema, environment variables, paths, authentication, or billing behavior change.
 
-Administrator sign-in is `/admin/login`; regular member sign-in is `/login`. Initial local passwords/accounts are development-only and are never created by the production default seeder. Use `clarity:admin` to create your own production administrator with a private password. Do not deploy local credential files or the local-reset SQL backup.
+Administrator sign-in is `/admin/login`; regular member sign-in is `/login`. The roles have separate dashboards and cannot enter each other's protected routes. Logging out returns each role to its own login page. Initial local passwords/accounts are development-only and are never created by the production default seeder. Use `clarity:admin` to create your own production administrator with a private password. Do not deploy local credential files or the local-reset SQL backup.
 
 The current release's original migrations define numeric application record IDs and matching integer ownership references. This schema was installed through an explicitly requested fresh local reset. For a new cPanel database, run the original migrations normally. An older populated UUID-schema database cannot be upgraded by simply running these revised, already-recorded migrations; use a planned conversion or restore/recreate only with explicit authorization and a backup. Never run `migrate:fresh` as a routine production update.
 
