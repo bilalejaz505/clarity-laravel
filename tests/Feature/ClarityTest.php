@@ -41,7 +41,7 @@ class ClarityTest extends TestCase
         $this->get('/')
             ->assertSeeText('Dashboard')
             ->assertDontSeeText('Log in');
-        $this->post('/logout')->assertRedirect('/');
+        $this->post('/logout')->assertRedirect('/login');
         $this->assertGuest();
     }
 
@@ -119,9 +119,9 @@ class ClarityTest extends TestCase
             ->assertSeeText('Chat Insights')
             ->assertSeeText('Freelance Tracker')
             ->assertSeeText('Conversations')
-            ->assertSeeText('Conversation insights')
-            ->assertSeeText('Chat statistics')
-            ->assertSeeText('Privacy & connections')
+            ->assertSeeText('Conversation Insights')
+            ->assertSeeText('Chat Statistics')
+            ->assertSeeText('Privacy & Connections')
             ->assertSeeText('Plans')
             ->assertSee('/chats?view=overview', false)
             ->assertDontSeeText('Chat dashboard')
@@ -129,10 +129,10 @@ class ClarityTest extends TestCase
 
         $this->get('/account?product=freelance')
             ->assertOk()
-            ->assertSeeText('Client conversations')
-            ->assertSeeText('Contract tracker')
-            ->assertSeeText('Tasks & milestones')
-            ->assertSeeText('Privacy & connections')
+            ->assertSeeText('Client Conversations')
+            ->assertSeeText('Contract Tracker')
+            ->assertSeeText('Tasks & Milestones')
+            ->assertSeeText('Privacy & Connections')
             ->assertSeeText('Plans')
             ->assertSee('/contracts?view=settings', false)
             ->assertSee('/account?product=freelance', false)
@@ -217,10 +217,10 @@ class ClarityTest extends TestCase
             $showsChat
                 ? $account
                     ->assertSeeText('Conversations')
-                    ->assertSeeText('Conversation insights')
+                    ->assertSeeText('Conversation Insights')
                 : $account
-                    ->assertSeeText('Client conversations')
-                    ->assertSeeText('Contract tracker');
+                    ->assertSeeText('Client Conversations')
+                    ->assertSeeText('Contract Tracker');
             $showsContracts
                 ? $account->assertSeeText('Freelance Tracker')
                 : $account->assertDontSeeText('Freelance Tracker');

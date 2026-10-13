@@ -105,11 +105,12 @@ class AuthController extends Controller
 
     public function logout(Request $request): Response
     {
+        $admin = $this->access->admin($request->user());
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect($admin ? '/admin/login' : '/login');
     }
 
     public function forgot(ForgotPasswordRequest $request): Response

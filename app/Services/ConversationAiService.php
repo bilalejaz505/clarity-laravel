@@ -14,9 +14,8 @@ class ConversationAiService
     public function analyze(array $body): array
     {
         $s = $this->settings->get();
-        $key =
-            $this->settings->secret('openai') ?: config('clarity.openai_key');
-        $model = $s['aiModel'] ?: config('clarity.openai_model');
+        $key = $this->settings->secret('openai');
+        $model = $s['aiModel'];
         if (! $key || ! $model) {
             throw new RuntimeException(
                 'AI is not configured. Ask the administrator to save a key and model.',

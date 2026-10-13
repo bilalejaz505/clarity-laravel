@@ -32,20 +32,26 @@ const sections = {
             "Manage the model, encrypted credential, and response limits.",
     },
     paypal: {
-        title: "PayPal & plans",
-        heading: "Billing and packages",
+        title: "PayPal & Plans",
+        heading: "Billing and Packages",
         description:
             "Configure merchant access, prices, quotas, and product entitlements.",
     },
+    email: {
+        title: "Email & SMTP",
+        heading: "Email & SMTP Configuration",
+        description:
+            "Manage verification, password reset, sender, and mail server settings.",
+    },
     general: {
-        title: "Application settings",
-        heading: "Application settings",
+        title: "System & Site",
+        heading: "System & Site Settings",
         description:
             "Control customer notices, imports, maintenance, demos, and trials.",
     },
     audit: {
-        title: "Audit log",
-        heading: "Audit log",
+        title: "Audit Log",
+        heading: "Audit Log",
         description:
             "Review administrative and billing activity across the system.",
     },
@@ -76,7 +82,12 @@ function tab(name) {
     document
         .querySelectorAll("[data-admin-panel]")
         .forEach((p) => (p.hidden = p.dataset.adminPanel !== name));
-    $("admin-save-bar").hidden = !["ai", "paypal", "general"].includes(name);
+    $("admin-save-bar").hidden = ![
+        "ai",
+        "paypal",
+        "email",
+        "general",
+    ].includes(name);
     document
         .querySelectorAll("[data-tab]")
         .forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
@@ -105,12 +116,12 @@ async function load(search = "") {
         .join("");
     $("admin-health").textContent =
         `Database: ${state.server.database} · Authentication: ${state.server.auth} · Encryption: ${state.server.encryption ? "Ready" : "Missing app key"}`;
-    for (const id of ["openai", "paypal"])
+    for (const id of ["openai", "paypal", "smtp"])
         $(id + "-saved").textContent = state.secrets.some(
             (s) => s.provider === id,
         )
             ? "Encrypted credential is saved."
-            : `No saved ${id === "openai" ? "OpenAI key" : "merchant secret"}.`;
+            : `No saved ${id === "openai" ? "OpenAI key" : id === "paypal" ? "merchant secret" : "SMTP password"}.`;
     $("admin-subscriptions").innerHTML = table(state.subscriptions, [
         "plan_key",
         "status",
@@ -217,9 +228,11 @@ $("admin-settings-form").onsubmit = async (e) => {
             revision: state.revision,
             openaiKey: $("openai-key").value,
             paypalSecret: $("paypal-secret").value,
+            smtpPassword: $("smtp-password").value,
         });
         $("openai-key").value = "";
         $("paypal-secret").value = "";
+        $("smtp-password").value = "";
         await load();
         notice("Settings saved.");
     } catch (err) {
@@ -249,8 +262,16 @@ document.querySelectorAll("[data-delete-secret]").forEach(
 );
 $("test-openai").onclick = async () => {
     try {
-        const result = await api("/api/connection", {});
+        const result = await api("/api/connection", { provider: "openai" });
         notice("Saved connection verified: " + result.model);
+    } catch (err) {
+        error(err);
+    }
+};
+$("test-smtp").onclick = async () => {
+    try {
+        await api("/api/connection", { provider: "smtp" });
+        notice("Test email sent to your administrator address.");
     } catch (err) {
         error(err);
     }

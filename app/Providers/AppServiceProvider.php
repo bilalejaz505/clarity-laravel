@@ -23,8 +23,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         URL::forceRootUrl(config('app.url'));
-        View::composer('layouts.public', function ($view) {
-            $view->with('settings', app(AppSettingsService::class)->get());
-        });
+        View::composer(
+            ['layouts.public', 'layouts.member', 'layouts.workspace', 'layouts.admin'],
+            function ($view) {
+                $view->with('settings', app(AppSettingsService::class)->get());
+            },
+        );
     }
 }

@@ -7,9 +7,11 @@ use App\Http\Requests\Admin\AdminActionRequest;
 use App\Models\User;
 use App\Services\AppSettingsService;
 use App\Services\EntitlementService;
+use App\Services\MailSettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
@@ -67,7 +69,7 @@ class AdminController extends Controller
             ],
             'server' => [
                 'encryption' => (bool) config('app.key'),
-                'openai' => (bool) config('clarity.openai_key'),
+                'openai' => (bool) $settings->secret('openai'),
                 'database' => config('database.default'),
                 'auth' => 'Laravel sessions',
             ],
@@ -82,13 +84,7 @@ class AdminController extends Controller
         if ($request->action === 'user-status') {
             $user = User::findOrFail($request->userId);
             abort_if(
-                $user->id === $request->user()->id ||
-                    $user->is_admin ||
-                    in_array(
-                        strtolower($user->email),
-                        array_map('strtolower', config('clarity.admin_emails')),
-                        true,
-                    ),
+                $user->id === $request->user()->id || $user->is_admin,
                 422,
                 'Super-admin accounts cannot be suspended here.',
             );
@@ -142,7 +138,11 @@ class AdminController extends Controller
                     'updated_at' => now(),
                 ]);
             foreach (
-                ['openaiKey' => 'openai', 'paypalSecret' => 'paypal'] as $field => $id
+                [
+                    'openaiKey' => 'openai',
+                    'paypalSecret' => 'paypal',
+                    'smtpPassword' => 'smtp',
+                ] as $field => $id
             ) {
                 if ($request->filled($field)) {
                     $settings->saveSecret($id, $request->input($field));
@@ -158,10 +158,33 @@ class AdminController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function connection(AppSettingsService $settings): Response
-    {
-        $key = $settings->secret('openai') ?: config('clarity.openai_key');
-        $model = $settings->get()['aiModel'] ?: config('clarity.openai_model');
+    public function connection(
+        Request $request,
+        AppSettingsService $settings,
+        MailSettingsService $mail,
+    ): Response {
+        if ($request->input('provider') === 'smtp') {
+            $config = $settings->get();
+            abort_unless(
+                $config['smtpEnabled'] &&
+                    $config['smtpHost'] &&
+                    $config['smtpFromAddress'],
+                422,
+                'Save and enable the SMTP settings first.',
+            );
+            $mail->apply($config);
+            Mail::raw(
+                'Your Clarity SMTP settings are working.',
+                fn ($message) => $message
+                    ->to($request->user()->email)
+                    ->subject('Clarity SMTP test'),
+            );
+
+            return response()->json(['ok' => true]);
+        }
+
+        $key = $settings->secret('openai');
+        $model = $settings->get()['aiModel'];
         abort_unless(
             $key && $model,
             422,

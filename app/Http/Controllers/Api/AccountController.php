@@ -89,11 +89,10 @@ class AccountController extends Controller
 
         return response()->json([
             'ai' => $s['aiEnabled'] &&
-                (bool) ($settings->secret('openai') ?:
-                    config('clarity.openai_key')) &&
-                (bool) ($s['aiModel'] ?: config('clarity.openai_model')),
+                (bool) $settings->secret('openai') &&
+                (bool) $s['aiModel'],
             'cloud' => (bool) $u,
-            'model' => $s['aiModel'] ?: config('clarity.openai_model'),
+            'model' => $s['aiModel'],
             'admin' => $u ? $access->admin($u) : false,
             'products' => $e['products'] ?? [],
             'local' => $access->local($request),

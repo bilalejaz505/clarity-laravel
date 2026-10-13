@@ -74,16 +74,49 @@
             <h3>Plans, prices & quotas</h3>
             <div id="admin-plans"></div>
         </section>
+        <section data-admin-panel="email" hidden class="card detail-card">
+            <h2>Email & SMTP Configuration</h2>
+            <p class="definition">Verification, password reset, and system email use these settings. The password is
+                encrypted in MySQL and is never returned to this page.</p>
+            <div class="form-grid">
+                <label class="checkbox-line"><input type="checkbox" data-setting="smtpEnabled">Enable SMTP
+                    Delivery</label>
+                <label>SMTP Host<input data-setting="smtpHost" maxlength="255"></label>
+                <label>SMTP Port<input data-setting="smtpPort" type="number" min="1" max="65535"></label>
+                <label>Encryption<select data-setting="smtpEncryption">
+                        <option value="none">None</option>
+                        <option value="tls">TLS / STARTTLS</option>
+                        <option value="ssl">SSL</option>
+                    </select></label>
+                <label>Username<input data-setting="smtpUsername" maxlength="255" autocomplete="off"></label>
+                <label>Replace SMTP Password<input type="password" id="smtp-password" autocomplete="new-password"
+                        maxlength="500" placeholder="Leave blank to keep saved password"></label>
+                <label>From Address<input data-setting="smtpFromAddress" type="email" maxlength="254"></label>
+                <label>From Name<input data-setting="smtpFromName" maxlength="120"></label>
+            </div>
+            <p id="smtp-saved" class="muted"></p>
+            <div class="toolbar">
+                <button type="button" id="test-smtp" class="secondary"><i class="bi bi-send-check"
+                        aria-hidden="true"></i>Send Test Email</button>
+                <button type="button" data-delete-secret="smtp" class="danger"><i class="bi bi-trash3"
+                        aria-hidden="true"></i>Remove Saved Password</button>
+            </div>
+        </section>
         <section data-admin-panel="general" hidden class="card detail-card">
-            <h2>Application settings</h2>
+            <h2>System & Site Settings</h2>
             <div class="form-grid">
                 <label>Application name<input data-setting="appName" maxlength="80" required></label>
+                <label>Site Tagline<input data-setting="siteTagline" maxlength="160" required></label>
+                <label>Support Email<input data-setting="supportEmail" type="email" maxlength="254"></label>
                 <label>Customer notice<textarea data-setting="notice" maxlength="500"></textarea></label>
+                <label>Maintenance Page Title<input data-setting="maintenanceTitle" maxlength="120" required></label>
+                <label>Maintenance Message<textarea data-setting="maintenanceMessage" maxlength="500"
+                        required></textarea></label>
                 <label>Maximum upload MB<input data-setting="maxUploadMB" type="number" min="1" max="50"></label>
                 <label>Maximum messages per import<input data-setting="maxImportMessages" type="number" min="100"
                         max="100000"></label>
-                <label class="checkbox-line"><input data-setting="maintenance" type="checkbox">Maintenance mode</label>
-                <label class="checkbox-line"><input data-setting="demoEnabled" type="checkbox">Enable sample demo</label>
+                <label class="checkbox-line"><input data-setting="maintenance" type="checkbox">Maintenance Mode</label>
+                <label class="checkbox-line"><input data-setting="demoEnabled" type="checkbox">Enable Sample Demo</label>
                 <label class="checkbox-line"><input data-setting="trialEnabled" type="checkbox">Enable one-time
                     trial</label>
                 <label>Trial days<input data-setting="trialDays" type="number" min="1" max="30"></label>

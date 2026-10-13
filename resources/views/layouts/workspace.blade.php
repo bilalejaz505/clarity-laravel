@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Clarity · {{ $product === 'freelance' ? 'Freelance Tracker' : 'Chat Insights' }}</title>
+    <title>{{ $settings['appName'] }} · {{ $product === 'freelance' ? 'Freelance Tracker' : 'Chat Insights' }}</title>
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="/css/clarity.css">
     <link rel="stylesheet" href="{{ asset('css/blade.css') }}?v={{ filemtime(public_path('css/blade.css')) }}">
@@ -16,7 +16,7 @@
 <body>
     @php($availableProducts = $availableProducts ?? ['chat', 'freelance'])
     <aside class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a>
+        <a href="/" class="sidebar-brand"><x-brand-mark /> {{ $settings['appName'] }}</a>
         <button class="mobile-nav-close icon-only" id="nav-close" aria-label="Close navigation">
             <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
@@ -26,22 +26,14 @@
         @else
             <div class="sidebar-bottom">
                 <a href="?view=settings" data-view="settings" class="nav-link"><i class="bi bi-shield-check"
-                        aria-hidden="true"></i>Privacy & connections</a>
-                <a href="/login" class="nav-link"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>Log in</a>
-                <a href="/" class="nav-link"><i class="bi bi-globe2" aria-hidden="true"></i>Public area</a>
+                        aria-hidden="true"></i>Privacy & Connections</a>
+                <a href="/login" class="nav-link"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>Log In</a>
+                <a href="/" class="nav-link"><i class="bi bi-globe2" aria-hidden="true"></i>Public Site</a>
             </div>
         @endauth
     </aside>
     <div class="main-shell">
-        <header class="topbar">
-            <div class="breadcrumb"><button id="nav-open" class="mobile-menu icon-only" aria-label="Open navigation"><i
-                        class="bi bi-list" aria-hidden="true"></i></button><span>Clarity /</span><strong
-                    id="view-title">Overview</strong></div>
-            <div class="topbar-right"><span
-                    class="badge">{{ $demo ? 'Sample demo' : auth()->user()->name }}</span><button class="primary"
-                    id="open-import" @disabled($demo)><i class="bi bi-plus-circle"
-                        aria-hidden="true"></i>Import chat</button></div>
-        </header>
+        <x-member-topbar section-title="Overview" :dynamic-title="true" :show-import="true" :demo="$demo" />
         <main class="main-content">
             @if ($demo)
                 <div class="sample-banner">Sample demo · personal imports, persistent storage, and live AI are

@@ -27,12 +27,7 @@ class EntitlementService
 
         return $u->status === 'active' &&
             $u->hasVerifiedEmail() &&
-            ($u->is_admin ||
-                in_array(
-                    strtolower($u->email),
-                    array_map('strtolower', config('clarity.admin_emails')),
-                    true,
-                ));
+            $u->is_admin;
     }
 
     public function entitlement(User $u, bool $local): array

@@ -18,9 +18,7 @@ class PayPalService
         ?string $id = null,
     ): array {
         $s = $this->settings->get();
-        $secret =
-            $this->settings->secret('paypal') ?:
-            config('clarity.paypal_secret');
+        $secret = $this->settings->secret('paypal');
         if (! $s['paypalClientId'] || ! $secret) {
             throw new RuntimeException(
                 'PayPal is not connected. Configure merchant credentials in admin.',

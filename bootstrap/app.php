@@ -2,6 +2,9 @@
 
 use App\Http\Middleware\ActiveAccount;
 use App\Http\Middleware\AdminOnly;
+use App\Http\Middleware\ApplicationMaintenance;
+use App\Http\Middleware\ApplyManagedConfiguration;
+use App\Http\Middleware\MemberOnly;
 use App\Http\Middleware\PrivateResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,7 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn (Request $request): string => $request->is('admin', 'admin/*') ? route('admin.login') : route('login'));
-        $middleware->alias(['admin' => AdminOnly::class, 'active' => ActiveAccount::class, 'private' => PrivateResponse::class]);
+        $middleware->web(append: [ApplyManagedConfiguration::class]);
+        $middleware->alias([
+            'admin' => AdminOnly::class,
+            'member' => MemberOnly::class,
+            'active' => ActiveAccount::class,
+            'maintenance' => ApplicationMaintenance::class,
+            'private' => PrivateResponse::class,
+        ]);
         $middleware->preventRequestForgery(except: ['api/paypal/webhook']);
         $middleware->trimStrings(except: [fn (Request $r) => $r->is('api/*')]);
         $middleware->convertEmptyStringsToNull(except: [fn (Request $r) => $r->is('api/*')]);

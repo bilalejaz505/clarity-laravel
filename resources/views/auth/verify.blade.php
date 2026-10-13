@@ -1,6 +1,6 @@
 @extends('layouts.member')
 @section('title', 'Verify your email · Clarity')
-@section('section-title', 'Email verification')
+@section('section-title', 'Email Verification')
 @section('content')
     <div class="dashboard-gate">
         <span class="dashboard-gate-icon"><i class="bi bi-envelope-check" aria-hidden="true"></i></span>

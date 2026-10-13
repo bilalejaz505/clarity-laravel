@@ -17,8 +17,10 @@ class AdminLoginController extends Controller
         Request $request,
         EntitlementService $access,
     ): View|RedirectResponse {
-        if ($request->user() && $access->admin($request->user())) {
-            return redirect()->route('admin.dashboard');
+        if ($request->user()) {
+            return $access->admin($request->user())
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('dashboard');
         }
 
         return view('auth.form', [

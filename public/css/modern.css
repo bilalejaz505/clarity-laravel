@@ -832,6 +832,37 @@ textarea:focus,
     min-height: 100vh;
     background: var(--page);
 }
+.maintenance-page {
+    min-height: 100vh;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: var(--page);
+}
+.maintenance-card {
+    width: min(560px, 100%);
+    padding: 48px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+.maintenance-card .clarity-mark {
+    width: 52px;
+    height: 52px;
+    color: var(--accent);
+}
+.maintenance-card h1,
+.maintenance-card p {
+    margin: 0;
+}
+.maintenance-card p {
+    max-width: 440px;
+    color: #68758c;
+    line-height: 1.7;
+}
 .admin-app-sidebar .eyebrow,
 .member-app-sidebar .eyebrow {
     margin: 10px 0 12px;

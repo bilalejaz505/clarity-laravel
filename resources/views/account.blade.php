@@ -1,6 +1,6 @@
 @extends('layouts.member')
 @section('title', 'Your account · Clarity')
-@section('section-title', 'My account')
+@section('section-title', 'My Account')
 @section('content')
     <div class="page-heading dashboard-page-heading"><span class="eyebrow">ACCOUNT CENTER</span>
         <h1>Your account</h1>

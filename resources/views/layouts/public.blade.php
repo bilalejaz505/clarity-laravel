@@ -21,21 +21,22 @@
                 {{ $settings['appName'] ?? config('app.name', 'Clarity') }}
             </a>
             <nav>
-                <a href="/demo">Try the demo</a>
+                <a href="/demo">Try the Demo</a>
                 <a href="/pricing">Plans</a>
                 @auth
                     <a href="/dashboard" class="secondary"><i class="bi bi-speedometer2" aria-hidden="true"></i>
                         Dashboard</a>
                 @else
                     <a href="/login" class="secondary"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
-                        Log in</a>
+                        Log In</a>
                 @endauth
             </nav>
         </header>
         @yield('content')
         <footer class="public-footer">
-            <span>Clarity <span class="footer-separator">/</span> A clearer way forward.</span>
-            <a href="{{ route('admin.login') }}"><i class="bi bi-shield-lock" aria-hidden="true"></i> Admin access</a>
+            <span>{{ $settings['appName'] }} <span class="footer-separator">/</span>
+                {{ $settings['siteTagline'] }}</span>
+            <a href="{{ route('admin.login') }}"><i class="bi bi-shield-lock" aria-hidden="true"></i> Admin Access</a>
         </footer>
     </div>
     <x-feedback />

@@ -1,6 +1,10 @@
 {
     "appName": "Clarity",
+    "siteTagline": "A clearer way forward.",
+    "supportEmail": "",
     "maintenance": false,
+    "maintenanceTitle": "We’ll be back shortly.",
+    "maintenanceMessage": "The service is temporarily unavailable while scheduled maintenance is completed.",
     "notice": "",
     "maxUploadMB": 20,
     "maxImportMessages": 100000,
@@ -15,6 +19,13 @@
     "paypalEnvironment": "sandbox",
     "paypalClientId": "",
     "paypalWebhookId": "",
+    "smtpEnabled": false,
+    "smtpHost": "",
+    "smtpPort": 587,
+    "smtpUsername": "",
+    "smtpEncryption": "tls",
+    "smtpFromAddress": "",
+    "smtpFromName": "Clarity",
     "plans": [
         {
             "key": "chat",

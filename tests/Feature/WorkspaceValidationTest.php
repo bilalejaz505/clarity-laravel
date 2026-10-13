@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\AppSetting;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Services\AppSettingsService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -54,9 +56,9 @@ class WorkspaceValidationTest extends TestCase
     {
         $this->get('/demo')
             ->assertOk()
-            ->assertSee('Log in')
-            ->assertDontSee('My account')
-            ->assertDontSee('Admin panel');
+            ->assertSee('Log In')
+            ->assertDontSee('My Account')
+            ->assertDontSee('Admin Panel');
     }
 
     public function test_expired_account_sees_the_product_gate_instead_of_a_server_error(): void
@@ -69,5 +71,33 @@ class WorkspaceValidationTest extends TestCase
             ->get('/chats')
             ->assertForbidden()
             ->assertSee('Choose your next step.');
+    }
+
+    public function test_database_maintenance_mode_covers_public_and_member_pages_but_not_admin(): void
+    {
+        $settings = app(AppSettingsService::class);
+        AppSetting::updateOrCreate(
+            ['key' => 'application'],
+            [
+                'data' => array_replace($settings->defaults(), [
+                    'maintenance' => true,
+                    'maintenanceTitle' => 'Scheduled Maintenance',
+                    'maintenanceMessage' => 'Please return after the update.',
+                ]),
+                'revision' => 1,
+            ],
+        );
+
+        $this->get('/')
+            ->assertStatus(503)
+            ->assertSeeText('Scheduled Maintenance')
+            ->assertSeeText('Please return after the update.');
+        $this->get('/login')->assertStatus(503);
+
+        $member = User::factory()->create();
+        $this->actingAs($member)->get('/dashboard')->assertStatus(503);
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $this->actingAs($admin)->get('/admin')->assertOk();
     }
 }

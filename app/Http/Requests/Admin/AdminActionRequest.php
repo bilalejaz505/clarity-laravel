@@ -18,9 +18,13 @@ class AdminActionRequest extends FormRequest
         return match ($this->input('action')) {
             'settings' => [
                 'revision' => 'required|integer|min:0',
-                'config' => 'required|array:appName,maintenance,notice,maxUploadMB,maxImportMessages,demoEnabled,trialEnabled,trialDays,trialMessages,trialRequests,aiEnabled,aiModel,aiMaxOutput,paypalEnvironment,paypalClientId,paypalWebhookId,plans',
+                'config' => 'required|array:appName,siteTagline,supportEmail,maintenance,maintenanceTitle,maintenanceMessage,notice,maxUploadMB,maxImportMessages,demoEnabled,trialEnabled,trialDays,trialMessages,trialRequests,aiEnabled,aiModel,aiMaxOutput,paypalEnvironment,paypalClientId,paypalWebhookId,smtpEnabled,smtpHost,smtpPort,smtpUsername,smtpEncryption,smtpFromAddress,smtpFromName,plans',
                 'config.appName' => 'required|string|max:80',
+                'config.siteTagline' => 'required|string|max:160',
+                'config.supportEmail' => 'nullable|email|max:254',
                 'config.maintenance' => 'required|boolean',
+                'config.maintenanceTitle' => 'required|string|max:120',
+                'config.maintenanceMessage' => 'required|string|max:500',
                 'config.notice' => 'present|string|max:500',
                 'config.maxUploadMB' => 'required|integer|between:1,50',
                 'config.maxImportMessages' => 'required|integer|between:100,100000',
@@ -35,6 +39,13 @@ class AdminActionRequest extends FormRequest
                 'config.paypalEnvironment' => 'required|in:sandbox,live',
                 'config.paypalClientId' => 'present|string|max:200',
                 'config.paypalWebhookId' => 'present|string|max:100',
+                'config.smtpEnabled' => 'required|boolean',
+                'config.smtpHost' => 'present|string|max:255',
+                'config.smtpPort' => 'required|integer|between:1,65535',
+                'config.smtpUsername' => 'present|string|max:255',
+                'config.smtpEncryption' => 'required|in:none,tls,ssl',
+                'config.smtpFromAddress' => 'nullable|email|max:254',
+                'config.smtpFromName' => 'present|string|max:120',
                 'config.plans' => 'required|array|size:3',
                 'config.plans.*.key' => 'required|in:chat,freelance,bundle|distinct',
                 'config.plans.*.name' => 'required|string|max:60',
@@ -49,6 +60,7 @@ class AdminActionRequest extends FormRequest
                 'config.plans.*.enabled' => 'required|boolean',
                 'openaiKey' => 'nullable|string|max:300|regex:/^sk-[A-Za-z0-9_-]{15,}$/',
                 'paypalSecret' => 'nullable|string|max:500',
+                'smtpPassword' => 'nullable|string|max:500',
                 'action' => 'required|in:settings',
             ],
             'user-status' => [
@@ -58,7 +70,7 @@ class AdminActionRequest extends FormRequest
             ],
             'delete-secret' => [
                 'action' => 'required|in:delete-secret',
-                'provider' => 'required|in:openai,paypal',
+                'provider' => 'required|in:openai,paypal,smtp',
             ],
             default => [
                 'action' => 'required|in:settings,user-status,delete-secret',

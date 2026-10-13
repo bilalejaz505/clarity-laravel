@@ -56,8 +56,34 @@ class AdminAccessTest extends TestCase
             ->assertOk()
             ->assertSee('id="admin-sidebar"', false)
             ->assertSee('class="main-shell admin-main-shell"', false)
-            ->assertSeeText('PayPal & plans')
-            ->assertSeeText('Member dashboard');
+            ->assertSeeText('PayPal & Plans')
+            ->assertSeeText('Email & SMTP')
+            ->assertSeeText('System & Site')
+            ->assertSeeText('Log Out')
+            ->assertDontSeeText('Member Dashboard');
+    }
+
+    public function test_administrators_cannot_enter_member_routes(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        foreach (['/dashboard', '/account', '/chats', '/contracts'] as $path) {
+            $this->actingAs($admin)->get($path)->assertRedirect('/admin');
+        }
+        $this->actingAs($admin)
+            ->getJson('/api/account')
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Member access required.');
+    }
+
+    public function test_administrator_logout_returns_to_admin_login(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->post('/logout')
+            ->assertRedirect('/admin/login');
+        $this->assertGuest();
     }
 
     public static function restrictedAdminStates(): array
