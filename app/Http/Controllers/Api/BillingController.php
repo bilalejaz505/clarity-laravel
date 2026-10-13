@@ -31,16 +31,57 @@ class BillingController extends Controller
             'Billing is unavailable for this account.',
         );
         if ($request->action === 'checkout') {
-            abort_if(
-                $access->local($request),
-                422,
-                'Localhost uses the free development plan. Test paid checkout on HTTPS staging.',
-            );
             $plan = collect($s['plans'])->first(
                 fn ($p) => $p['key'] === $request->planKey && $p['enabled'],
             );
+            abort_unless($plan, 422, 'This package is unavailable.');
+
+            if ((float) $plan['price'] === 0.0) {
+                $subscriptionId = DB::transaction(function () use (
+                    $u,
+                    $plan,
+                    $settings,
+                ): int {
+                    DB::table('users')
+                        ->where('id', $u->id)
+                        ->lockForUpdate()
+                        ->first();
+                    $this->ensureNoCurrentSubscription($u->id);
+
+                    $providerId = 'FREE-'.Str::uuid();
+                    $subscriptionId = DB::table('subscriptions')->insertGetId([
+                        'paypal_id' => $providerId,
+                        'provider_custom_id' => (string) $u->id,
+                        'user_id' => $u->id,
+                        'plan_key' => $plan['key'],
+                        'status' => 'FREE_ACTIVE',
+                        'period_start' => now(),
+                        'plan_snapshot' => json_encode(
+                            $plan,
+                            JSON_THROW_ON_ERROR,
+                        ),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $settings->audit(
+                        $u->id,
+                        'subscription.free_activated',
+                        $providerId.': '.$plan['key'],
+                    );
+
+                    return $subscriptionId;
+                }, 3);
+
+                return response()->json([
+                    'subscribed' => true,
+                    'subscriptionId' => $subscriptionId,
+                    'redirectUrl' => url('/account'),
+                ]);
+            }
+
             abort_unless(
-                $plan && ! empty($plan['paypalPlanId']),
+                ! empty($plan['paypalPlanId']) &&
+                    ! empty($s['paypalClientId']),
                 422,
                 'This plan is not connected to PayPal yet.',
             );
@@ -58,19 +99,7 @@ class BillingController extends Controller
                     409,
                     'Another checkout request is in progress.',
                 );
-                abort_if(
-                    DB::table('subscriptions')
-                        ->where('user_id', $u->id)
-                        ->whereIn('status', [
-                            'ACTIVE',
-                            'APPROVAL_PENDING',
-                            'APPROVED',
-                            'SUSPENDED',
-                        ])
-                        ->exists(),
-                    409,
-                    'You already have a subscription in progress. Manage it first.',
-                );
+                $this->ensureNoCurrentSubscription($u->id);
                 DB::table('checkout_locks')->updateOrInsert(
                     ['user_id' => $u->id],
                     ['token' => $token, 'expires_at' => now()->addMinutes(2)],
@@ -149,6 +178,31 @@ class BillingController extends Controller
         }
 
         return response()->json($paypal->reconcile($sub->id));
+    }
+
+    private function ensureNoCurrentSubscription(int $userId): void
+    {
+        abort_if(
+            DB::table('subscriptions')
+                ->where('user_id', $userId)
+                ->whereIn('status', [
+                    'ACTIVE',
+                    'APPROVAL_PENDING',
+                    'APPROVED',
+                    'SUSPENDED',
+                    'CANCELLED',
+                    'FREE_ACTIVE',
+                    'TEST_PAID',
+                ])
+                ->where(function ($query): void {
+                    $query
+                        ->whereNull('paid_until')
+                        ->orWhere('paid_until', '>', now());
+                })
+                ->exists(),
+            409,
+            'You already have a current subscription. Manage it first.',
+        );
     }
 
     public function webhook(

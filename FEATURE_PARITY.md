@@ -14,7 +14,7 @@ Clarity is now a Laravel 13 / MySQL / Blade application. Source is `E:\laragon\w
 | Freelance | Candidate contract review and history, scope/change items, task statuses/dates, ICS export, invoice records with currency-separated totals and CSV |
 | Document studio | Editable SOW, proposal, contract summary, change request and follow-up drafts; TXT and browser print/PDF |
 | Storage | Memory by default, optional account-scoped device storage, version-one JSON backup/restore, owner-only MySQL snapshots |
-| Administration | Users/status, settings revision conflict checks, encrypted provider secrets, OpenAI setup/test, PayPal plans/settings, quotas/trials, application settings, audit records |
+| Administration | Users/status, settings revision conflict checks, encrypted provider secrets, OpenAI setup/test, packages/prices/product access, zero-price activation, PayPal plans/settings, quotas/trials, application settings, audit records |
 | Billing | Paid/trial entitlements, authenticated localhost-only free plan, checkout locks, immutable plan snapshot, verified provider reconciliation/webhook deduplication, cancellation/refund rules |
 
 These are the existing app's features, not a claim that every possible competitor feature exists. Document drafts are not electronic signatures. Invoice records do not collect your clients' payments. OCR must be reviewed; interpretations of intentions or personality remain uncertain and evidence-based, not facts about a person.
@@ -42,13 +42,13 @@ A private SQL backup was saved before restructuring in `E:\db-backups`. The loca
 
 ## Verification and remaining activation
 
-Backend tests cover authentication, password resets, admin isolation, encrypted settings/revision checks, trials/expiry, product access, snapshots, failed AI credits/evidence validation, usage reservations and verified PayPal lifecycle events. They run on SQLite and a separate MySQL test database. Parser/document regression tests cover WhatsApp dates, CSV escaping, JSON imports, deduplication, bounded reply gaps, conservative contract detection, formula-safe CSV and document/calendar exports.
+Backend tests cover authentication, password resets, admin isolation, encrypted settings/revision checks, trials/expiry, zero-price package activation without PayPal, product access, snapshots, failed AI credits/evidence validation, usage reservations and verified PayPal lifecycle events. They run on SQLite and a separate MySQL test database. Parser/document regression tests cover WhatsApp dates, CSV escaping, JSON imports, deduplication, bounded reply gaps, conservative contract detection, formula-safe CSV and document/calendar exports.
 
 Local browser checks verify normal login, import review, MySQL snapshot save, and the preserved interfaces. Real OpenAI requests, PayPal transactions and cPanel SMTP/deployment still require your credentials and hosting, and are not claimed as live-tested.
 
 ## Owner-requested local reset — 13 October 2026
 
-The current source is in `E:\laragon\www\clarity-laravel`. Earlier imported accounts are historical: the current local database has one administrator plus chat-only, contracts-only, and complete members with independent starter workspaces. A private SQL backup precedes the reset. The member entitlements are explicit `LOCAL_ACTIVE` test records and are deliberately distinct from verified PayPal subscriptions.
+The current source is in `E:\laragon\www\clarity-laravel`. Earlier imported accounts are historical: the current local database has one administrator plus chat-only, contracts-only, and complete members with independent starter workspaces. A private SQL backup precedes the reset. The member entitlements are explicit local-only `TEST_PAID` records with matching dummy billing events and are deliberately distinct from verified PayPal subscriptions.
 
 Administration has a dedicated `/admin/login` page, with role/status/verification checks before session establishment; guests requesting `/admin` are redirected there. The public footer links to that page. The updated brand uses a blue/violet logo, cool neutral surfaces, a responsive product preview landing page, and a shared modern design system in `public/css/modern.css`.
 

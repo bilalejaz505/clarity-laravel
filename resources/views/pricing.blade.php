@@ -11,8 +11,13 @@
                     <article class="card pricing-card {{ $plan['key'] === 'bundle' ? 'featured' : '' }}">
                         <h2>{{ $plan['name'] }}</h2>
                         <p>{{ $plan['description'] }}</p>
-                        <div class="price">{{ $plan['currency'] }} <strong>{{ $plan['price'] }}</strong><small>/
-                                month</small></div>
+                        <div class="price">
+                            @if ((float) $plan['price'] === 0.0)
+                                <strong>Free</strong><small>No payment required</small>
+                            @else
+                                {{ $plan['currency'] }} <strong>{{ $plan['price'] }}</strong><small>/ month</small>
+                            @endif
+                        </div>
                         <ul>
                             <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i>
                                 {{ number_format($plan['messages']) }} AI message units per period</li>
@@ -24,22 +29,21 @@
                             <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Private workspace and exports
                             </li>
                         </ul>
-                        @if ($local)
-                            <a class="primary full" href="{{ $plan['key'] === 'freelance' ? '/contracts' : '/chats' }}">Use
-                            localhost free plan</a>@else<button class="primary full" data-checkout="{{ $plan['key'] }}"
-                                @disabled(!$plan['paypalPlanId'] || !$settings['paypalClientId'])>{{ $plan['paypalPlanId'] && $settings['paypalClientId'] ? 'Continue to PayPal' : 'Checkout coming soon' }}</button>
-                        @endif
+                        <button class="primary full" data-checkout="{{ $plan['key'] }}"
+                            @disabled((float) $plan['price'] > 0 && (!$plan['paypalPlanId'] || !$settings['paypalClientId']))>
+                            {{ (float) $plan['price'] === 0.0 ? 'Subscribe free' : ($plan['paypalPlanId'] && $settings['paypalClientId'] ? 'Continue to PayPal' : 'Checkout coming soon') }}
+                        </button>
                     </article>
                 @endif
             @endforeach
         </div>
         <div class="card trial-card">
             <div>
-                <h3>{{ $local ? 'Free development plan · localhost only' : ($settings['trialEnabled'] ? $settings['trialDays'] . '-day trial' : 'Explore the sample demo') }}
+                <h3>{{ $settings['trialEnabled'] ? $settings['trialDays'] . '-day trial' : 'Explore the sample demo' }}
                 </h3>
                 <p>{{ $settings['trialMessages'] }} message units and {{ $settings['trialRequests'] }} requests. One trial
                     per account; no automatic renewal.</p>
-            </div><a href="/account" class="secondary">{{ $local ? 'Open your account' : 'Start trial' }} <i
+            </div><a href="/account" class="secondary">Start trial <i
                     class="bi bi-arrow-right" aria-hidden="true"></i></a>
         </div>
         <p class="definition">Prices are draft launch settings until merchant plans are configured. Each analysis batch,

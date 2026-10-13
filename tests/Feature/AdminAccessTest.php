@@ -86,6 +86,16 @@ class AdminAccessTest extends TestCase
         $this->assertDatabaseCount('users', 4);
         $this->assertDatabaseCount('workspaces', 4);
         $this->assertDatabaseCount('subscriptions', 3);
+        $this->assertDatabaseCount('billing_events', 3);
+        $this->assertDatabaseHas('subscriptions', [
+            'user_id' => 2,
+            'plan_key' => 'chat',
+            'status' => 'TEST_PAID',
+        ]);
+        $this->assertDatabaseHas('billing_events', [
+            'type' => 'TEST.PAYMENT.COMPLETED',
+            'status' => 'completed',
+        ]);
         $admin = User::where('email', 'admin@clarity.com')->firstOrFail();
         $chatMember = User::where('email', 'chat@clarity.com')->firstOrFail();
         $contractsMember = User::where(

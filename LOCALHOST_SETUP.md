@@ -34,7 +34,7 @@ Copy-Item .env.example .env
 php artisan key:generate
 ```
 
-Edit `.env` with `APP_URL=http://127.0.0.1:8000`, `APP_ENV=local`, your MySQL connection details, and `LOCALHOST_FREE_PLAN=true`. Then:
+Edit `.env` with `APP_URL=http://127.0.0.1:8000`, `APP_ENV=local`, and your MySQL connection details. Then:
 
 ```powershell
 php artisan migrate --seed
@@ -46,11 +46,11 @@ Seeding creates application defaults, never a shared login. `composer dev` also 
 
 ## Email, AI, and PayPal
 
-Local `MAIL_MAILER=log` writes verification/reset emails to `storage/logs/laravel.log`; it does not deliver email. Configure your hosting SMTP to deliver them. Console-created admins are verified. The authenticated localhost plan works only when the application environment is `local` and the request host is exact loopback.
+Local `MAIL_MAILER=log` writes verification/reset emails to `storage/logs/laravel.log`; it does not deliver email. Configure your hosting SMTP to deliver them. Console-created admins are verified. Localhost no longer grants a special entitlement; access follows the same trial and package-subscription rules used by the deployed application.
 
 In `/admin`, save the OpenAI key and model, then test the connection. Keys are encrypted in MySQL and never returned to the browser. The app's local observations and statistics work without a key; AI requests require one.
 
-PayPal settings remain inactive until you supply a Business account's sandbox or live credentials, webhook ID, and matching monthly plan IDs. Use sandbox first. See `BILLING_ARCHITECTURE.md`.
+PayPal settings remain inactive until you supply a Business account's sandbox or live credentials, webhook ID, and matching monthly plan IDs. Use sandbox first. Packages priced at zero activate without PayPal. See `BILLING_ARCHITECTURE.md`.
 
 ## Verification and troubleshooting
 
@@ -68,7 +68,7 @@ If port 8000 is occupied, stop the other server or choose another port and updat
 
 The initialized local MySQL database contains four active, verified accounts: one administrator, one Chat Insights member, one Contracts member, and one Complete member. Their current generated passwords and exact access are saved in the private `Clarity-Local-Accounts-Current.txt` deliverable; credentials are never committed to source control. Administrator login is `/admin/login`; all member accounts use `/login`. The admin form refuses regular, suspended, or unverified accounts.
 
-Three configured plans are stored in the application settings: Chat Plus (USD 9/month), Freelance Pro (USD 15/month), and Clarity Complete (USD 19/month). PayPal checkout requires merchant credentials and real matching provider plan IDs. The three member accounts use clearly labeled `LOCAL_ACTIVE` subscription records for package-boundary testing; they are not PayPal payments and cannot be reconciled as provider transactions. Other authenticated accounts on exact localhost continue to receive the free development entitlement.
+Three configured plans are stored in the application settings: Chat Plus (USD 9/month), Freelance Pro (USD 15/month), and Clarity Complete (USD 19/month). The administrator can change package details, availability, quotas, product access, and price. Setting the price to zero enables immediate free subscription without PayPal; positive prices require merchant credentials and matching provider plan IDs. The three initialized member accounts use clearly labeled `TEST_PAID` subscriptions and matching dummy completed billing events for pre-launch package-boundary testing. These are local fixtures, not PayPal transactions.
 
 All four accounts have independent starter workspaces with a personal conversation, a Northstar Studio freelance project, reviewed terms, two milestones and two draft invoices. These are editable examples, clearly marked as starter/sample conversations. Saved server snapshots load automatically into the owning account's workspace; optional saved device data takes precedence. Changes remain in memory until you save them explicitly.
 

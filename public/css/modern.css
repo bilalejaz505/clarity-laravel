@@ -675,6 +675,25 @@ textarea:focus,
 .pricing-card {
     border-radius: 17px;
 }
+.public-heading p,
+.pricing-card > p,
+.pricing-card li,
+.trial-card p,
+.public-content .definition {
+    color: #68758c;
+}
+.pricing-card li i {
+    color: #6678e8;
+}
+.price {
+    color: #68758c;
+}
+.price strong {
+    color: #18243b;
+}
+.price small {
+    color: #7a879d;
+}
 .pricing-card.featured {
     border-color: #8494ed;
     background: #fafbff;

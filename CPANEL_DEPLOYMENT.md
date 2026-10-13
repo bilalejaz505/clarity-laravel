@@ -27,7 +27,6 @@ Use PHP **8.4** for this Composer lockfile, MySQL 8, Apache rewriting, HTTPS, an
    APP_ENV=production
    APP_DEBUG=false
    APP_URL=https://your-domain.example
-   LOCALHOST_FREE_PLAN=false
    DB_CONNECTION=mysql
    DB_HOST=localhost
    DB_PORT=3306
@@ -56,7 +55,7 @@ Use PHP **8.4** for this Composer lockfile, MySQL 8, Apache rewriting, HTTPS, an
    ```
 
    Use directory ownership/group permissions appropriate to your hosting account, commonly 755 directories and 644 files, with write access for the PHP user to `storage` and `bootstrap/cache`. Do not make the entire app world-writable.
-7. Visit `/`, `/login`, `/register`, `/account`, and `/admin`. Verify email delivery, password reset, ordinary-user admin denial, private snapshot ownership, trial expiry, and HTTPS cookies. Configure provider settings in `/admin`. Test PayPal sandbox subscription creation, verified webhooks, cancellation and refund handling before enabling live checkout.
+7. Visit `/`, `/login`, `/register`, `/account`, and `/admin`. Verify email delivery, password reset, ordinary-user admin denial, private snapshot ownership, trial expiry, zero-price package activation, and HTTPS cookies. Configure provider settings in `/admin`. Test PayPal sandbox subscription creation, verified webhooks, cancellation and refund handling before enabling live paid checkout.
 
 If Composer/SSH are unavailable, create a deployment copy locally using the same PHP version, run `composer install --no-dev --optimize-autoloader` there, and upload its `vendor` folder with the app. Do not remove developer dependencies from your working source just to prepare that copy. Use the hosting terminal or host support to run Artisan migrations; do not create a public migration/key-generation endpoint.
 
@@ -78,4 +77,6 @@ The current release's original migrations define numeric application record IDs 
 
 Notification and icon assets are self-hosted under `public/vendor`, `public/css`, and `public/js`. Upload the SweetAlert2 files, Bootstrap Icons CSS/font files, their license files, and the Clarity assets with the rest of `public`; no CDN or Node build is required. After upload, verify that `/vendor/bootstrap-icons.min.css`, `/vendor/fonts/bootstrap-icons.woff2`, and the application styles return HTTP 200 rather than an HTML error page.
 
-The `LOCAL_ACTIVE` package records created by `clarity:reset-local-data` are for localhost testing only. Never run that command on cPanel and never import those records as production billing. Production access must come from a trial or a provider-verified PayPal subscription.
+The `TEST_PAID` subscriptions and `TEST.PAYMENT.COMPLETED` events created by `clarity:reset-local-data` are pre-launch fixtures accepted only in the local environment. Never run that command on cPanel and never import those records as production billing. Production access must come from a trial, a `FREE_ACTIVE` zero-price package subscription, or a provider-verified PayPal subscription.
+
+Zero-price packages need no PayPal plan ID and activate immediately. Positive-price packages must have a matching PayPal plan and merchant configuration before their checkout button is enabled. Review package prices and remove all dummy billing records before launch.

@@ -14,7 +14,6 @@ class EntitlementService
     public function local(Request $request): bool
     {
         return app()->environment('local') &&
-            config('clarity.localhost_free') &&
             in_array(
                 strtolower($request->getHost()),
                 ['localhost', '127.0.0.1', '[::1]', '::1'],
@@ -81,13 +80,22 @@ class EntitlementService
             ]);
         }
 
+        $paidStatuses = ['ACTIVE', 'CANCELLED'];
+        if (app()->environment('local')) {
+            $paidStatuses[] = 'TEST_PAID';
+        }
+
         $subs = DB::table('subscriptions')
             ->where('user_id', $u->id)
-            ->whereIn(
-                'status',
-                $local ? ['LOCAL_ACTIVE'] : ['ACTIVE', 'CANCELLED'],
-            )
-            ->where('paid_until', '>', now())
+            ->where(function ($query) use ($paidStatuses): void {
+                $query
+                    ->where('status', 'FREE_ACTIVE')
+                    ->orWhere(function ($query) use ($paidStatuses): void {
+                        $query
+                            ->whereIn('status', $paidStatuses)
+                            ->where('paid_until', '>', now());
+                    });
+            })
             ->get();
         $plans = [];
         foreach ($subs as $sub) {
@@ -115,37 +123,31 @@ class EntitlementService
                     $sub->paypal_id.
                     ':'.
                     ($sub->period_start ?: $sub->paid_until);
-                $expires[] = CarbonImmutable::parse(
-                    $sub->paid_until,
-                )->toISOString();
+                if ($sub->paid_until) {
+                    $expires[] = CarbonImmutable::parse(
+                        $sub->paid_until,
+                    )->toISOString();
+                }
             }
             sort($buckets);
             sort($expires);
 
+            $statuses = collect($plans)->pluck('0.status');
+            $reason = match (true) {
+                $statuses->contains('TEST_PAID') => 'Test payment access',
+                $statuses->every(fn (string $status): bool => $status === 'FREE_ACTIVE') => 'Free package subscription',
+                default => 'Verified paid subscription',
+            };
+
             return [
                 'allowed' => true,
-                'reason' => $local
-                    ? 'Local package access'
-                    : 'Verified paid subscription',
+                'reason' => $reason,
                 'plan' => implode(' + ', $names),
                 'products' => array_values(array_unique($products)),
                 'messages' => $messages,
                 'requests' => $requests,
                 'bucket' => implode('|', $buckets),
-                'expires' => $expires[0],
-            ];
-        }
-
-        if ($local) {
-            return [
-                'allowed' => true,
-                'reason' => 'Local development only',
-                'plan' => 'localhost',
-                'products' => ['chat', 'freelance'],
-                'messages' => 1000000000,
-                'requests' => 1000000000,
-                'bucket' => 'localhost',
-                'expires' => null,
+                'expires' => $expires[0] ?? null,
             ];
         }
 

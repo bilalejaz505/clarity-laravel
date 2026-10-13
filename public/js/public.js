@@ -41,7 +41,7 @@ document.querySelectorAll("[data-checkout]").forEach(
                     action: "checkout",
                     planKey: button.dataset.checkout,
                 });
-                location.assign(result.approvalUrl);
+                location.assign(result.redirectUrl || result.approvalUrl);
             } catch (e) {
                 showError(e);
                 button.disabled = false;
@@ -83,8 +83,11 @@ async function loadAccount() {
             };
         document.querySelector("#subscriptions").innerHTML = d.subscriptions
             .map((s) => {
-                if (s.status === "LOCAL_ACTIVE") {
-                    return `<div class="card detail-card"><h3><i class="bi bi-pc-display-horizontal" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Local test access</h3><p class="muted">Package-scoped localhost entitlement. No PayPal transaction is attached.</p></div>`;
+                if (s.status === "FREE_ACTIVE") {
+                    return `<div class="card detail-card"><h3><i class="bi bi-gift" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Free package</h3><p class="muted">Active with no payment required.</p></div>`;
+                }
+                if (s.status === "TEST_PAID") {
+                    return `<div class="card detail-card"><h3><i class="bi bi-patch-check" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Test payment</h3><p class="muted">Pre-launch paid access through ${escapeText(s.paid_until || "the configured test period")}.</p></div>`;
                 }
 
                 return `<div class="card detail-card"><h3>${escapeText(s.plan_key)} · ${escapeText(s.status)}</h3><p class="muted">Paid through: ${escapeText(s.paid_until || "Payment not yet verified")}</p><button class="secondary" data-refresh="${escapeText(s.id)}"><i class="bi bi-arrow-repeat" aria-hidden="true"></i>Verify with PayPal</button> <button class="danger" data-cancel="${escapeText(s.id)}"><i class="bi bi-x-circle" aria-hidden="true"></i>Cancel renewals</button></div>`;

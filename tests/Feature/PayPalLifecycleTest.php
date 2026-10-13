@@ -14,6 +14,69 @@ class PayPalLifecycleTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_zero_price_package_activates_without_paypal(): void
+    {
+        $this->freezeTime();
+        $user = User::factory()->create();
+        $settings = app(AppSettingsService::class);
+        $config = $settings->defaults();
+        $config['plans'][0]['price'] = 0;
+        DB::table('app_settings')->insert([
+            'key' => 'application',
+            'data' => json_encode($config),
+            'revision' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Http::preventStrayRequests();
+
+        $this->actingAs($user)
+            ->postJson('/api/billing', [
+                'action' => 'checkout',
+                'planKey' => 'chat',
+            ])
+            ->assertOk()
+            ->assertJson([
+                'subscribed' => true,
+                'redirectUrl' => url('/account'),
+            ]);
+
+        $this->assertDatabaseHas('subscriptions', [
+            'user_id' => $user->id,
+            'plan_key' => 'chat',
+            'status' => 'FREE_ACTIVE',
+            'paid_until' => null,
+        ]);
+        $entitlement = app(EntitlementService::class)->entitlement(
+            $user,
+            false,
+        );
+        $this->assertTrue($entitlement['allowed']);
+        $this->assertSame(['chat'], $entitlement['products']);
+        $this->assertSame('Free package subscription', $entitlement['reason']);
+        Http::assertNothingSent();
+    }
+
+    public function test_zero_price_package_cannot_be_activated_twice(): void
+    {
+        $user = User::factory()->create();
+        $settings = app(AppSettingsService::class);
+        $config = $settings->defaults();
+        $config['plans'][0]['price'] = 0;
+        DB::table('app_settings')->insert([
+            'key' => 'application',
+            'data' => json_encode($config),
+            'revision' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $payload = ['action' => 'checkout', 'planKey' => 'chat'];
+        $this->actingAs($user)->postJson('/api/billing', $payload)->assertOk();
+        $this->postJson('/api/billing', $payload)->assertConflict();
+        $this->assertDatabaseCount('subscriptions', 1);
+    }
+
     public function test_verified_payment_is_bound_to_the_owner_and_grants_only_the_paid_product(): void
     {
         $this->freezeTime();

@@ -211,6 +211,24 @@ class ClarityTest extends TestCase
         $this->postJson('/api/admin', $body)->assertStatus(409);
     }
 
+    public function test_admin_can_configure_a_zero_price_package(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $settings = app(AppSettingsService::class);
+        $config = $settings->defaults();
+        $config['plans'][0]['price'] = 0;
+
+        $this->actingAs($admin)
+            ->postJson('/api/admin', [
+                'action' => 'settings',
+                'revision' => 0,
+                'config' => $config,
+            ])
+            ->assertOk();
+
+        $this->assertSame(0, $settings->get()['plans'][0]['price']);
+    }
+
     public function test_suspension_and_admin_self_protection(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);

@@ -84,15 +84,28 @@ class LocalWorkspaceSeeder extends Seeder
                     'key',
                     $planKey,
                 );
+                $providerId =
+                    'TEST-PAY-'.strtoupper($planKey).'-'.
+                    str_pad((string) $member->id, 4, '0', STR_PAD_LEFT);
                 DB::table('subscriptions')->insert([
-                    'paypal_id' => 'LOCAL-'.strtoupper($planKey).'-'.$member->id,
+                    'paypal_id' => $providerId,
                     'provider_custom_id' => (string) $member->id,
                     'user_id' => $member->id,
                     'plan_key' => $planKey,
-                    'status' => 'LOCAL_ACTIVE',
+                    'status' => 'TEST_PAID',
                     'period_start' => now(),
-                    'paid_until' => now()->addYears(10),
+                    'paid_until' => now()->addYear(),
+                    'provider_updated_at' => now(),
                     'plan_snapshot' => json_encode($plan, JSON_THROW_ON_ERROR),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                DB::table('billing_events')->insert([
+                    'paypal_event_id' => 'TEST-EVENT-'.strtoupper($planKey).'-'.
+                        str_pad((string) $member->id, 4, '0', STR_PAD_LEFT),
+                    'type' => 'TEST.PAYMENT.COMPLETED',
+                    'provider_subscription_id' => $providerId,
+                    'status' => 'completed',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -107,7 +120,7 @@ class LocalWorkspaceSeeder extends Seeder
             $settings->audit(
                 'console',
                 'local.initialized',
-                'Created one administrator and three package-scoped local member accounts.',
+                'Created one administrator and three package-scoped members with pre-launch test payments.',
             );
         });
     }

@@ -39,7 +39,7 @@ class AdminActionRequest extends FormRequest
                 'config.plans.*.key' => 'required|in:chat,freelance,bundle|distinct',
                 'config.plans.*.name' => 'required|string|max:60',
                 'config.plans.*.description' => 'present|string|max:200',
-                'config.plans.*.price' => 'required|numeric|between:1,1000',
+                'config.plans.*.price' => 'required|numeric|between:0,1000',
                 'config.plans.*.currency' => 'required|in:USD,EUR,GBP,CAD,AUD',
                 'config.plans.*.messages' => 'required|integer|between:100,1000000',
                 'config.plans.*.requests' => 'required|integer|between:1,10000',
