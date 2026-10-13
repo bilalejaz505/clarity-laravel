@@ -71,6 +71,14 @@
                         maxlength="500" placeholder="Enter a PayPal merchant secret"></label>
             </div>
             <p id="paypal-saved" class="muted"></p>
+            <div id="paypal-readiness" class="progress-banner"></div>
+            <div class="toolbar">
+                <button type="button" id="test-paypal" class="secondary"><i class="bi bi-plug"
+                        aria-hidden="true"></i>Test PayPal Connection</button>
+                <a id="paypal-plan-manager" class="secondary" href="https://www.sandbox.paypal.com/billing/plans"
+                    target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right"
+                        aria-hidden="true"></i>Open PayPal Plan Manager</a>
+            </div>
             <h3 class="admin-subsection-title">Plans, Prices & Quotas</h3>
             <div id="admin-plans"></div>
         </section>

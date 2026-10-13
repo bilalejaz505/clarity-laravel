@@ -27,9 +27,16 @@ class PageController extends Controller
 
     public function pricing(Request $request): View|Response
     {
+        $settings = $this->settings->get();
+
         return view('pricing', [
-            'settings' => $this->settings->get(),
+            'settings' => $settings,
             'local' => $this->access->local($request),
+            'paypalMerchantReady' => (bool) (
+                $settings['paypalClientId'] &&
+                $settings['paypalWebhookId'] &&
+                $this->settings->secret('paypal')
+            ),
         ]);
     }
 

@@ -14,6 +14,67 @@ class PayPalLifecycleTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_pricing_identifies_missing_plan_ids_and_ready_packages(): void
+    {
+        $settings = app(AppSettingsService::class);
+        $config = $settings->defaults();
+        $config['paypalClientId'] = 'sandbox-client-id';
+        $config['paypalWebhookId'] = 'sandbox-webhook-id';
+        DB::table('app_settings')->insert([
+            'key' => 'application',
+            'data' => json_encode($config),
+            'revision' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $settings->saveSecret('paypal', 'sandbox-secret');
+
+        $this->get('/pricing')
+            ->assertOk()
+            ->assertSeeText('PayPal Plan ID Missing');
+
+        foreach ($config['plans'] as $index => $plan) {
+            $config['plans'][$index]['paypalPlanId'] = 'P-'.$plan['key'];
+        }
+        DB::table('app_settings')
+            ->where('key', 'application')
+            ->update(['data' => json_encode($config)]);
+
+        $this->get('/pricing')
+            ->assertOk()
+            ->assertSeeText('Continue to PayPal')
+            ->assertDontSeeText('PayPal Plan ID Missing');
+    }
+
+    public function test_administrator_can_verify_the_saved_paypal_connection(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $settings = app(AppSettingsService::class);
+        $config = $settings->defaults();
+        $config['paypalClientId'] = 'sandbox-client-id';
+        DB::table('app_settings')->insert([
+            'key' => 'application',
+            'data' => json_encode($config),
+            'revision' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $settings->saveSecret('paypal', 'sandbox-secret');
+        Http::fake([
+            'https://api-m.sandbox.paypal.com/v1/oauth2/token' => Http::response([
+                'access_token' => 'sandbox-token',
+            ]),
+            'https://api-m.sandbox.paypal.com/v1/catalogs/products*' => Http::response([
+                'products' => [],
+            ]),
+        ]);
+
+        $this->actingAs($admin)
+            ->postJson('/api/connection', ['provider' => 'paypal'])
+            ->assertOk()
+            ->assertJsonPath('environment', 'sandbox');
+    }
+
     public function test_zero_price_package_activates_without_paypal(): void
     {
         $this->freezeTime();

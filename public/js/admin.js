@@ -150,6 +150,34 @@ async function load(search = "") {
             ? "An encrypted value is saved. Keep the mask, enter a replacement, or clear it and save to remove it."
             : "No encrypted value is currently saved.";
     }
+    const paypalSecretSaved = state.secrets.some(
+        (secret) => secret.provider === "paypal",
+    );
+    const missingPlanIds = state.config.plans
+        .filter(
+            (plan) =>
+                plan.enabled && Number(plan.price) > 0 && !plan.paypalPlanId,
+        )
+        .map((plan) => plan.name);
+    const paypalProblems = [
+        !state.config.paypalClientId ? "Client ID" : null,
+        !paypalSecretSaved ? "Merchant Secret" : null,
+        !state.config.paypalWebhookId ? "Webhook ID" : null,
+        missingPlanIds.length
+            ? `PayPal Plan IDs for ${missingPlanIds.join(", ")}`
+            : null,
+    ].filter(Boolean);
+    $("paypal-readiness").textContent = paypalProblems.length
+        ? `Checkout is pending. Missing: ${paypalProblems.join("; ")}.`
+        : "PayPal merchant settings and all paid package Plan IDs are configured.";
+    $("paypal-readiness").classList.toggle(
+        "positive",
+        !paypalProblems.length,
+    );
+    $("paypal-plan-manager").href =
+        state.config.paypalEnvironment === "live"
+            ? "https://www.paypal.com/billing/plans"
+            : "https://www.sandbox.paypal.com/billing/plans";
     $("admin-subscriptions").innerHTML = table(state.subscriptions, [
         "plan_key",
         "status",
@@ -341,6 +369,16 @@ $("test-openai").onclick = async () => {
     try {
         const result = await api("/api/connection", { provider: "openai" });
         notice("Saved connection verified: " + result.model);
+    } catch (err) {
+        error(err);
+    }
+};
+$("test-paypal").onclick = async () => {
+    try {
+        const result = await api("/api/connection", { provider: "paypal" });
+        notice(
+            `PayPal ${result.environment} merchant credentials are connected.`,
+        );
     } catch (err) {
         error(err);
     }

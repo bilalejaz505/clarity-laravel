@@ -79,11 +79,17 @@ class BillingController extends Controller
                 ]);
             }
 
-            abort_unless(
-                ! empty($plan['paypalPlanId']) &&
-                    ! empty($s['paypalClientId']),
+            abort_if(
+                empty($plan['paypalPlanId']),
                 422,
-                'This plan is not connected to PayPal yet.',
+                'This package needs an active PayPal Plan ID.',
+            );
+            abort_unless(
+                $s['paypalClientId'] &&
+                    $s['paypalWebhookId'] &&
+                    $settings->secret('paypal'),
+                422,
+                'PayPal merchant credentials and the webhook ID must be configured.',
             );
             $token = (string) Str::uuid();
             DB::transaction(function () use ($u, $token) {

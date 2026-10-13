@@ -9,6 +9,7 @@ use App\Services\AppSettingsService;
 use App\Services\AuditLogService;
 use App\Services\EntitlementService;
 use App\Services\MailSettingsService;
+use App\Services\PayPalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -192,9 +193,10 @@ class AdminController extends Controller
         Request $request,
         AppSettingsService $settings,
         MailSettingsService $mail,
+        PayPalService $paypal,
     ): Response {
         $provider = $request->validate([
-            'provider' => ['required', 'in:openai,smtp'],
+            'provider' => ['required', 'in:openai,paypal,smtp'],
         ])['provider'];
 
         if ($provider === 'smtp') {
@@ -213,6 +215,15 @@ class AdminController extends Controller
             );
 
             return response()->json(['ok' => true]);
+        }
+
+        if ($provider === 'paypal') {
+            $paypal->request('/v1/catalogs/products?page_size=1');
+
+            return response()->json([
+                'ok' => true,
+                'environment' => $settings->get()['paypalEnvironment'],
+            ]);
         }
 
         $key = $settings->secret('openai');

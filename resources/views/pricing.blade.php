@@ -33,8 +33,8 @@
                             </li>
                         </ul>
                         <button class="primary full" data-checkout="{{ $plan['key'] }}"
-                            @disabled((float) $plan['price'] > 0 && (!$plan['paypalPlanId'] || !$settings['paypalClientId']))>
-                            {{ (float) $plan['price'] === 0.0 ? 'Subscribe free' : ($plan['paypalPlanId'] && $settings['paypalClientId'] ? 'Continue to PayPal' : 'PayPal setup pending') }}
+                            @disabled((float) $plan['price'] > 0 && (!$plan['paypalPlanId'] || !$paypalMerchantReady))>
+                            {{ (float) $plan['price'] === 0.0 ? 'Subscribe Free' : (!$plan['paypalPlanId'] ? 'PayPal Plan ID Missing' : ($paypalMerchantReady ? 'Continue to PayPal' : 'PayPal Merchant Setup Pending')) }}
                         </button>
                     </article>
                 @endif
