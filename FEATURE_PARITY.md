@@ -29,7 +29,7 @@ These are the existing app's features, not a claim that every possible competito
 - `database/factories` and `seeders`: fixtures and repeatable defaults without a shared default login.
 - `resources/views`: formatted Blade templates.
 - `public/js` and `public/css`: editable plain browser modules and styles; no compilation step.
-- `public/vendor`: prebuilt free XLSX/OCR browser dependencies and licenses.
+- `public/vendor`: prebuilt free XLSX/OCR dependencies, SweetAlert2, Bootstrap Icons, fonts, and licenses.
 - `tests/Feature`: backend behavior; `tests/frontend`: optional native Node regression checks for parsing/documents.
 
 There is no `package.json`, `node_modules`, Vite, React, Next, Livewire, Inertia, or Supabase dependency in this application. Composer's `vendor` directory is the standard PHP dependency directory.
@@ -46,15 +46,15 @@ Backend tests cover authentication, password resets, admin isolation, encrypted 
 
 Local browser checks verify normal login, import review, MySQL snapshot save, and the preserved interfaces. Real OpenAI requests, PayPal transactions and cPanel SMTP/deployment still require your credentials and hosting, and are not claimed as live-tested.
 
-## Owner-requested local reset — 12 October 2026
+## Owner-requested local reset — 13 October 2026
 
-The current source was moved to `E:\laragon\www\clarity-laravel`. The earlier imported accounts described above are historical: they have now been replaced by exactly one administrator and one member, three enabled plans, and independent coherent starter workspaces. A private SQL backup precedes this reset. No test fixtures, fake settled payments, or fake provider subscriptions remain in the application database.
+The current source is in `E:\laragon\www\clarity-laravel`. Earlier imported accounts are historical: the current local database has one administrator plus chat-only, contracts-only, and complete members with independent starter workspaces. A private SQL backup precedes the reset. The member entitlements are explicit `LOCAL_ACTIVE` test records and are deliberately distinct from verified PayPal subscriptions.
 
 Administration has a dedicated `/admin/login` page, with role/status/verification checks before session establishment; guests requesting `/admin` are redirected there. The public footer links to that page. The updated brand uses a blue/violet logo, cool neutral surfaces, a responsive product preview landing page, and a shared modern design system in `public/css/modern.css`.
 
 ## Numeric database identifiers — 12 October 2026
 
-At the owner's request, the original 18 migrations were revised and the local database was rebuilt and reseeded. No additional conversion migrations are required. Internal application records now use auto-incrementing unsigned BIGINT IDs; administrator ID is 1 and member ID is 2. Updated account names/emails and existing password hashes were preserved. Relationship columns use matching integer types and ownership foreign keys.
+At the owner's request, the original 18 migrations were revised and the local database was rebuilt and reseeded. No additional conversion migrations are required. Internal application records use auto-incrementing unsigned BIGINT IDs; the current local user IDs are 1–4. Relationship columns use matching integer types and ownership foreign keys.
 
 PayPal subscription/event identifiers remain in separate provider fields. Usage hashes are `bucket_key`, settings use `key`, provider secrets use `provider`, and legacy import fingerprints are separate from numeric row IDs. Workspace/message/term IDs inside JSON backups and framework session tokens remain opaque strings; they are not application database primary keys.
 
@@ -63,3 +63,5 @@ This was an explicitly authorized local reset, preceded by a private SQL backup.
 ## Notifications
 
 SweetAlert2 11.26.25 is served locally from public/vendor with its license. Public, member and admin pages share styled toast notifications and confirmation dialogs. Errors remain until dismissed; routine success messages close automatically. Messages are rendered as plain text. The contracts workspace is available at /contracts; /agreements remains compatible with existing links and older document backups.
+
+Bootstrap Icons 1.13.2 is also self-hosted with its font files and license. Public, member, workspace, and administration controls use meaningful icons with decorative icons hidden from assistive technology and accessible names retained on icon-only buttons.

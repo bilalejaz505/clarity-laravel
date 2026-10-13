@@ -1,9 +1,20 @@
 @extends('layouts.public')
-@section('title', ($adminLogin ?? false) ? 'Admin sign in · Clarity' : 'Account access · Clarity')
+@section('title', $adminLogin ?? false ? 'Admin sign in · Clarity' : 'Account access · Clarity')
 @section('content')
     <main class="public-content auth-content">
-        <section class="card auth-card"><span class="auth-icon"
-                aria-hidden="true">{{ $adminLogin ?? false ? '◇' : '↗' }}</span><span
+        @php
+            $authIcon =
+                $adminLogin ?? false
+                    ? 'shield-lock'
+                    : [
+                        'login' => 'box-arrow-in-right',
+                        'register' => 'person-plus',
+                        'forgot' => 'key',
+                        'reset' => 'key-fill',
+                    ][$mode];
+        @endphp
+        <section class="card auth-card"><span class="auth-icon" aria-hidden="true"><i
+                    class="bi bi-{{ $authIcon }}"></i></span><span
                 class="eyebrow">{{ $adminLogin ?? false ? 'CLARITY ADMINISTRATION' : 'YOUR CLARITY WORKSPACE' }}</span>
             <h1>{{ $adminLogin ?? false ? 'Admin sign in.' : ['login' => 'Welcome back.', 'register' => 'Create your account.', 'forgot' => 'Reset your password.', 'reset' => 'Choose a new password.'][$mode] }}
             </h1>
@@ -37,9 +48,10 @@
                     <label class="checkbox-line"><input type="checkbox" name="remember" value="1">Remember me</label><a
                         href="/forgot-password" class="text-btn">Forgot password?</a>
                 @endif
-                <button class="primary full"
-                    type="submit">{{ ['login' => 'Log in', 'register' => 'Create account', 'forgot' => 'Send reset link', 'reset' => 'Save password'][$mode] }}
-                    →</button>
+                <button class="primary full" type="submit">
+                    {{ ['login' => 'Log in', 'register' => 'Create account', 'forgot' => 'Send reset link', 'reset' => 'Save password'][$mode] }}
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </button>
             </form>
             <p class="auth-switch">
                 @if ($adminLogin ?? false)

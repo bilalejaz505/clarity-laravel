@@ -10,6 +10,10 @@ class AuditLogFactory extends Factory
 {
     public function definition(): array
     {
-        return ['actor' => 'fixture-admin', 'action' => 'fixture', 'detail' => 'Test fixture'];
+        return [
+            'actor' => 'fixture-admin',
+            'action' => 'fixture',
+            'detail' => 'Test fixture',
+        ];
     }
 }

@@ -16,7 +16,7 @@ Open http://127.0.0.1:8000. Register and log in normally. Grant your account adm
 
 ## Guides
 
-The local database is initialized with one administrator and one member. Use `/admin/login` for administration and `/login` for member access; generated passwords are in the private `Clarity-Local-Accounts.txt` deliverable. See the current-account section in the localhost guide for plans and starter records.
+The local database is initialized with one administrator plus chat-only, contracts-only, and complete members. Use `/admin/login` for administration and `/login` for member access; generated passwords are in the private `Clarity-Local-Accounts-Current.txt` deliverable. See the current-account section in the localhost guide for plans and starter records.
 
 - [Localhost setup](LOCALHOST_SETUP.md): existing/fresh setup, authentication, email and troubleshooting.
 - [cPanel deployment](CPANEL_DEPLOYMENT.md): PHP/MySQL requirements, secure public root, releases and backups.
@@ -25,7 +25,7 @@ The local database is initialized with one administrator and one member. Use `/a
 
 ## Development
 
-Run `php artisan test` for isolated backend tests and `php vendor/bin/pint --dirty --format agent` for PHP formatting. Optional parser/document checks: `node --test tests/frontend/*.test.mjs`. Those optional tests do not add a Node runtime or package dependency to the application.
+Run `php artisan test` for isolated backend tests and `php vendor/bin/pint --format agent` for PHP formatting. PHP source is also kept in a readable multiline layout, and Blade, browser JavaScript, CSS, and JSON are formatted before release. Optional parser/document checks use `node --test tests/frontend/*.test.mjs`; Node remains a developer-only tool and is not an application dependency.
 
 Each table has its own migration. Keep input validation in Form Requests, provider/business behavior in services, persistence in Eloquent models or transactional Laravel queries, and page markup in Blade. Preserve the existing APP_KEY and MySQL records when updating an installed instance. Never use `migrate:fresh` as a deployment command.
 

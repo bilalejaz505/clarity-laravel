@@ -10,6 +10,12 @@ class AppSettingsSeeder extends Seeder
 {
     public function run(): void
     {
-        AppSetting::firstOrCreate(['key' => 'application'], ['data' => app(AppSettingsService::class)->defaults(), 'revision' => 0]);
+        AppSetting::firstOrCreate(
+            ['key' => 'application'],
+            [
+                'data' => app(AppSettingsService::class)->defaults(),
+                'revision' => 0,
+            ],
+        );
     }
 }

@@ -10,7 +10,11 @@ return new class extends Migration
     {
         Schema::create('checkout_locks', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('user_id')->unique()->constrained('users')->cascadeOnDelete();
+            $table
+                ->foreignId('user_id')
+                ->unique()
+                ->constrained('users')
+                ->cascadeOnDelete();
             $table->uuid('token');
             $table->timestamp('expires_at');
         });

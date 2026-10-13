@@ -5,11 +5,17 @@
             <h1>System administration</h1>
             <p>Manage people, providers, plans, and application settings.</p>
         </div>
-        <div class="admin-tabs toolbar"><button class="secondary" data-tab="overview">Overview</button><button
-                class="secondary" data-tab="users">Users</button><button class="secondary"
-                data-tab="ai">OpenAI</button><button class="secondary" data-tab="paypal">PayPal & plans</button><button
-                class="secondary" data-tab="general">Application settings</button><button class="secondary"
-                data-tab="audit">Audit log</button></div>
+        <div class="admin-tabs toolbar">
+            <button class="secondary" data-tab="overview"><i class="bi bi-grid" aria-hidden="true"></i>Overview</button>
+            <button class="secondary" data-tab="users"><i class="bi bi-people" aria-hidden="true"></i>Users</button>
+            <button class="secondary" data-tab="ai"><i class="bi bi-stars" aria-hidden="true"></i>OpenAI</button>
+            <button class="secondary" data-tab="paypal"><i class="bi bi-paypal" aria-hidden="true"></i>PayPal &
+                plans</button>
+            <button class="secondary" data-tab="general"><i class="bi bi-sliders" aria-hidden="true"></i>Application
+                settings</button>
+            <button class="secondary" data-tab="audit"><i class="bi bi-journal-text" aria-hidden="true"></i>Audit
+                log</button>
+        </div>
         <section data-admin-panel="overview">
             <div id="admin-totals" class="metrics"></div>
             <div class="card detail-card">
@@ -30,7 +36,8 @@
         <section data-admin-panel="users" hidden>
             <div class="card detail-card">
                 <form id="user-search-form" class="toolbar"><input id="user-search" placeholder="Search names or emails"
-                        maxlength="100" aria-label="Search users"><button class="secondary">Search</button></form>
+                        maxlength="100" aria-label="Search users"><button class="secondary"><i class="bi bi-search"
+                            aria-hidden="true"></i>Search</button></form>
                 <div id="admin-users"></div>
             </div>
         </section>
@@ -46,9 +53,10 @@
                         OpenAI key<input type="password" id="openai-key" autocomplete="new-password"
                             placeholder="Leave blank to keep saved key"></label></div>
                 <p id="openai-saved" class="muted"></p>
-                <div class="toolbar"><button type="button" id="test-openai" class="secondary">Test saved
-                        connection</button><button type="button" data-delete-secret="openai" class="danger">Remove saved
-                        key</button></div>
+                <div class="toolbar"><button type="button" id="test-openai" class="secondary"><i class="bi bi-plug"
+                            aria-hidden="true"></i>Test saved connection</button><button type="button"
+                        data-delete-secret="openai" class="danger"><i class="bi bi-trash3" aria-hidden="true"></i>Remove
+                        saved key</button></div>
             </section>
             <section data-admin-panel="paypal" hidden class="card detail-card">
                 <h2>PayPal merchant configuration</h2>
@@ -62,7 +70,7 @@
                             maxlength="100"></label><label>Replace merchant secret<input type="password" id="paypal-secret"
                             autocomplete="new-password" placeholder="Leave blank to keep saved secret"></label></div>
                 <p id="paypal-saved" class="muted"></p><button type="button" data-delete-secret="paypal"
-                    class="danger">Remove saved merchant secret</button>
+                    class="danger"><i class="bi bi-trash3" aria-hidden="true"></i>Remove saved merchant secret</button>
                 <h3>Plans, prices & quotas</h3>
                 <div id="admin-plans"></div>
             </section>
@@ -83,8 +91,10 @@
                             max="10000"></label><label>Trial AI requests<input data-setting="trialRequests"
                             type="number" min="1" max="100"></label></div>
             </section>
-            <div id="admin-save-bar" class="sticky-save" hidden><button type="submit" class="primary">Save
-                    settings</button><span class="muted">Changes are protected by a settings revision check.</span></div>
+            <div id="admin-save-bar" class="sticky-save" hidden><button type="submit" class="primary"><i
+                        class="bi bi-floppy" aria-hidden="true"></i>Save settings</button><span class="muted">Changes
+                    are
+                    protected by a settings revision check.</span></div>
         </form>
         <section data-admin-panel="audit" hidden class="card detail-card">
             <h2>Audit log</h2>

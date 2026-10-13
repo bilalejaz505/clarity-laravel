@@ -59,17 +59,17 @@ async function loadAccount() {
             `<div class="metric"><span>AI message units</span><strong>${d.usage.messages}</strong><small>of ${e.messages}</small></div><div class="metric"><span>AI requests</span><strong>${d.usage.requests}</strong><small>of ${e.requests}</small></div>`;
         document.querySelector("#account-actions").innerHTML =
             (e.products.includes("chat")
-                ? '<a href="/chats" class="primary">Open Chat Insights</a>'
+                ? '<a href="/chats" class="primary"><i class="bi bi-chat-dots" aria-hidden="true"></i>Open Chat Insights</a>'
                 : "") +
             (e.products.includes("freelance")
-                ? '<a href="/contracts" class="secondary">Open Freelance Tracker</a>'
+                ? '<a href="/contracts" class="secondary"><i class="bi bi-briefcase" aria-hidden="true"></i>Open Freelance Tracker</a>'
                 : "") +
             (d.trialAvailable && !e.allowed
-                ? '<button id="start-trial" class="primary">Start one-time trial</button>'
+                ? '<button id="start-trial" class="primary"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Start one-time trial</button>'
                 : "") +
-            '<a href="/pricing" class="secondary">View plans</a>' +
+            '<a href="/pricing" class="secondary"><i class="bi bi-card-list" aria-hidden="true"></i>View plans</a>' +
             (d.admin
-                ? '<a href="/admin" class="secondary">Open admin panel</a>'
+                ? '<a href="/admin" class="secondary"><i class="bi bi-speedometer2" aria-hidden="true"></i>Open admin panel</a>'
                 : "");
         const trial = document.querySelector("#start-trial");
         if (trial)
@@ -82,10 +82,13 @@ async function loadAccount() {
                 }
             };
         document.querySelector("#subscriptions").innerHTML = d.subscriptions
-            .map(
-                (s) =>
-                    `<div class="card detail-card"><h3>${escapeText(s.plan_key)} · ${escapeText(s.status)}</h3><p class="muted">Paid through: ${escapeText(s.paid_until || "Payment not yet verified")}</p><button class="secondary" data-refresh="${escapeText(s.id)}">Verify with PayPal</button> <button class="danger" data-cancel="${escapeText(s.id)}">Cancel renewals</button></div>`,
-            )
+            .map((s) => {
+                if (s.status === "LOCAL_ACTIVE") {
+                    return `<div class="card detail-card"><h3><i class="bi bi-pc-display-horizontal" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Local test access</h3><p class="muted">Package-scoped localhost entitlement. No PayPal transaction is attached.</p></div>`;
+                }
+
+                return `<div class="card detail-card"><h3>${escapeText(s.plan_key)} · ${escapeText(s.status)}</h3><p class="muted">Paid through: ${escapeText(s.paid_until || "Payment not yet verified")}</p><button class="secondary" data-refresh="${escapeText(s.id)}"><i class="bi bi-arrow-repeat" aria-hidden="true"></i>Verify with PayPal</button> <button class="danger" data-cancel="${escapeText(s.id)}"><i class="bi bi-x-circle" aria-hidden="true"></i>Cancel renewals</button></div>`;
+            })
             .join("");
         document.querySelectorAll("[data-refresh],[data-cancel]").forEach(
             (b) =>

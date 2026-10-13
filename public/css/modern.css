@@ -168,9 +168,16 @@ textarea:focus,
     border-color: #e3e9f1;
 }
 .public-site {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
     background: linear-gradient(180deg, #fafbff 0%, white 75%);
 }
 .public-header {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
     max-width: 1200px;
     padding: 24px 32px;
     border-color: var(--border);
@@ -196,16 +203,43 @@ textarea:focus,
     border-color: #dce2ff;
     background: #f0f3ff;
 }
+.public-header nav a,
+.public-footer a,
+.primary,
+.secondary,
+.text-btn,
+.danger,
+.nav-link,
+.product-switch a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
 .public-content {
+    box-sizing: border-box;
+    flex: 1 0 auto;
+    width: 100%;
+    margin: 0 auto;
     max-width: 1200px;
     padding: 44px 32px;
 }
 .public-footer {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: 100%;
+    margin: auto auto 0;
     max-width: 1200px;
     border-color: var(--border);
     color: #7a879e;
     padding: 28px 32px;
     font-size: 12px;
+}
+.bi {
+    line-height: 1;
+}
+.icon-only {
+    display: inline-grid;
+    place-items: center;
 }
 .footer-separator {
     color: #c6cedd;

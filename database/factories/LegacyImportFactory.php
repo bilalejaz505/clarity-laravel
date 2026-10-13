@@ -10,6 +10,10 @@ class LegacyImportFactory extends Factory
 {
     public function definition(): array
     {
-        return ['fingerprint' => hash('sha256', fake()->uuid()), 'summary' => ['users' => 0], 'created_at' => now()];
+        return [
+            'fingerprint' => hash('sha256', fake()->uuid()),
+            'summary' => ['users' => 0],
+            'created_at' => now(),
+        ];
     }
 }

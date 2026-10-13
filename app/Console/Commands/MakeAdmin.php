@@ -22,16 +22,32 @@ class MakeAdmin extends Command
         }
         $user = User::where('email', $email)->first();
         if (! $user) {
-            $password = $this->secret('Choose an admin password (at least 10 characters)');
+            $password = $this->secret(
+                'Choose an admin password (at least 10 characters)',
+            );
             if (strlen((string) $password) < 10) {
                 $this->error('Password is too short.');
 
                 return self::FAILURE;
             }
-            $user = User::create(['name' => $this->option('name'), 'email' => $email, 'password' => $password]);
+            $user = User::create([
+                'name' => $this->option('name'),
+                'email' => $email,
+                'password' => $password,
+            ]);
         }
-        $user->forceFill(['is_admin' => true, 'status' => 'active', 'email_verified_at' => now()])->save();
-        app(AppSettingsService::class)->audit('console', 'admin.granted', $user->id);
+        $user
+            ->forceFill([
+                'is_admin' => true,
+                'status' => 'active',
+                'email_verified_at' => now(),
+            ])
+            ->save();
+        app(AppSettingsService::class)->audit(
+            'console',
+            'admin.granted',
+            $user->id,
+        );
         $this->info('Administrator access enabled. Log in using this account.');
 
         return self::SUCCESS;

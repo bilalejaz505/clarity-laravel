@@ -13,7 +13,7 @@
         text.textContent = message;
         const close = document.createElement("button");
         close.type = "button";
-        close.textContent = "×";
+        close.className = "bi bi-x-lg";
         close.setAttribute("aria-label", "Dismiss notification");
         close.onclick = () => toast.remove();
         toast.append(text, close);

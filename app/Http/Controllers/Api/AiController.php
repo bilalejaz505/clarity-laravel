@@ -11,11 +11,23 @@ use RuntimeException;
 
 class AiController extends Controller
 {
-    public function analyze(AnalyzeRequest $request, ConversationAiService $ai, UsageMeter $usage): JsonResponse
-    {
-        abort_if(strlen($request->getContent()) > 250000, 413, 'This analysis chunk is too large.');
+    public function analyze(
+        AnalyzeRequest $request,
+        ConversationAiService $ai,
+        UsageMeter $usage,
+    ): JsonResponse {
+        abort_if(
+            strlen($request->getContent()) > 250000,
+            413,
+            'This analysis chunk is too large.',
+        );
         $body = $request->validated();
-        $reservation = $usage->reserve($request, ($body['purpose'] ?? '') === 'freelance' ? 'freelance' : 'chat', $body['mode'], count($body['messages']));
+        $reservation = $usage->reserve(
+            $request,
+            ($body['purpose'] ?? '') === 'freelance' ? 'freelance' : 'chat',
+            $body['mode'],
+            count($body['messages']),
+        );
         $success = false;
         try {
             $result = $ai->analyze($body);
@@ -23,7 +35,14 @@ class AiController extends Controller
 
             return response()->json($result);
         } catch (\Throwable $error) {
-            return response()->json(['error' => get_class($error) === RuntimeException::class ? $error->getMessage() : 'Invalid request or AI response structure.'], 422);
+            return response()->json(
+                [
+                    'error' => get_class($error) === RuntimeException::class
+                            ? $error->getMessage()
+                            : 'Invalid request or AI response structure.',
+                ],
+                422,
+            );
         } finally {
             $usage->finish($reservation, $success);
         }

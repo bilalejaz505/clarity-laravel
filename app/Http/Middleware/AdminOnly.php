@@ -11,7 +11,12 @@ class AdminOnly
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless($request->user() && app(EntitlementService::class)->admin($request->user()), 403, 'Administrator access required.');
+        abort_unless(
+            $request->user() &&
+                app(EntitlementService::class)->admin($request->user()),
+            403,
+            'Administrator access required.',
+        );
 
         return $next($request);
     }

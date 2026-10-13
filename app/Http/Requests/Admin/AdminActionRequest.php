@@ -9,7 +9,8 @@ class AdminActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() && app(EntitlementService::class)->admin($this->user());
+        return $this->user() &&
+            app(EntitlementService::class)->admin($this->user());
     }
 
     public function rules(): array
@@ -50,9 +51,18 @@ class AdminActionRequest extends FormRequest
                 'paypalSecret' => 'nullable|string|max:500',
                 'action' => 'required|in:settings',
             ],
-            'user-status' => ['action' => 'required|in:user-status', 'userId' => 'required|integer|min:1', 'status' => 'required|in:active,suspended'],
-            'delete-secret' => ['action' => 'required|in:delete-secret', 'provider' => 'required|in:openai,paypal'],
-            default => ['action' => 'required|in:settings,user-status,delete-secret'],
+            'user-status' => [
+                'action' => 'required|in:user-status',
+                'userId' => 'required|integer|min:1',
+                'status' => 'required|in:active,suspended',
+            ],
+            'delete-secret' => [
+                'action' => 'required|in:delete-secret',
+                'provider' => 'required|in:openai,paypal',
+            ],
+            default => [
+                'action' => 'required|in:settings,user-status,delete-secret',
+            ],
         };
     }
 }

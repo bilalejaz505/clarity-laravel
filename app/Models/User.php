@@ -29,7 +29,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'boolean', 'trial_start' => 'datetime', 'trial_end' => 'datetime', 'last_seen' => 'datetime',
+            'is_admin' => 'boolean',
+            'trial_start' => 'datetime',
+            'trial_end' => 'datetime',
+            'last_seen' => 'datetime',
         ];
     }
 }

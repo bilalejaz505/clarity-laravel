@@ -14,12 +14,15 @@
                         <div class="price">{{ $plan['currency'] }} <strong>{{ $plan['price'] }}</strong><small>/
                                 month</small></div>
                         <ul>
-                            <li>✓ {{ number_format($plan['messages']) }} AI message units per period</li>
-                            <li>✓ {{ $plan['requests'] }} AI requests per period</li>
-                            <li>✓
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                                {{ number_format($plan['messages']) }} AI message units per period</li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> {{ $plan['requests'] }} AI
+                                requests per period</li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i>
                                 {{ implode(' + ', array_map(fn($p) => $p === 'chat' ? 'Chat Insights' : 'Freelance Tracker', $plan['products'])) }}
                             </li>
-                            <li>✓ Private workspace and exports</li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Private workspace and exports
+                            </li>
                         </ul>
                         @if ($local)
                             <a class="primary full" href="{{ $plan['key'] === 'freelance' ? '/contracts' : '/chats' }}">Use
@@ -36,7 +39,8 @@
                 </h3>
                 <p>{{ $settings['trialMessages'] }} message units and {{ $settings['trialRequests'] }} requests. One trial
                     per account; no automatic renewal.</p>
-            </div><a href="/account" class="secondary">{{ $local ? 'Open your account' : 'Start trial' }} →</a>
+            </div><a href="/account" class="secondary">{{ $local ? 'Open your account' : 'Start trial' }} <i
+                    class="bi bi-arrow-right" aria-hidden="true"></i></a>
         </div>
         <p class="definition">Prices are draft launch settings until merchant plans are configured. Each analysis batch,
             question, or reply counts as one request; supplied messages count toward the allowance. Failed AI requests are

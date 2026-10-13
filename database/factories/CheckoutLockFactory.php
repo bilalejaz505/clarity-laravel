@@ -11,6 +11,10 @@ class CheckoutLockFactory extends Factory
 {
     public function definition(): array
     {
-        return ['user_id' => User::factory(), 'token' => fake()->uuid(), 'expires_at' => now()->addMinutes(2)];
+        return [
+            'user_id' => User::factory(),
+            'token' => fake()->uuid(),
+            'expires_at' => now()->addMinutes(2),
+        ];
     }
 }

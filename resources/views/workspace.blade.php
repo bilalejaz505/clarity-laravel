@@ -33,7 +33,8 @@
             <h1>Conversation insights</h1>
             <p>Observed wording, alternative interpretations, and inspectable evidence.</p>
         </div>
-        <div class="toolbar"><button id="export-report" class="secondary">Export JSON report</button></div>
+        <div class="toolbar"><button id="export-report" class="secondary"><i class="bi bi-download"
+                    aria-hidden="true"></i>Export JSON report</button></div>
         <div id="insight-summary" class="card detail-card"></div>
         <div id="insights-list" class="insights-grid"></div>
     </section>
@@ -77,7 +78,8 @@
                 id="sender-filter" aria-label="Sender">
                 <option value="">All participants</option>
             </select><input type="date" id="date-from" aria-label="From date"><input type="date" id="date-to"
-                aria-label="To date"><button class="secondary" id="export-messages">Export CSV</button></div>
+                aria-label="To date"><button class="secondary" id="export-messages"><i class="bi bi-filetype-csv"
+                    aria-hidden="true"></i>Export CSV</button></div>
         <p id="message-count" class="definition"></p>
         <div id="message-list"></div>
     </section>
@@ -95,7 +97,8 @@
         </div>
         <form id="ask-form" class="card detail-card"><label>Your question
                 <textarea name="question" rows="3" required maxlength="2500" placeholder="What was agreed about the deadline?"></textarea>
-            </label><button class="primary" type="submit">Ask with AI →</button>
+            </label><button class="primary" type="submit">Ask with AI <i class="bi bi-stars"
+                    aria-hidden="true"></i></button>
             <p class="definition">The most relevant 30 messages are supplied. This is not exhaustive semantic retrieval.</p>
         </form>
         <div id="answers-list"></div>
@@ -113,10 +116,13 @@
                     <option>Professional</option>
                     <option>Set a boundary</option>
                 </select></label>
-            <div class="toolbar"><button class="secondary" type="button" id="local-reply">Create local
-                    draft</button><button class="primary" type="submit">Draft with AI</button></div><label>Editable reply
+            <div class="toolbar"><button class="secondary" type="button" id="local-reply"><i
+                        class="bi bi-pencil-square" aria-hidden="true"></i>Create local draft</button><button
+                    class="primary" type="submit"><i class="bi bi-stars" aria-hidden="true"></i>Draft with AI</button>
+            </div><label>Editable reply
                 <textarea id="coach-reply" rows="7"></textarea>
-            </label><button class="text-btn" type="button" id="copy-reply">Copy reply</button>
+            </label><button class="text-btn" type="button" id="copy-reply"><i class="bi bi-copy"
+                    aria-hidden="true"></i>Copy reply</button>
         </form>
     </section>
     <section data-panel="contracts" hidden>
@@ -130,7 +136,8 @@
                 <option>accepted</option>
                 <option>unclear</option>
                 <option>rejected</option>
-            </select><button class="secondary" id="export-terms">Export terms CSV</button></div>
+            </select><button class="secondary" id="export-terms"><i class="bi bi-filetype-csv"
+                    aria-hidden="true"></i>Export terms CSV</button></div>
         <div id="terms-list" class="term-list"></div>
         <div class="card detail-card">
             <h3>Review history</h3>
@@ -152,8 +159,9 @@
         <form id="task-form" class="card detail-card">
             <div class="form-grid"><label>Task title<input name="title" required maxlength="200"></label><label>Due
                     date<input type="date" name="due"></label><label>Notes<input name="note"
-                        maxlength="1000"></label></div><button class="primary">Add task</button><button type="button"
-                class="secondary" id="export-calendar">Export calendar ICS</button>
+                        maxlength="1000"></label></div><button class="primary"><i class="bi bi-plus-circle"
+                    aria-hidden="true"></i>Add task</button><button type="button" class="secondary"
+                id="export-calendar"><i class="bi bi-calendar3" aria-hidden="true"></i>Export calendar ICS</button>
         </form>
         <div id="task-board" class="kanban"></div>
     </section>
@@ -175,8 +183,9 @@
                         <option>CAD</option>
                         <option>AUD</option>
                     </select></label><label>Due date<input name="due" type="date"></label></div><button
-                class="primary">Add invoice record</button><button type="button" class="secondary"
-                id="export-invoices">Export ledger CSV</button>
+                class="primary"><i class="bi bi-plus-circle" aria-hidden="true"></i>Add invoice record</button><button
+                type="button" class="secondary" id="export-invoices"><i class="bi bi-filetype-csv"
+                    aria-hidden="true"></i>Export ledger CSV</button>
         </form>
         <div id="invoice-totals" class="metrics"></div>
         <div id="invoice-list"></div>
@@ -192,9 +201,10 @@
                 <option>Contract summary</option>
                 <option>Change request</option>
                 <option>Follow-up email</option>
-            </select><button class="primary" id="generate-document">Create draft</button><button class="secondary"
-                id="download-document">Download TXT</button><button class="secondary" id="print-document">Print / Save
-                PDF</button></div>
+            </select><button class="primary" id="generate-document"><i class="bi bi-file-earmark-plus"
+                    aria-hidden="true"></i>Create draft</button><button class="secondary" id="download-document"><i
+                    class="bi bi-download" aria-hidden="true"></i>Download TXT</button><button class="secondary"
+                id="print-document"><i class="bi bi-printer" aria-hidden="true"></i>Print / Save PDF</button></div>
         <article class="card document-card">
             <textarea id="document-text" rows="24" aria-label="Editable document"></textarea>
             <pre class="print-document" id="print-document-text"></pre>
@@ -210,17 +220,22 @@
                     id="remember-workspace">Remember this workspace on this device</label>
             <p class="definition">Session-only by default. Device storage contains message text when enabled. Device data
                 is scoped to your account.</p>
-            <div class="toolbar"><button class="secondary" id="export-backup">Export workspace backup</button><label
-                    class="secondary">Restore backup<input id="restore-backup" type="file" accept=".json"
-                        hidden></label><button class="danger" id="clear-device">Delete device workspace</button><button
-                    class="text-btn" id="reset-samples">Reset to sample data</button></div>
+            <div class="toolbar"><button class="secondary" id="export-backup"><i class="bi bi-download"
+                        aria-hidden="true"></i>Export workspace backup</button><label class="secondary"><i
+                        class="bi bi-upload" aria-hidden="true"></i>Restore backup<input id="restore-backup"
+                        type="file" accept=".json" hidden></label><button class="danger" id="clear-device"><i
+                        class="bi bi-trash3" aria-hidden="true"></i>Delete device workspace</button><button
+                    class="text-btn" id="reset-samples"><i class="bi bi-arrow-counterclockwise"
+                        aria-hidden="true"></i>Reset to sample data</button></div>
         </div>
         <div class="card detail-card">
             <h3>Service connections</h3>
             <p id="connection-status"></p>
-            <div class="toolbar"><button class="secondary" id="save-cloud">Save to server</button><button
-                    class="secondary" id="load-cloud">Load server snapshot</button><button class="danger"
-                    id="delete-cloud">Delete server snapshot</button></div>
+            <div class="toolbar"><button class="secondary" id="save-cloud"><i class="bi bi-cloud-arrow-up"
+                        aria-hidden="true"></i>Save to server</button><button class="secondary" id="load-cloud"><i
+                        class="bi bi-cloud-arrow-down" aria-hidden="true"></i>Load server snapshot</button><button
+                    class="danger" id="delete-cloud"><i class="bi bi-cloud-slash" aria-hidden="true"></i>Delete server
+                    snapshot</button></div>
             <p class="definition">Laravel authorizes snapshots by your logged-in account. Provider secrets stay on the
                 server and are configured in admin. Demo data is never persisted.</p>
         </div>

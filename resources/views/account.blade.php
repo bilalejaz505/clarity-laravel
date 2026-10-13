@@ -19,7 +19,8 @@
             <p id="account-reason"></p>
             <div id="account-usage" class="metrics"></div>
             <div id="account-actions" class="toolbar"></div>
-            <form method="POST" action="/logout">@csrf<button class="text-btn">Log out</button></form>
+            <form method="POST" action="/logout">@csrf<button class="text-btn"><i class="bi bi-box-arrow-right"
+                        aria-hidden="true"></i>Log out</button></form>
         </div>
         <div id="subscriptions"></div>
     </main>

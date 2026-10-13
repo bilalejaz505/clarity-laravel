@@ -10,12 +10,20 @@ class AppSettingsService
 {
     public function defaults(): array
     {
-        return json_decode(file_get_contents(resource_path('data/defaults.json')), true, 512, JSON_THROW_ON_ERROR);
+        return json_decode(
+            file_get_contents(resource_path('data/defaults.json')),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
     }
 
     public function get(): array
     {
-        return array_replace($this->defaults(), AppSetting::where('key', 'application')->first()?->data ?? []);
+        return array_replace(
+            $this->defaults(),
+            AppSetting::where('key', 'application')->first()?->data ?? [],
+        );
     }
 
     public function revision(): int
@@ -25,16 +33,27 @@ class AppSettingsService
 
     public function secret(string $id): string
     {
-        return ProviderSecret::where('provider', $id)->first()?->ciphertext ?? '';
+        return ProviderSecret::where('provider', $id)->first()?->ciphertext ??
+            '';
     }
 
     public function saveSecret(string $id, string $value): void
     {
-        ProviderSecret::updateOrCreate(['provider' => $id], ['ciphertext' => $value]);
+        ProviderSecret::updateOrCreate(
+            ['provider' => $id],
+            ['ciphertext' => $value],
+        );
     }
 
-    public function audit(int|string $actor, string $action, string $detail): void
-    {
-        AuditLog::create(['actor' => (string) $actor, 'action' => $action, 'detail' => mb_substr($detail, 0, 1000)]);
+    public function audit(
+        int|string $actor,
+        string $action,
+        string $detail,
+    ): void {
+        AuditLog::create([
+            'actor' => (string) $actor,
+            'action' => $action,
+            'detail' => mb_substr($detail, 0, 1000),
+        ]);
     }
 }

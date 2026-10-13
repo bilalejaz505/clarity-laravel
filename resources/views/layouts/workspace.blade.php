@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Clarity · {{ $product === 'freelance' ? 'Freelance Tracker' : 'Chat Insights' }}</title>
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="/css/clarity.css">
     <link rel="stylesheet" href="{{ asset('css/blade.css') }}?v={{ filemtime(public_path('css/blade.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/modern.css') }}?v={{ filemtime(public_path('css/modern.css')) }}">
@@ -13,56 +14,81 @@
 </head>
 
 <body>
-    @php $items=$product==='freelance'?['overview'=>'Overview','library'=>'Client conversations','contracts'=>'Contract tracker','scope'=>'Scope & changes','tasks'=>'Tasks & milestones','payments'=>'Invoices & payments','documents'=>'Document studio','ask'=>'Ask your project']:['overview'=>'Overview','library'=>'Conversations','insights'=>'Conversation insights','stats'=>'Chat statistics','explorer'=>'Message explorer','compare'=>'Compare conversations','ask'=>'Ask your chat','coach'=>'Reply coach']; @endphp
-    <aside class="sidebar" id="sidebar"><a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a><button
-            class="mobile-nav-close" id="nav-close" aria-label="Close navigation">×</button>
-        <div class="product-switch"><a data-switch-product="chat" href="{{ $demo ? '/demo?product=chat' : '/chats' }}"
-                class="{{ $product === 'chat' ? 'active' : '' }}">Chat Insights</a><a data-switch-product="freelance"
-                href="{{ $demo ? '/demo?product=freelance' : '/contracts' }}"
-                class="{{ $product === 'freelance' ? 'active' : '' }}">Freelance Tracker</a></div><span
-            class="eyebrow">{{ $product === 'chat' ? 'YOUR CONVERSATIONS' : 'YOUR CLIENT WORK' }}</span>
-        <nav data-product-nav="chat" @if ($product !== 'chat') hidden @endif><a href="?view=overview"
-                data-view="overview" class="nav-link">Overview</a><a href="?view=library" data-view="library"
-                class="nav-link">Conversations</a><a href="?view=insights" data-view="insights"
-                class="nav-link">Conversation insights</a><a href="?view=stats" data-view="stats" class="nav-link">Chat
-                statistics</a><a href="?view=explorer" data-view="explorer" class="nav-link">Message explorer</a><a
-                href="?view=compare" data-view="compare" class="nav-link">Compare conversations</a><a href="?view=ask"
-                data-view="ask" class="nav-link">Ask your chat</a><a href="?view=coach" data-view="coach"
-                class="nav-link">Reply coach</a></nav>
-        <nav data-product-nav="freelance" @if ($product !== 'freelance') hidden @endif><a href="?view=overview"
-                data-view="overview" class="nav-link">Overview</a><a href="?view=library" data-view="library"
-                class="nav-link">Client conversations</a><a href="?view=contracts" data-view="contracts"
-                class="nav-link">Contract tracker</a><a href="?view=scope" data-view="scope" class="nav-link">Scope &
-                changes</a><a href="?view=tasks" data-view="tasks" class="nav-link">Tasks & milestones</a><a
-                href="?view=payments" data-view="payments" class="nav-link">Invoices & payments</a><a
-                href="?view=documents" data-view="documents" class="nav-link">Document studio</a><a href="?view=ask"
-                data-view="ask" class="nav-link">Ask your project</a></nav>
+    @php
+        $chatNavigation = [
+            'overview' => ['Overview', 'grid'],
+            'library' => ['Conversations', 'chat-left-text'],
+            'insights' => ['Conversation insights', 'lightbulb'],
+            'stats' => ['Chat statistics', 'bar-chart'],
+            'explorer' => ['Message explorer', 'search'],
+            'compare' => ['Compare conversations', 'columns-gap'],
+            'ask' => ['Ask your chat', 'stars'],
+            'coach' => ['Reply coach', 'chat-heart'],
+        ];
+        $freelanceNavigation = [
+            'overview' => ['Overview', 'grid'],
+            'library' => ['Client conversations', 'chat-square-text'],
+            'contracts' => ['Contract tracker', 'file-earmark-text'],
+            'scope' => ['Scope & changes', 'list-check'],
+            'tasks' => ['Tasks & milestones', 'check2-square'],
+            'payments' => ['Invoices & payments', 'receipt'],
+            'documents' => ['Document studio', 'file-earmark-richtext'],
+            'ask' => ['Ask your project', 'stars'],
+        ];
+    @endphp
+    <aside class="sidebar" id="sidebar">
+        <a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a>
+        <button class="mobile-nav-close icon-only" id="nav-close" aria-label="Close navigation">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+        <div class="product-switch">
+            <a data-switch-product="chat" href="{{ $demo ? '/demo?product=chat' : '/chats' }}"
+                class="{{ $product === 'chat' ? 'active' : '' }}"><i class="bi bi-chat-dots" aria-hidden="true"></i>
+                Chat Insights</a>
+            <a data-switch-product="freelance" href="{{ $demo ? '/demo?product=freelance' : '/contracts' }}"
+                class="{{ $product === 'freelance' ? 'active' : '' }}"><i class="bi bi-briefcase"
+                    aria-hidden="true"></i>
+                Freelance Tracker</a>
+        </div>
+        <span class="eyebrow">{{ $product === 'chat' ? 'YOUR CONVERSATIONS' : 'YOUR CLIENT WORK' }}</span>
+        @foreach (['chat' => $chatNavigation, 'freelance' => $freelanceNavigation] as $navigationProduct => $items)
+            <nav data-product-nav="{{ $navigationProduct }}" @if ($product !== $navigationProduct) hidden @endif>
+                @foreach ($items as $view => [$label, $icon])
+                    <a href="?view={{ $view }}" data-view="{{ $view }}" class="nav-link">
+                        <i class="bi bi-{{ $icon }}" aria-hidden="true"></i>{{ $label }}
+                    </a>
+                @endforeach
+            </nav>
+        @endforeach
         <div class="sidebar-bottom">
-            <a href="?view=settings" data-view="settings" class="nav-link">Privacy & connections</a>
+            <a href="?view=settings" data-view="settings" class="nav-link"><i class="bi bi-shield-check"
+                    aria-hidden="true"></i>Privacy & connections</a>
             @auth
-                <a href="/account" class="nav-link">My account</a>
+                <a href="/account" class="nav-link"><i class="bi bi-person-circle" aria-hidden="true"></i>My account</a>
                 @if (app(\App\Services\EntitlementService::class)->admin(auth()->user()))
-                    <a href="/admin" class="nav-link">Admin panel</a>
+                    <a href="/admin" class="nav-link"><i class="bi bi-speedometer2" aria-hidden="true"></i>Admin panel</a>
                 @endif
             @else
-                <a href="/login" class="nav-link">Log in</a>
+                <a href="/login" class="nav-link"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>Log in</a>
             @endauth
-            <a href="/" class="nav-link">Public area ↗</a>
+            <a href="/" class="nav-link"><i class="bi bi-globe2" aria-hidden="true"></i>Public area</a>
         </div>
     </aside>
     <div class="main-shell">
         <header class="topbar">
-            <div class="breadcrumb"><button id="nav-open" class="mobile-menu"
-                    aria-label="Open navigation">☰</button><span>Clarity /</span><strong
+            <div class="breadcrumb"><button id="nav-open" class="mobile-menu icon-only" aria-label="Open navigation"><i
+                        class="bi bi-list" aria-hidden="true"></i></button><span>Clarity /</span><strong
                     id="view-title">Overview</strong></div>
             <div class="topbar-right"><span
                     class="badge">{{ $demo ? 'Sample demo' : auth()->user()->name }}</span><button class="primary"
-                    id="open-import" @disabled($demo)>Import chat +</button></div>
+                    id="open-import" @disabled($demo)><i class="bi bi-plus-circle"
+                        aria-hidden="true"></i>Import chat</button></div>
         </header>
         <main class="main-content">
             @if ($demo)
                 <div class="sample-banner">Sample demo · personal imports, persistent storage, and live AI are
-                    disabled. <a href="/pricing">View plans →</a></div>
+                    disabled. <a href="/pricing">View plans <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </div>
             @endif
             <div class="context-bar"><label for="conversation-select">Conversation</label><select
                     id="conversation-select"></select><span class="badge" id="conversation-engine"></span><button
@@ -75,13 +101,15 @@
     </div>
     <dialog id="evidence-dialog">
         <div class="flex-between">
-            <h2>Source evidence</h2><button data-close="evidence-dialog" aria-label="Close evidence">×</button>
+            <h2>Source evidence</h2><button class="icon-only" data-close="evidence-dialog"
+                aria-label="Close evidence"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <div id="evidence-list"></div>
     </dialog>
     <dialog id="import-dialog">
         <div class="flex-between">
-            <h2>Import a conversation</h2><button data-close="import-dialog" aria-label="Close import">×</button>
+            <h2>Import a conversation</h2><button class="icon-only" data-close="import-dialog"
+                aria-label="Close import"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <p class="muted">Review extracted text and participants before saving.</p>
         <form id="import-form">

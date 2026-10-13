@@ -10,7 +10,11 @@ class ActiveAccount
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless($request->user()?->refresh()->status === 'active', 403, 'This account is suspended.');
+        abort_unless(
+            $request->user()?->refresh()->status === 'active',
+            403,
+            'This account is suspended.',
+        );
 
         return $next($request);
     }

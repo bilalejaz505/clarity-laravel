@@ -11,7 +11,10 @@ return new class extends Migration
         Schema::create('subscriptions', function (Blueprint $table): void {
             $table->id();
             $table->string('paypal_id', 100)->unique();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table
+                ->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
             $table->string('provider_custom_id')->nullable();
             $table->string('plan_key');
             $table->string('status')->index();

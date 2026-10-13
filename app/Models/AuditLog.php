@@ -17,7 +17,6 @@ class AuditLog extends Model
 
     protected function casts(): array
     {
-        return [
-        ];
+        return [];
     }
 }

@@ -14,11 +14,18 @@ class SnapshotRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['product' => 'sometimes|in:chat,freelance', 'store' => ['required', 'array', new ValidWorkspace]];
+        return [
+            'product' => 'sometimes|in:chat,freelance',
+            'store' => ['required', 'array', new ValidWorkspace],
+        ];
     }
 
     protected function prepareForValidation(): void
     {
-        abort_if(strlen($this->getContent()) > 10485760, 413, 'Snapshots are limited to 10 MB.');
+        abort_if(
+            strlen($this->getContent()) > 10485760,
+            413,
+            'Snapshots are limited to 10 MB.',
+        );
     }
 }
