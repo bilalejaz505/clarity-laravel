@@ -20,6 +20,12 @@
             app(\App\Services\EntitlementService::class)->local(request()),
         );
         $memberProducts = $memberEntitlement['products'];
+        $requestedProduct = request()->query('product');
+        $memberProduct = in_array($requestedProduct, $memberProducts, true)
+            ? $requestedProduct
+            : (in_array('chat', $memberProducts, true)
+                ? 'chat'
+                : 'freelance');
     @endphp
     <aside class="sidebar member-app-sidebar" id="member-sidebar">
         <a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a>
@@ -27,14 +33,7 @@
             <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
         @if ($memberProducts)
-            <div class="product-switch">
-                @if (in_array('chat', $memberProducts, true))
-                    <a href="/chats"><i class="bi bi-chat-dots" aria-hidden="true"></i>Chat Insights</a>
-                @endif
-                @if (in_array('freelance', $memberProducts, true))
-                    <a href="/contracts"><i class="bi bi-briefcase" aria-hidden="true"></i>Freelance Tracker</a>
-                @endif
-            </div>
+            <x-product-navigation :product="$memberProduct" :products="$memberProducts" />
         @endif
         <div class="sidebar-bottom">
             <a href="/account" class="nav-link {{ request()->is('account', 'email/verify') ? 'active' : '' }}"><i

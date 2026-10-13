@@ -14,61 +14,19 @@
 </head>
 
 <body>
-    @php
-        $chatNavigation = [
-            'overview' => ['Overview', 'grid'],
-            'library' => ['Conversations', 'chat-left-text'],
-            'insights' => ['Conversation insights', 'lightbulb'],
-            'stats' => ['Chat statistics', 'bar-chart'],
-            'explorer' => ['Message explorer', 'search'],
-            'compare' => ['Compare conversations', 'columns-gap'],
-            'ask' => ['Ask your chat', 'stars'],
-            'coach' => ['Reply coach', 'chat-heart'],
-        ];
-        $freelanceNavigation = [
-            'overview' => ['Overview', 'grid'],
-            'library' => ['Client conversations', 'chat-square-text'],
-            'contracts' => ['Contract tracker', 'file-earmark-text'],
-            'scope' => ['Scope & changes', 'list-check'],
-            'tasks' => ['Tasks & milestones', 'check2-square'],
-            'payments' => ['Invoices & payments', 'receipt'],
-            'documents' => ['Document studio', 'file-earmark-richtext'],
-            'ask' => ['Ask your project', 'stars'],
-        ];
-        $availableProducts = $availableProducts ?? ['chat', 'freelance'];
-    @endphp
+    @php($availableProducts = $availableProducts ?? ['chat', 'freelance'])
     <aside class="sidebar" id="sidebar">
         <a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a>
         <button class="mobile-nav-close icon-only" id="nav-close" aria-label="Close navigation">
             <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
-        <div class="product-switch">
-            @if (in_array('chat', $availableProducts, true))
-                <a data-switch-product="chat" href="{{ $demo ? '/demo?product=chat' : '/chats' }}"
-                    class="{{ $product === 'chat' ? 'active' : '' }}"><i class="bi bi-chat-dots"
-                        aria-hidden="true"></i>Chat Insights</a>
-            @endif
-            @if (in_array('freelance', $availableProducts, true))
-                <a data-switch-product="freelance" href="{{ $demo ? '/demo?product=freelance' : '/contracts' }}"
-                    class="{{ $product === 'freelance' ? 'active' : '' }}"><i class="bi bi-briefcase"
-                        aria-hidden="true"></i>Freelance Tracker</a>
-            @endif
-        </div>
-        <span class="eyebrow">{{ $product === 'chat' ? 'YOUR CONVERSATIONS' : 'YOUR CLIENT WORK' }}</span>
-        @foreach (['chat' => $chatNavigation, 'freelance' => $freelanceNavigation] as $navigationProduct => $items)
-            <nav data-product-nav="{{ $navigationProduct }}" @if ($product !== $navigationProduct) hidden @endif>
-                @foreach ($items as $view => [$label, $icon])
-                    <a href="?view={{ $view }}" data-view="{{ $view }}" class="nav-link">
-                        <i class="bi bi-{{ $icon }}" aria-hidden="true"></i>{{ $label }}
-                    </a>
-                @endforeach
-            </nav>
-        @endforeach
+        <x-product-navigation :product="$product" :products="$availableProducts" :demo="$demo" />
         <div class="sidebar-bottom">
             <a href="?view=settings" data-view="settings" class="nav-link"><i class="bi bi-shield-check"
                     aria-hidden="true"></i>Privacy & connections</a>
             @auth
-                <a href="/account" class="nav-link"><i class="bi bi-person-circle" aria-hidden="true"></i>My account</a>
+                <a href="/account?product={{ $product }}" class="nav-link"><i class="bi bi-person-circle"
+                        aria-hidden="true"></i>My account</a>
                 @if (app(\App\Services\EntitlementService::class)->admin(auth()->user()))
                     <a href="/admin" class="nav-link"><i class="bi bi-speedometer2" aria-hidden="true"></i>Admin panel</a>
                 @endif

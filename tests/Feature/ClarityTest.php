@@ -118,8 +118,19 @@ class ClarityTest extends TestCase
             ->assertSee('class="product-switch"', false)
             ->assertSeeText('Chat Insights')
             ->assertSeeText('Freelance Tracker')
+            ->assertSeeText('Conversations')
+            ->assertSeeText('Conversation insights')
+            ->assertSeeText('Chat statistics')
+            ->assertSee('/chats?view=overview', false)
             ->assertDontSeeText('Chat dashboard')
             ->assertDontSeeText('Contracts dashboard');
+
+        $this->get('/account?product=freelance')
+            ->assertOk()
+            ->assertSeeText('Client conversations')
+            ->assertSeeText('Contract tracker')
+            ->assertSeeText('Tasks & milestones')
+            ->assertSee('/contracts?view=overview', false);
 
         $unsubscribed = User::factory()->create();
         $this->actingAs($unsubscribed)
@@ -170,6 +181,18 @@ class ClarityTest extends TestCase
             $showsContracts
                 ? $workspace->assertSeeText('Freelance Tracker')
                 : $workspace->assertDontSeeText('Freelance Tracker');
+
+            $account = $this->get('/account')->assertOk();
+            $showsChat
+                ? $account
+                    ->assertSeeText('Conversations')
+                    ->assertSeeText('Conversation insights')
+                : $account
+                    ->assertSeeText('Client conversations')
+                    ->assertSeeText('Contract tracker');
+            $showsContracts
+                ? $account->assertSeeText('Freelance Tracker')
+                : $account->assertDontSeeText('Freelance Tracker');
 
             $this->post('/logout');
         }
