@@ -35,16 +35,15 @@
     <form id="admin-settings-form">
         <section data-admin-panel="ai" hidden class="card detail-card">
             <h2>OpenAI Configuration</h2>
-            <p class="definition">Keys are encrypted in MySQL and never returned to this page. Leave the replacement
-                field blank to retain the saved key.</p>
+            <p class="definition">The key is encrypted in MySQL. A saved key appears as a mask because its plaintext is
+                never returned to the browser. Keep the mask, enter a replacement, or clear the field to remove it.</p>
             <div class="form-grid admin-setting-grid">
                 <label>Model<input data-setting="aiModel" maxlength="150"
                         placeholder="Account-accessible model ID"></label>
                 <label>Maximum Output Tokens<input type="number" data-setting="aiMaxOutput" min="1000"
                         max="10000"></label>
-                <label class="admin-field-full">Replace OpenAI Key<input type="password" id="openai-key"
-                        autocomplete="new-password"
-                        placeholder="Leave blank to keep saved key"></label>
+                <label class="admin-field-full">OpenAI API Key<input type="password" id="openai-key"
+                        autocomplete="new-password" maxlength="300" placeholder="Enter an OpenAI API key"></label>
                 <fieldset class="admin-options-row">
                     <legend>AI Availability</legend>
                     <label class="checkbox-line"><input type="checkbox" data-setting="aiEnabled">Enable AI
@@ -55,8 +54,6 @@
             <div class="toolbar">
                 <button type="button" id="test-openai" class="secondary"><i class="bi bi-plug"
                         aria-hidden="true"></i>Test Saved Connection</button>
-                <button type="button" data-delete-secret="openai" class="danger"><i class="bi bi-trash3"
-                        aria-hidden="true"></i>Remove Saved Key</button>
             </div>
         </section>
         <section data-admin-panel="paypal" hidden class="card detail-card">
@@ -70,12 +67,10 @@
                     </select></label>
                 <label>Client ID<input data-setting="paypalClientId" maxlength="200"></label>
                 <label>Webhook ID<input data-setting="paypalWebhookId" maxlength="100"></label>
-                <label>Replace Merchant Secret<input type="password" id="paypal-secret" autocomplete="new-password"
-                        placeholder="Leave blank to keep saved secret"></label>
+                <label>PayPal Merchant Secret<input type="password" id="paypal-secret" autocomplete="new-password"
+                        maxlength="500" placeholder="Enter a PayPal merchant secret"></label>
             </div>
             <p id="paypal-saved" class="muted"></p>
-            <button type="button" data-delete-secret="paypal" class="danger"><i class="bi bi-trash3"
-                    aria-hidden="true"></i>Remove Saved Merchant Secret</button>
             <h3 class="admin-subsection-title">Plans, Prices & Quotas</h3>
             <div id="admin-plans"></div>
         </section>
@@ -93,9 +88,8 @@
                         <option value="ssl">SSL</option>
                     </select></label>
                 <label>Username<input data-setting="smtpUsername" maxlength="255" autocomplete="off"></label>
-                <label class="admin-field-full">Replace SMTP Password<input type="password" id="smtp-password"
-                        autocomplete="new-password"
-                        maxlength="500" placeholder="Leave blank to keep saved password"></label>
+                <label class="admin-field-full">SMTP Password<input type="password" id="smtp-password"
+                        autocomplete="new-password" maxlength="500" placeholder="Enter an SMTP password"></label>
                 <label>From Address<input data-setting="smtpFromAddress" type="email" maxlength="254"></label>
                 <label>From Name<input data-setting="smtpFromName" maxlength="120"></label>
             </div>
@@ -103,8 +97,6 @@
             <div class="toolbar">
                 <button type="button" id="test-smtp" class="secondary"><i class="bi bi-send-check"
                         aria-hidden="true"></i>Send Test Email</button>
-                <button type="button" data-delete-secret="smtp" class="danger"><i class="bi bi-trash3"
-                        aria-hidden="true"></i>Remove Saved Password</button>
             </div>
         </section>
         <section data-admin-panel="general" hidden class="card detail-card">

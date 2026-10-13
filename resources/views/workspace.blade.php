@@ -3,18 +3,18 @@
     <section data-panel="overview">
         <div class="welcome">
             <div><span class="eyebrow">YOUR WORKSPACE, WITH PERSPECTIVE</span>
-                <h1 id="overview-heading">Your conversations.<br><span>A clearer perspective.</span></h1>
+                <h1 id="overview-heading">Your Conversations<br><span>A Clearer Perspective</span></h1>
                 <p id="overview-description">Explore the patterns. Review the evidence. Decide your next step.</p>
             </div>
         </div>
         <div class="metrics" id="overview-metrics"></div>
         <div class="two-col">
             <article class="card detail-card">
-                <h3>Message activity</h3>
+                <h3>Message Activity</h3>
                 <div id="overview-chart" class="daily-chart"></div>
             </article>
             <article class="card detail-card">
-                <h3>Conversation summary</h3>
+                <h3>Conversation Summary</h3>
                 <p id="overview-summary"></p>
                 <div class="toolbar"><button class="secondary" data-go="insights">Review insights</button><button
                         class="secondary" data-go="library">View conversations</button></div>
@@ -23,14 +23,14 @@
     </section>
     <section data-panel="library" hidden>
         <div class="page-heading">
-            <h1>Your conversations</h1>
+            <h1>Your Conversations</h1>
             <p>Keep each conversation organized with its source and purpose.</p>
         </div>
         <div id="conversation-library" class="conversation-grid"></div>
     </section>
     <section data-panel="insights" hidden>
         <div class="page-heading">
-            <h1>Conversation insights</h1>
+            <h1>Conversation Insights</h1>
             <p>Observed wording, alternative interpretations, and inspectable evidence.</p>
         </div>
         <div class="toolbar"><button id="export-report" class="secondary"><i class="bi bi-download"
@@ -40,38 +40,38 @@
     </section>
     <section data-panel="stats" hidden>
         <div class="page-heading">
-            <h1>Chat statistics</h1>
+            <h1>Chat Statistics</h1>
             <p>Message counts and timing describe activity, not character or intentions.</p>
         </div>
         <div id="statistics-metrics" class="metrics"></div>
         <div class="card detail-card">
-            <h3>Participants & response timing</h3>
+            <h3>Participants & Response Timing</h3>
             <div id="participant-statistics"></div>
         </div>
         <div class="two-col">
             <div class="card detail-card">
-                <h3>Daily activity</h3>
+                <h3>Daily Activity</h3>
                 <div id="stats-chart" class="daily-chart"></div>
             </div>
             <div class="card detail-card">
-                <h3>Activity by hour · UTC</h3>
+                <h3>Activity By Hour · UTC</h3>
                 <div id="hour-chart" class="hours"></div>
             </div>
         </div>
         <div class="two-col">
             <div class="card detail-card">
-                <h3>Frequent words</h3>
+                <h3>Frequent Words</h3>
                 <div id="word-list"></div>
             </div>
             <div class="card detail-card">
-                <h3>Emoji use</h3>
+                <h3>Emoji Use</h3>
                 <div id="emoji-list"></div>
             </div>
         </div>
     </section>
     <section data-panel="explorer" hidden>
         <div class="page-heading">
-            <h1>Message explorer</h1>
+            <h1>Message Explorer</h1>
             <p>Search, inspect, and correct messages. Exports include all filtered matches.</p>
         </div>
         <div class="filters"><input id="message-search" placeholder="Search messages" aria-label="Search messages"><select
@@ -85,17 +85,17 @@
     </section>
     <section data-panel="compare" hidden>
         <div class="page-heading">
-            <h1>Compare conversations</h1>
+            <h1>Compare Conversations</h1>
             <p>Compare communication patterns without ranking people.</p>
         </div><select id="compare-conversation" aria-label="Comparison conversation"></select>
         <div id="comparison" class="two-col"></div>
     </section>
     <section data-panel="ask" hidden>
         <div class="page-heading">
-            <h1>Ask your conversation</h1>
+            <h1>Ask Your Conversation</h1>
             <p>Answers use a retrieved excerpt, with source links and clear limits.</p>
         </div>
-        <form id="ask-form" class="card detail-card"><label>Your question
+        <form id="ask-form" class="card detail-card dashboard-form"><label>Your Question
                 <textarea name="question" rows="3" required maxlength="2500" placeholder="What was agreed about the deadline?"></textarea>
             </label><button class="primary" type="submit">Ask with AI <i class="bi bi-stars"
                     aria-hidden="true"></i></button>
@@ -105,10 +105,10 @@
     </section>
     <section data-panel="coach" hidden>
         <div class="page-heading">
-            <h1>Reply coach</h1>
+            <h1>Reply Coach</h1>
             <p>Draft a clear, respectful response without inventing commitments.</p>
         </div>
-        <form id="coach-form" class="card detail-card"><label>What would you like to say?
+        <form id="coach-form" class="card detail-card dashboard-form"><label>What Would You Like to Say?
                 <textarea name="context" rows="4" required maxlength="2000"></textarea>
             </label><label>Tone<select name="tone">
                     <option>Warm</option>
@@ -117,61 +117,61 @@
                     <option>Set a boundary</option>
                 </select></label>
             <div class="toolbar"><button class="secondary" type="button" id="local-reply"><i
-                        class="bi bi-pencil-square" aria-hidden="true"></i>Create local draft</button><button
-                    class="primary" type="submit"><i class="bi bi-stars" aria-hidden="true"></i>Draft with AI</button>
-            </div><label>Editable reply
+                        class="bi bi-pencil-square" aria-hidden="true"></i>Create Local Draft</button><button
+                    class="primary" type="submit"><i class="bi bi-stars" aria-hidden="true"></i>Draft With AI</button>
+            </div><label>Editable Reply
                 <textarea id="coach-reply" rows="7"></textarea>
             </label><button class="text-btn" type="button" id="copy-reply"><i class="bi bi-copy"
-                    aria-hidden="true"></i>Copy reply</button>
+                    aria-hidden="true"></i>Copy Reply</button>
         </form>
     </section>
     <section data-panel="contracts" hidden>
         <div class="page-heading">
-            <h1>Contract tracker</h1>
+            <h1>Contract Tracker</h1>
             <p>Review proposed, accepted, unclear, and rejected terms against the original conversation.</p>
         </div>
         <div class="filters"><select id="term-filter" aria-label="Term status">
                 <option value="">All statuses</option>
-                <option>proposed</option>
-                <option>accepted</option>
-                <option>unclear</option>
-                <option>rejected</option>
+                <option value="proposed">Proposed</option>
+                <option value="accepted">Accepted</option>
+                <option value="unclear">Unclear</option>
+                <option value="rejected">Rejected</option>
             </select><button class="secondary" id="export-terms"><i class="bi bi-filetype-csv"
                     aria-hidden="true"></i>Export terms CSV</button></div>
         <div id="terms-list" class="term-list"></div>
         <div class="card detail-card">
-            <h3>Review history</h3>
+            <h3>Review History</h3>
             <div id="review-history"></div>
         </div>
     </section>
     <section data-panel="scope" hidden>
         <div class="page-heading">
-            <h1>Scope & changes</h1>
+            <h1>Scope & Changes</h1>
             <p>Keep baseline scope and proposed changes separate.</p>
         </div>
         <div id="scope-list" class="term-list"></div>
     </section>
     <section data-panel="tasks" hidden>
         <div class="page-heading">
-            <h1>Tasks & milestones</h1>
+            <h1>Tasks & Milestones</h1>
             <p>Track delivery dates and status; export dated tasks to your calendar.</p>
         </div>
-        <form id="task-form" class="card detail-card">
-            <div class="form-grid"><label>Task title<input name="title" required maxlength="200"></label><label>Due
-                    date<input type="date" name="due"></label><label>Notes<input name="note"
-                        maxlength="1000"></label></div><button class="primary"><i class="bi bi-plus-circle"
-                    aria-hidden="true"></i>Add task</button><button type="button" class="secondary"
-                id="export-calendar"><i class="bi bi-calendar3" aria-hidden="true"></i>Export calendar ICS</button>
+        <form id="task-form" class="card detail-card dashboard-form">
+            <div class="form-grid dashboard-form-grid"><label>Task Title<input name="title" required maxlength="200"></label><label>Due
+                    Date<input type="date" name="due"></label><label class="dashboard-field-full">Notes<input name="note"
+                        maxlength="1000"></label></div><div class="toolbar"><button class="primary"><i class="bi bi-plus-circle"
+                        aria-hidden="true"></i>Add Task</button><button type="button" class="secondary"
+                    id="export-calendar"><i class="bi bi-calendar3" aria-hidden="true"></i>Export Calendar ICS</button></div>
         </form>
         <div id="task-board" class="kanban"></div>
     </section>
     <section data-panel="payments" hidden>
         <div class="page-heading">
-            <h1>Invoices & payments</h1>
+            <h1>Invoices & Payments</h1>
             <p>These are manually reviewed records. They do not collect client payments.</p>
         </div>
-        <form id="invoice-form" class="card detail-card">
-            <div class="form-grid"><label>Client<input name="client" required
+        <form id="invoice-form" class="card detail-card dashboard-form">
+            <div class="form-grid dashboard-form-grid"><label>Client<input name="client" required
                         maxlength="200"></label><label>Description<input name="description" required
                         maxlength="1000"></label><label>Amount<input name="amount" type="number" min="0"
                         step="0.01" required></label><label>Currency<select name="currency">
@@ -182,25 +182,25 @@
                         <option>AED</option>
                         <option>CAD</option>
                         <option>AUD</option>
-                    </select></label><label>Due date<input name="due" type="date"></label></div><button
-                class="primary"><i class="bi bi-plus-circle" aria-hidden="true"></i>Add invoice record</button><button
-                type="button" class="secondary" id="export-invoices"><i class="bi bi-filetype-csv"
-                    aria-hidden="true"></i>Export ledger CSV</button>
+                    </select></label><label class="dashboard-field-full">Due Date<input name="due" type="date"></label></div><div class="toolbar"><button
+                    class="primary"><i class="bi bi-plus-circle" aria-hidden="true"></i>Add Invoice Record</button><button
+                    type="button" class="secondary" id="export-invoices"><i class="bi bi-filetype-csv"
+                        aria-hidden="true"></i>Export Ledger CSV</button></div>
         </form>
         <div id="invoice-totals" class="metrics"></div>
         <div id="invoice-list"></div>
     </section>
     <section data-panel="documents" hidden>
         <div class="page-heading">
-            <h1>Document studio</h1>
+            <h1>Document Studio</h1>
             <p>Editable drafts built from reviewed terms. Documents are not signed contracts.</p>
         </div>
         <div class="toolbar"><select id="document-kind" aria-label="Document template">
-                <option>Statement of work</option>
-                <option>Project proposal</option>
-                <option>Contract summary</option>
-                <option>Change request</option>
-                <option>Follow-up email</option>
+                <option value="Statement of work">Statement Of Work</option>
+                <option value="Project proposal">Project Proposal</option>
+                <option value="Contract summary">Contract Summary</option>
+                <option value="Change request">Change Request</option>
+                <option value="Follow-up email">Follow-Up Email</option>
             </select><button class="primary" id="generate-document"><i class="bi bi-file-earmark-plus"
                     aria-hidden="true"></i>Create draft</button><button class="secondary" id="download-document"><i
                     class="bi bi-download" aria-hidden="true"></i>Download TXT</button><button class="secondary"
@@ -212,12 +212,12 @@
     </section>
     <section data-panel="settings" hidden>
         <div class="page-heading">
-            <h1>Privacy & connections</h1>
+            <h1>Privacy & Connections</h1>
             <p>Control device storage, backups, and your private server snapshot.</p>
         </div>
         <div class="card detail-card">
-            <h3>Workspace storage</h3><label class="checkbox-line"><input type="checkbox"
-                    id="remember-workspace">Remember this workspace on this device</label>
+            <h3>Workspace Storage</h3><label class="checkbox-line"><input type="checkbox"
+                    id="remember-workspace">Remember This Workspace on This Device</label>
             <p class="definition">Session-only by default. Device storage contains message text when enabled. Device data
                 is scoped to your account.</p>
             <div class="toolbar"><button class="secondary" id="export-backup"><i class="bi bi-download"
@@ -229,7 +229,7 @@
                         aria-hidden="true"></i>Reset to sample data</button></div>
         </div>
         <div class="card detail-card">
-            <h3>Service connections</h3>
+            <h3>Service Connections</h3>
             <p id="connection-status"></p>
             <div class="toolbar"><button class="secondary" id="save-cloud"><i class="bi bi-cloud-arrow-up"
                         aria-hidden="true"></i>Save to server</button><button class="secondary" id="load-cloud"><i

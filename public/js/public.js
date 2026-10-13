@@ -20,6 +20,7 @@ async function api(url, body) {
                 .content,
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
+        credentials: "same-origin",
     });
     const data = await r.json();
     if (r.status === 401) {
@@ -56,7 +57,7 @@ async function loadAccount() {
         document.querySelector("#account-plan").textContent = e.plan;
         document.querySelector("#account-reason").textContent = e.reason;
         document.querySelector("#account-usage").innerHTML =
-            `<div class="metric"><span>AI message units</span><strong>${d.usage.messages}</strong><small>of ${e.messages}</small></div><div class="metric"><span>AI requests</span><strong>${d.usage.requests}</strong><small>of ${e.requests}</small></div>`;
+            `<div class="metric"><span>AI Message Units</span><strong>${Number(d.usage.messages).toLocaleString()}</strong><small>of ${Number(e.messages).toLocaleString()}</small></div><div class="metric"><span>AI Requests</span><strong>${Number(d.usage.requests).toLocaleString()}</strong><small>of ${Number(e.requests).toLocaleString()}</small></div>`;
         document.querySelector("#account-actions").innerHTML =
             (e.products.includes("chat")
                 ? '<a href="/chats" class="primary"><i class="bi bi-chat-dots" aria-hidden="true"></i>Open Chat Insights</a>'
@@ -65,11 +66,11 @@ async function loadAccount() {
                 ? '<a href="/contracts" class="secondary"><i class="bi bi-briefcase" aria-hidden="true"></i>Open Freelance Tracker</a>'
                 : "") +
             (d.trialAvailable && !e.allowed
-                ? '<button id="start-trial" class="primary"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Start one-time trial</button>'
+                ? '<button id="start-trial" class="primary"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Start One-Time Trial</button>'
                 : "") +
-            '<a href="/pricing" class="secondary"><i class="bi bi-card-list" aria-hidden="true"></i>View plans</a>' +
+            '<a href="/pricing" class="secondary"><i class="bi bi-card-list" aria-hidden="true"></i>View Plans</a>' +
             (d.admin
-                ? '<a href="/admin" class="secondary"><i class="bi bi-speedometer2" aria-hidden="true"></i>Open admin panel</a>'
+                ? '<a href="/admin" class="secondary"><i class="bi bi-speedometer2" aria-hidden="true"></i>Open Admin Panel</a>'
                 : "");
         const trial = document.querySelector("#start-trial");
         if (trial)
@@ -84,13 +85,13 @@ async function loadAccount() {
         document.querySelector("#subscriptions").innerHTML = d.subscriptions
             .map((s) => {
                 if (s.status === "FREE_ACTIVE") {
-                    return `<div class="card detail-card"><h3><i class="bi bi-gift" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Free package</h3><p class="muted">Active with no payment required.</p></div>`;
+                    return `<div class="card detail-card"><h3><i class="bi bi-gift" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Free Package</h3><p class="muted">Active with no payment required.</p></div>`;
                 }
                 if (s.status === "TEST_PAID") {
-                    return `<div class="card detail-card"><h3><i class="bi bi-patch-check" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Test payment</h3><p class="muted">Pre-launch paid access through ${escapeText(s.paid_until || "the configured test period")}.</p></div>`;
+                    return `<div class="card detail-card"><h3><i class="bi bi-patch-check" aria-hidden="true"></i> ${escapeText(s.plan_key)} · Test Payment</h3><p class="muted">Pre-launch paid access through ${escapeText(s.paid_until || "the configured test period")}.</p></div>`;
                 }
 
-                return `<div class="card detail-card"><h3>${escapeText(s.plan_key)} · ${escapeText(s.status)}</h3><p class="muted">Paid through: ${escapeText(s.paid_until || "Payment not yet verified")}</p><button class="secondary" data-refresh="${escapeText(s.id)}"><i class="bi bi-arrow-repeat" aria-hidden="true"></i>Verify with PayPal</button> <button class="danger" data-cancel="${escapeText(s.id)}"><i class="bi bi-x-circle" aria-hidden="true"></i>Cancel renewals</button></div>`;
+                return `<div class="card detail-card"><h3>${escapeText(s.plan_key)} · ${escapeText(s.status)}</h3><p class="muted">Paid Through: ${escapeText(s.paid_until || "Payment Not Yet Verified")}</p><button class="secondary" data-refresh="${escapeText(s.id)}"><i class="bi bi-arrow-repeat" aria-hidden="true"></i>Verify With PayPal</button> <button class="danger" data-cancel="${escapeText(s.id)}"><i class="bi bi-x-circle" aria-hidden="true"></i>Cancel Renewals</button></div>`;
             })
             .join("");
         document.querySelectorAll("[data-refresh],[data-cancel]").forEach(

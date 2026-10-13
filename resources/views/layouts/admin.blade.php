@@ -47,7 +47,7 @@
             </div>
             <div class="topbar-right">
                 <span class="badge"><i class="bi bi-shield-check" aria-hidden="true"></i>Super Admin</span>
-                <form method="POST" action="/logout">
+                <form method="POST" action="/logout" data-ajax-form>
                     @csrf
                     <button class="secondary"><i class="bi bi-box-arrow-right" aria-hidden="true"></i>Log Out</button>
                 </form>

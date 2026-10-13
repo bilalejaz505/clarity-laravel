@@ -17,6 +17,10 @@ import {
 import { workspaceSchema } from "./core/validation.js";
 const boot = window.clarityBootstrap,
     $ = (id) => document.getElementById(id),
+    titleCase = (value) =>
+        String(value ?? "").replace(/\b\w/g, (character) =>
+            character.toUpperCase(),
+        ),
     escape = (value) =>
         String(value ?? "").replace(
             /[&<>"']/g,
@@ -111,6 +115,7 @@ async function api(url, { method = "GET", body, signal } = {}) {
                 .content,
         },
         ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+        credentials: "same-origin",
     });
     let data;
     try {
@@ -118,8 +123,13 @@ async function api(url, { method = "GET", body, signal } = {}) {
     } catch {
         throw Error("The server did not return a valid response.");
     }
-    if (!response.ok)
-        throw Error(data.error || data.message || "Request failed.");
+    if (!response.ok) {
+        const requestError = Error(
+            data.error || data.message || "Request failed.",
+        );
+        requestError.errors = data.errors || null;
+        throw requestError;
+    }
     return data;
 }
 function button(text, attrs = "") {
@@ -133,7 +143,7 @@ function metrics(s) {
         ["Messages", s.total],
         ["Participants", s.participants.length],
         ["Sessions", s.sessions],
-        ["Active days", s.days.length],
+        ["Active Days", s.days.length],
     ]
         .map(
             ([name, n]) =>
@@ -172,15 +182,15 @@ function bindEvidence(root) {
 }
 function evidenceButton(ids) {
     return button(
-        "View source evidence",
+        "View Source Evidence",
         `data-evidence="${escape(JSON.stringify(ids))}"`,
     );
 }
 function render() {
     $("overview-heading").innerHTML =
         boot.product === "freelance"
-            ? "Clear scope.<br><span>Confident delivery.</span>"
-            : "Your conversations.<br><span>A clearer perspective.</span>";
+            ? "Clear Scope<br><span>Confident Delivery</span>"
+            : "Your Conversations<br><span>A Clearer Perspective</span>";
     $("overview-description").textContent =
         boot.product === "freelance"
             ? "See what is agreed, what is due, and what needs your attention."
@@ -213,7 +223,7 @@ function render() {
         relevant()
             .map(
                 (v) =>
-                    `<article class="card detail-card"><h3>${escape(v.name)}</h3><p class="muted">${escape(v.platform)} · ${v.messages.length} messages · ${v.sample ? "sample" : "personal import"}</p><div class="toolbar">${button("Open", `data-select="${escape(v.id)}"`)}${button("Rename", `data-rename="${escape(v.id)}"`)}${button("Delete", `data-delete="${escape(v.id)}"`)}</div></article>`,
+                    `<article class="card detail-card"><h3>${escape(v.name)}</h3><p class="muted">${escape(v.platform)} · ${v.messages.length} Messages · ${v.sample ? "Sample" : "Personal Import"}</p><div class="toolbar">${button("Open", `data-select="${escape(v.id)}"`)}${button("Rename", `data-rename="${escape(v.id)}"`)}${button("Delete", `data-delete="${escape(v.id)}"`)}</div></article>`,
             )
             .join("") ||
         empty(
@@ -237,9 +247,12 @@ function render() {
                     const v = mem.store.conversations.find(
                             (c) => c.id === b.dataset.rename,
                         ),
-                        name = prompt("Conversation name", v.name);
-                    if (name?.trim()) {
-                        v.name = name.trim().slice(0, 200);
+                        name = await window.ClarityFeedback.requestText(
+                            "Conversation Name",
+                            v.name,
+                        );
+                    if (name) {
+                        v.name = name.slice(0, 200);
                         save();
                         render();
                     }
@@ -276,7 +289,7 @@ function render() {
             .join("") || empty("No observations available.");
     bindEvidence($("insights-list"));
     $("participant-statistics").innerHTML =
-        `<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Messages</th><th>Words</th><th>Questions</th><th>Starts</th><th>Median reply</th></tr></thead><tbody>${stats.participants.map((p) => `<tr><td>${escape(p.name)}</td><td>${p.count}</td><td>${p.words}</td><td>${p.questions}</td><td>${p.initiations}</td><td>${p.medianReply === null ? "—" : Math.round(p.medianReply) + " min"}</td></tr>`).join("")}</tbody></table></div><p class="definition">Only responses to another participant are counted. Gaps of 24 hours or more are excluded. No read receipt or availability is inferred.</p>`;
+        `<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Messages</th><th>Words</th><th>Questions</th><th>Starts</th><th>Median Reply</th></tr></thead><tbody>${stats.participants.map((p) => `<tr><td>${escape(p.name)}</td><td>${p.count}</td><td>${p.words}</td><td>${p.questions}</td><td>${p.initiations}</td><td>${p.medianReply === null ? "—" : Math.round(p.medianReply) + " min"}</td></tr>`).join("")}</tbody></table></div><p class="definition">Only responses to another participant are counted. Gaps of 24 hours or more are excluded. No read receipt or availability is inferred.</p>`;
     $("hour-chart").innerHTML = stats.hours
         .map(
             (n, i) =>
@@ -356,7 +369,7 @@ function renderMessages() {
             .slice(0, 300)
             .map(
                 (m) =>
-                    `<article class="message-row card"><div><strong>${escape(m.sender)}</strong><time>${escape(m.timestamp ? displayTime(m.timestamp) : "Undated")}</time><p>${escape(m.text).replaceAll("\n", "<br>")}</p><small class="muted">${escape(m.source)}</small>${button("Correct message", `data-edit-message="${escape(m.id)}"`)}</div></article>`,
+                    `<article class="message-row card"><div><strong>${escape(m.sender)}</strong><time>${escape(m.timestamp ? displayTime(m.timestamp) : "Undated")}</time><p>${escape(m.text).replaceAll("\n", "<br>")}</p><small class="muted">${escape(m.source)}</small>${button("Correct Message", `data-edit-message="${escape(m.id)}"`)}</div></article>`,
             )
             .join("") || empty("No messages match your filters.");
     $("message-list")
@@ -367,11 +380,19 @@ function renderMessages() {
                     const m = current().messages.find(
                             (m) => m.id === b.dataset.editMessage,
                         ),
-                        text = prompt("Correct message text", m.text);
+                        text = await window.ClarityFeedback.requestText(
+                            "Correct Message Text",
+                            m.text,
+                            true,
+                        );
                     if (text !== null) {
                         m.text = text;
-                        const sender = prompt("Participant name", m.sender);
-                        if (sender?.trim()) m.sender = sender.trim();
+                        const sender =
+                            await window.ClarityFeedback.requestText(
+                                "Participant Name",
+                                m.sender,
+                            );
+                        if (sender) m.sender = sender;
                         save();
                         render();
                     }
@@ -390,7 +411,7 @@ function renderCompare() {
         .join("");
 }
 function termMarkup(term) {
-    return `<article class="card term-card" data-term="${escape(term.id)}"><div class="flex-between"><h3>${escape(term.title)}</h3><span class="badge">${escape(term.category)}</span></div><p>${escape(term.detail)}</p>${evidenceButton(term.evidence)}<div class="form-grid"><label>Status<select data-term-field="status">${["proposed", "accepted", "unclear", "rejected"].map((s) => `<option ${s === term.status ? "selected" : ""}>${s}</option>`).join("")}</select></label><label>Due date<input data-term-field="due" type="date" value="${escape(term.due)}"></label><label>Amount<input data-term-field="amount" type="number" min="0" step="0.01" value="${term.amount ?? ""}"></label><label>Currency<input data-term-field="currency" value="${escape(term.currency)}" maxlength="10"></label><label>Review note<textarea data-term-field="note" rows="2">${escape(term.note)}</textarea></label><label class="checkbox-line"><input data-term-field="completed" type="checkbox" ${term.completed ? "checked" : ""}>Completed</label></div></article>`;
+    return `<article class="card term-card" data-term="${escape(term.id)}"><div class="flex-between"><h3>${escape(term.title)}</h3><span class="badge">${escape(titleCase(term.category))}</span></div><p>${escape(term.detail)}</p>${evidenceButton(term.evidence)}<div class="form-grid"><label>Status<select data-term-field="status">${["proposed", "accepted", "unclear", "rejected"].map((status) => `<option value="${status}" ${status === term.status ? "selected" : ""}>${titleCase(status)}</option>`).join("")}</select></label><label>Due Date<input data-term-field="due" type="date" value="${escape(term.due)}"></label><label>Amount<input data-term-field="amount" type="number" min="0" step="0.01" value="${term.amount ?? ""}"></label><label>Currency<input data-term-field="currency" value="${escape(term.currency)}" maxlength="10"></label><label>Review Note<textarea data-term-field="note" rows="2">${escape(term.note)}</textarea></label><label class="checkbox-line"><input data-term-field="completed" type="checkbox" ${term.completed ? "checked" : ""}>Completed</label></div></article>`;
 }
 function renderTerms() {
     const terms = current()?.analysis?.terms || [];
@@ -466,11 +487,11 @@ function renderTasks() {
     $("task-board").innerHTML = ["todo", "doing", "done"]
         .map(
             (status) =>
-                `<section class="card detail-card"><h3>${status === "todo" ? "To do" : status === "doing" ? "In progress" : "Done"}</h3>${tasks
+                `<section class="card detail-card"><h3>${status === "todo" ? "To Do" : status === "doing" ? "In Progress" : "Done"}</h3>${tasks
                     .filter((t) => t.status === status)
                     .map(
                         (t) =>
-                            `<article class="task-card" data-task="${escape(t.id)}"><label>Title<input data-task-field="title" value="${escape(t.title)}"></label><label>Due<input data-task-field="due" type="date" value="${escape(t.due)}"></label><label>Status<select data-task-field="status">${["todo", "doing", "done"].map((s) => `<option ${s === t.status ? "selected" : ""}>${s}</option>`).join("")}</select></label><label>Notes<textarea data-task-field="note">${escape(t.note)}</textarea></label>${button("Delete", `data-delete-task="${escape(t.id)}"`)}</article>`,
+                            `<article class="task-card" data-task="${escape(t.id)}"><label>Title<input data-task-field="title" value="${escape(t.title)}"></label><label>Due Date<input data-task-field="due" type="date" value="${escape(t.due)}"></label><label>Status<select data-task-field="status">${["todo", "doing", "done"].map((taskStatus) => `<option value="${taskStatus}" ${taskStatus === t.status ? "selected" : ""}>${taskStatus === "todo" ? "To Do" : taskStatus === "doing" ? "In Progress" : "Done"}</option>`).join("")}</select></label><label>Notes<textarea data-task-field="note">${escape(t.note)}</textarea></label>${button("Delete", `data-delete-task="${escape(t.id)}"`)}</article>`,
                     )
                     .join("")}</section>`,
         )
@@ -526,7 +547,7 @@ function renderInvoices() {
         invoices
             .map(
                 (i) =>
-                    `<article class="card detail-card" data-invoice="${escape(i.id)}"><h3>${escape(i.client)}</h3><div class="form-grid"><label>Description<input data-invoice-field="description" value="${escape(i.description)}"></label><label>Amount<input type="number" data-invoice-field="amount" min="0" step="0.01" value="${i.amount}"></label><label>Currency<input data-invoice-field="currency" value="${escape(i.currency)}"></label><label>Due<input type="date" data-invoice-field="due" value="${escape(i.due)}"></label><label>Status<select data-invoice-field="status">${["draft", "sent", "paid"].map((s) => `<option ${s === i.status ? "selected" : ""}>${s}</option>`).join("")}</select></label></div>${button("Delete", `data-delete-invoice="${escape(i.id)}"`)}</article>`,
+                    `<article class="card detail-card" data-invoice="${escape(i.id)}"><h3>${escape(i.client)}</h3><div class="form-grid"><label>Description<input data-invoice-field="description" value="${escape(i.description)}"></label><label>Amount<input type="number" data-invoice-field="amount" min="0" step="0.01" value="${i.amount}"></label><label>Currency<input data-invoice-field="currency" value="${escape(i.currency)}"></label><label>Due Date<input type="date" data-invoice-field="due" value="${escape(i.due)}"></label><label>Status<select data-invoice-field="status">${["draft", "sent", "paid"].map((invoiceStatus) => `<option value="${invoiceStatus}" ${invoiceStatus === i.status ? "selected" : ""}>${titleCase(invoiceStatus)}</option>`).join("")}</select></label></div>${button("Delete", `data-delete-invoice="${escape(i.id)}"`)}</article>`,
             )
             .join("") || empty("No invoice records.");
     $("invoice-list")
@@ -709,7 +730,9 @@ $("extract-ocr").onclick = async () => {
 $("preview-import").onclick = async () => {
     try {
         $("confirm-import").disabled = true;
-        const form = $("import-form"),
+        const form = $("import-form");
+        if (!window.ClarityFeedback.validateForm(form)) return;
+        const
             data = new FormData(form),
             order = data.get("order");
         let messages = await importFiles(
@@ -756,7 +779,7 @@ $("preview-import").onclick = async () => {
         $("participant-renames").innerHTML = names
             .map(
                 (name, i) =>
-                    `<label>${escape(name)}<input data-original-name="${escape(name)}" value="${escape(data.get("anonymize") ? "Participant " + (i + 1) : name)}" required maxlength="200"></label>`,
+                    `<label>${escape(name)}<input name="participant_${i}" data-original-name="${escape(name)}" value="${escape(data.get("anonymize") ? "Participant " + (i + 1) : name)}" required maxlength="200"></label>`,
             )
             .join("");
         $("confirm-import").disabled = false;
@@ -767,6 +790,7 @@ $("preview-import").onclick = async () => {
 };
 $("import-form").onsubmit = (e) => {
     e.preventDefault();
+    if (!window.ClarityFeedback.validateForm(e.currentTarget)) return;
     if (boot.demo || !mem.preview) return;
     const data = new FormData(e.currentTarget),
         map = {};
@@ -806,6 +830,7 @@ $("import-form").onsubmit = (e) => {
 };
 $("task-form").onsubmit = (e) => {
     e.preventDefault();
+    if (!window.ClarityFeedback.validateForm(e.currentTarget)) return;
     if (!current()) return;
     const data = new FormData(e.currentTarget);
     mem.store.tasks.push({
@@ -822,6 +847,7 @@ $("task-form").onsubmit = (e) => {
 };
 $("invoice-form").onsubmit = (e) => {
     e.preventDefault();
+    if (!window.ClarityFeedback.validateForm(e.currentTarget)) return;
     if (!current()) return;
     const data = new FormData(e.currentTarget);
     mem.store.invoices.push({
@@ -840,6 +866,7 @@ $("invoice-form").onsubmit = (e) => {
 };
 $("ask-form").onsubmit = async (e) => {
     e.preventDefault();
+    if (!window.ClarityFeedback.validateForm(e.currentTarget)) return;
     if (boot.demo) {
         error("Live AI is disabled in the sample demo.");
         return;
@@ -871,10 +898,17 @@ $("ask-form").onsubmit = async (e) => {
         renderAnswers();
         notice("Answer ready. Check its evidence.");
     } catch (err) {
-        error(err.message);
+        const shown = err.errors
+            ? window.ClarityFeedback.showFieldErrors(
+                  e.currentTarget,
+                  err.errors,
+              ).matched
+            : false;
+        if (!shown) error(err.message);
     }
 };
 $("local-reply").onclick = () => {
+    if (!window.ClarityFeedback.validateForm($("coach-form"))) return;
     const data = new FormData($("coach-form"));
     $("coach-reply").value =
         (data.get("tone") === "Set a boundary"
@@ -887,6 +921,7 @@ $("local-reply").onclick = () => {
 };
 $("coach-form").onsubmit = async (e) => {
     e.preventDefault();
+    if (!window.ClarityFeedback.validateForm(e.currentTarget)) return;
     if (boot.demo) {
         error("Live AI is disabled in the sample demo.");
         return;
@@ -907,7 +942,17 @@ $("coach-form").onsubmit = async (e) => {
         $("coach-reply").value = d.answer;
         notice("Reply draft ready. Review before sending.");
     } catch (err) {
-        error(err.message);
+        const shown = err.errors
+            ? window.ClarityFeedback.showFieldErrors(
+                  e.currentTarget,
+                  err.errors,
+                  (name) =>
+                      name === "question"
+                          ? e.currentTarget.elements.context
+                          : e.currentTarget.elements[name],
+              ).matched
+            : false;
+        if (!shown) error(err.message);
     }
 };
 $("copy-reply").onclick = async () => {

@@ -42,8 +42,8 @@
             @endif
             <div class="context-bar"><label for="conversation-select">Conversation</label><select
                     id="conversation-select"></select><span class="badge" id="conversation-engine"></span><button
-                    class="text-btn" id="run-local">Local review</button><button class="secondary" id="run-ai"
-                    @disabled($demo)>AI analysis</button><button class="text-btn" id="cancel-analysis"
+                    class="text-btn" id="run-local">Local Review</button><button class="secondary" id="run-ai"
+                    @disabled($demo)>AI Analysis</button><button class="text-btn" id="cancel-analysis"
                     hidden>Cancel</button></div>
             @yield('content')
         </main>
@@ -51,27 +51,27 @@
     </div>
     <dialog id="evidence-dialog">
         <div class="flex-between">
-            <h2>Source evidence</h2><button class="icon-only" data-close="evidence-dialog"
+            <h2>Source Evidence</h2><button class="icon-only" data-close="evidence-dialog"
                 aria-label="Close evidence"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <div id="evidence-list"></div>
     </dialog>
     <dialog id="import-dialog">
         <div class="flex-between">
-            <h2>Import a conversation</h2><button class="icon-only" data-close="import-dialog"
+            <h2>Import A Conversation</h2><button class="icon-only" data-close="import-dialog"
                 aria-label="Close import"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <p class="muted">Review extracted text and participants before saving.</p>
-        <form id="import-form">
-            <div class="form-grid"><label>Conversation name<input name="name" required maxlength="200"
+        <form id="import-form" class="dashboard-form dialog-form">
+            <div class="form-grid dashboard-form-grid"><label>Conversation Name<input name="name" required maxlength="200"
                         placeholder="Name this conversation"></label><label>Platform<select name="platform">
                         <option>WhatsApp</option>
                         <option>Telegram</option>
                         <option>Instagram</option>
                         <option>Other</option>
-                    </select></label><label>Date order<select name="order">
-                        <option value="DMY">Day / month / year</option>
-                        <option value="MDY">Month / day / year</option>
+                    </select></label><label>Date Order<select name="order">
+                        <option value="DMY">Day / Month / Year</option>
+                        <option value="MDY">Month / Day / Year</option>
                     </select></label><label>Purpose<select name="purpose">
                         <option value="personal">Personal</option>
                         <option value="freelance">Freelance</option>
@@ -87,18 +87,18 @@
                     <option value="ara">Arabic</option>
                     <option value="eng+urd">English + Urdu</option>
                 </select><button type="button" class="secondary" id="extract-ocr">Extract screenshot text</button>
-            </div><label>Pasted or extracted text
+            </div><label>Pasted Or Extracted Text
                 <textarea name="text" id="import-text" rows="6" placeholder="[10/10/2026, 09:00] Sender: Message"></textarea>
-            </label><label class="checkbox-line"><input type="checkbox" name="redact">Redact approximate email
-                addresses and phone numbers</label><label class="checkbox-line"><input type="checkbox"
-                    name="anonymize">Replace participant names with aliases</label><button type="button"
-                class="secondary" id="preview-import">Review import</button>
+            </label><div class="dashboard-options-row"><label class="checkbox-line"><input type="checkbox" name="redact">Redact Approximate Email
+                Addresses and Phone Numbers</label><label class="checkbox-line"><input type="checkbox"
+                    name="anonymize">Replace Participant Names With Aliases</label></div><button type="button"
+                class="secondary" id="preview-import">Review Import</button>
             <div id="import-preview"></div>
             <div id="participant-renames" class="form-grid"></div><button class="primary full" type="submit"
-                id="confirm-import" disabled>Save reviewed conversation</button>
+                id="confirm-import" disabled>Save Reviewed Conversation</button>
         </form>
     </dialog>
-    <script>
+    <script nonce="{{ $cspNonce }}">
         window.clarityBootstrap =
             {{ Illuminate\Support\Js::from(['product' => $product, 'demo' => $demo, 'userId' => auth()->id(), 'initialStore' => $initialStore ?? null]) }};
     </script>

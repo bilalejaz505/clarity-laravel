@@ -114,7 +114,14 @@ class AdminController extends Controller
 
         $data = $request->validated();
         $config = $data['config'];
-        DB::transaction(function () use ($request, $settings, $audit, $config) {
+        $clearSecrets = $data['clearSecrets'] ?? [];
+        DB::transaction(function () use (
+            $request,
+            $settings,
+            $audit,
+            $config,
+            $clearSecrets,
+        ) {
             DB::table('app_settings')->insertOrIgnore([
                 'key' => 'application',
                 'data' => json_encode($settings->defaults()),
@@ -155,6 +162,18 @@ class AdminController extends Controller
             ) {
                 if ($request->filled($field)) {
                     $settings->saveSecret($id, $request->input($field));
+                }
+            }
+            if ($clearSecrets) {
+                DB::table('app_secrets')
+                    ->whereIn('provider', $clearSecrets)
+                    ->delete();
+                foreach ($clearSecrets as $provider) {
+                    $settings->audit(
+                        $request->user()->id,
+                        "secret.$provider.removed",
+                        Str::headline($provider).' credential removed.',
+                    );
                 }
             }
             foreach ($changes as $area => $fields) {

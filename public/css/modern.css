@@ -1057,6 +1057,64 @@ textarea:focus,
     padding: 16px 18px;
     box-shadow: 0 12px 35px #17223b14;
 }
+.dashboard-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+}
+.dashboard-form > label,
+.dashboard-form-grid > label:not(.checkbox-line) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 9px;
+    margin: 0;
+    color: #273753;
+    font-size: 12px;
+    font-weight: 650;
+}
+.dashboard-form input,
+.dashboard-form select,
+.dashboard-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    font-weight: 400;
+}
+.dashboard-form textarea {
+    resize: vertical;
+}
+.dashboard-form .form-grid {
+    width: 100%;
+    margin: 0;
+    gap: 22px 20px;
+}
+.dashboard-field-full {
+    grid-column: 1 / -1;
+}
+.dashboard-options-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+.dashboard-options-row .checkbox-line {
+    box-sizing: border-box;
+    min-height: 48px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #f8f9fd;
+    color: #273753;
+    font-size: 12px;
+    font-weight: 600;
+}
+.dialog-form {
+    margin-top: 20px;
+}
 .member-app-content .account-content {
     max-width: 1050px;
 }
@@ -1158,6 +1216,9 @@ textarea:focus,
 }
 @media (max-width: 650px) {
     .admin-app-content .admin-options-row {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-options-row {
         grid-template-columns: 1fr;
     }
     .admin-dashboard-link,

@@ -6,6 +6,7 @@ use App\Http\Middleware\ApplicationMaintenance;
 use App\Http\Middleware\ApplyManagedConfiguration;
 use App\Http\Middleware\MemberOnly;
 use App\Http\Middleware\PrivateResponse;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,7 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn (Request $request): string => $request->is('admin', 'admin/*') ? route('admin.login') : route('login'));
-        $middleware->web(append: [ApplyManagedConfiguration::class]);
+        $middleware->web(append: [
+            ApplyManagedConfiguration::class,
+            SecurityHeaders::class,
+        ]);
         $middleware->alias([
             'admin' => AdminOnly::class,
             'member' => MemberOnly::class,

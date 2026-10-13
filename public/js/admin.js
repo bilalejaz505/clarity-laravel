@@ -12,6 +12,12 @@ const $ = (id) => document.getElementById(id),
                 })[c],
         );
 let state = null;
+const secretMask = "••••••••••••";
+const secretInputs = {
+    openai: "openai-key",
+    paypal: "paypal-secret",
+    smtp: "smtp-password",
+};
 const labels = {
     created_at: "Created At",
     actor_name: "Actor Name",
@@ -78,9 +84,14 @@ async function api(url, body) {
                 .content,
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
+        credentials: "same-origin",
     });
     const d = await r.json();
-    if (!r.ok) throw Error(d.error || d.message || "Request failed.");
+    if (!r.ok) {
+        const requestError = Error(d.error || d.message || "Request failed.");
+        requestError.errors = d.errors || null;
+        throw requestError;
+    }
     return d;
 }
 function error(e) {
@@ -128,12 +139,17 @@ async function load(search = "") {
         .join("");
     $("admin-health").textContent =
         `Database: ${state.server.database} · Authentication: ${state.server.auth} · Encryption: ${state.server.encryption ? "Ready" : "Missing app key"}`;
-    for (const id of ["openai", "paypal", "smtp"])
-        $(id + "-saved").textContent = state.secrets.some(
-            (s) => s.provider === id,
-        )
-            ? "Encrypted credential is saved."
-            : `No saved ${id === "openai" ? "OpenAI key" : id === "paypal" ? "merchant secret" : "SMTP password"}.`;
+    for (const [provider, inputId] of Object.entries(secretInputs)) {
+        const input = $(inputId);
+        const saved = state.secrets.some(
+            (secret) => secret.provider === provider,
+        );
+        input.value = saved ? secretMask : "";
+        input.dataset.saved = saved ? "true" : "false";
+        $(provider + "-saved").textContent = saved
+            ? "An encrypted value is saved. Keep the mask, enter a replacement, or clear it and save to remove it."
+            : "No encrypted value is currently saved.";
+    }
     $("admin-subscriptions").innerHTML = table(state.subscriptions, [
         "plan_key",
         "status",
@@ -184,6 +200,7 @@ async function load(search = "") {
                 }),
         );
     const planFields = [
+        ["key", "Package Key"],
         ["name", "Package Name"],
         ["description", "Description"],
         ["price", "Monthly Price"],
@@ -197,7 +214,7 @@ async function load(search = "") {
             const fields = planFields
                 .map(
                     ([field, fieldLabel]) =>
-                        `<label class="${field === "paypalPlanId" ? "admin-field-full" : ""}">${escape(fieldLabel)}<input data-plan-field="${field}" type="${["price", "messages", "requests"].includes(field) ? "number" : "text"}" ${field === "price" ? 'min="0" step="0.01"' : ""} value="${escape(plan[field])}"></label>`,
+                        `<label class="${field === "paypalPlanId" ? "admin-field-full" : ""}">${escape(fieldLabel)}<input data-plan-field="${field}" type="${["price", "messages", "requests"].includes(field) ? "number" : "text"}" ${field === "price" ? 'min="0" step="0.01"' : ""} ${field === "key" ? "readonly" : ""} value="${escape(plan[field])}"></label>`,
                 )
                 .join("");
             return `<article class="plan-editor" data-plan="${index}"><h3>${escape(plan.name)}</h3><div class="form-grid admin-setting-grid">${fields}<fieldset class="admin-options-row plan-access-options"><legend>Package Availability & Product Access</legend><label class="checkbox-line"><input type="checkbox" data-plan-field="enabled" ${plan.enabled ? "checked" : ""}>Package Enabled</label><label class="checkbox-line"><input type="checkbox" data-product="chat" ${plan.products.includes("chat") ? "checked" : ""}>Chat Insights</label><label class="checkbox-line"><input type="checkbox" data-product="freelance" ${plan.products.includes("freelance") ? "checked" : ""}>Freelance Tracker</label></fieldset></div><p class="plan-help muted">Set the price to 0 to let members subscribe immediately without PayPal.</p></article>`;
@@ -213,6 +230,7 @@ $("admin-nav-close").onclick = () =>
     $("admin-sidebar").classList.remove("mobile-open");
 $("user-search-form").onsubmit = async (e) => {
     e.preventDefault();
+    if (!window.ClarityFeedback.validateForm(e.currentTarget)) return;
     try {
         await load($("user-search").value);
     } catch (err) {
@@ -221,6 +239,7 @@ $("user-search-form").onsubmit = async (e) => {
 };
 $("admin-settings-form").onsubmit = async (e) => {
     e.preventDefault();
+    if (!window.ClarityFeedback.validateForm(e.currentTarget)) return;
     if (!state) return;
     const config = structuredClone(state.config);
     document
@@ -250,13 +269,33 @@ $("admin-settings-form").onsubmit = async (e) => {
         );
     });
     try {
+        const secrets = Object.fromEntries(
+            Object.entries(secretInputs).map(([provider, inputId]) => [
+                provider,
+                $(inputId),
+            ]),
+        );
+        const clearSecrets = Object.entries(secrets)
+            .filter(
+                ([, input]) =>
+                    input.dataset.saved === "true" && input.value === "",
+            )
+            .map(([provider]) => provider);
         await api("/api/admin", {
             action: "settings",
             config,
             revision: state.revision,
-            openaiKey: $("openai-key").value,
-            paypalSecret: $("paypal-secret").value,
-            smtpPassword: $("smtp-password").value,
+            openaiKey:
+                secrets.openai.value === secretMask
+                    ? ""
+                    : secrets.openai.value,
+            paypalSecret:
+                secrets.paypal.value === secretMask
+                    ? ""
+                    : secrets.paypal.value,
+            smtpPassword:
+                secrets.smtp.value === secretMask ? "" : secrets.smtp.value,
+            clearSecrets,
         });
         $("openai-key").value = "";
         $("paypal-secret").value = "";
@@ -264,30 +303,40 @@ $("admin-settings-form").onsubmit = async (e) => {
         await load();
         notice("Settings saved.");
     } catch (err) {
-        error(err);
+        const result = err.errors
+            ? window.ClarityFeedback.showFieldErrors(
+                  e.currentTarget,
+                  err.errors,
+                  (name) => {
+                      const plan = name.match(
+                          /^config\.plans\.(\d+)\.([^.]+)$/,
+                      );
+                      if (plan)
+                          return document.querySelector(
+                              `[data-plan="${plan[1]}"] [data-plan-field="${plan[2]}"]`,
+                          );
+                      const setting = name.replace(/^config\./, "");
+                      return (
+                          document.querySelector(
+                              `[data-setting="${setting}"]`,
+                          ) ||
+                          {
+                              openaiKey: $("openai-key"),
+                              paypalSecret: $("paypal-secret"),
+                              smtpPassword: $("smtp-password"),
+                          }[name]
+                      );
+                  },
+              )
+            : { matched: false };
+        if (!result.matched) error(err);
     }
 };
-document.querySelectorAll("[data-delete-secret]").forEach(
-    (b) =>
-        (b.onclick = async () => {
-            if (
-                !(await window.ClarityFeedback.confirm(
-                    "Remove this saved provider credential?",
-                ))
-            )
-                return;
-            try {
-                await api("/api/admin", {
-                    action: "delete-secret",
-                    provider: b.dataset.deleteSecret,
-                });
-                await load();
-                notice("Saved credential removed.");
-            } catch (err) {
-                error(err);
-            }
-        }),
-);
+Object.values(secretInputs).forEach((inputId) => {
+    $(inputId).addEventListener("beforeinput", (event) => {
+        if (event.target.value === secretMask) event.target.value = "";
+    });
+});
 $("test-openai").onclick = async () => {
     try {
         const result = await api("/api/connection", { provider: "openai" });

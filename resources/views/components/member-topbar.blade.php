@@ -23,7 +23,7 @@
             </button>
         @endif
         @auth
-            <form method="POST" action="/logout">
+            <form method="POST" action="/logout" data-ajax-form>
                 @csrf
                 <button class="secondary"><i class="bi bi-box-arrow-right" aria-hidden="true"></i>Log Out</button>
             </form>

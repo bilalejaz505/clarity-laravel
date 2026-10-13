@@ -39,6 +39,7 @@ Use PHP **8.4** for this Composer lockfile, MySQL 8, Apache rewriting, HTTPS, an
    ```
 
    Keep `.env` private and out of archives shared publicly. It contains infrastructure configuration only: the application key and URL, runtime mode, database, session, cache, queue, logging, and filesystem settings. Site identity, maintenance, SMTP, OpenAI, PayPal, packages, trials, limits, and customer notices are managed in the administrator panel and stored in MySQL. Provider and SMTP passwords are encrypted with `APP_KEY`.
+   Administration displays encrypted credentials as masks rather than plaintext. Keep the mask to preserve a credential, type a new value to replace it, or clear the field and save to remove it.
 6. Finish setup:
 
    ```sh
@@ -69,6 +70,8 @@ Administrator sign-in is `/admin/login`; regular member sign-in is `/login`. The
 The current release's original migrations define numeric application record IDs and matching integer ownership references. This schema was installed through an explicitly requested fresh local reset. For a new cPanel database, run the original migrations normally. An older populated UUID-schema database cannot be upgraded by simply running these revised, already-recorded migrations; use a planned conversion or restore/recreate only with explicit authorization and a backup. Never run `migrate:fresh` as a routine production update.
 
 Notification and icon assets are self-hosted under `public/vendor`, `public/css`, and `public/js`. Upload the SweetAlert2 files, Bootstrap Icons CSS/font files, their license files, and the Clarity assets with the rest of `public`; no CDN or Node build is required. After upload, verify that `/vendor/bootstrap-icons.min.css`, `/vendor/fonts/bootstrap-icons.woff2`, and the application styles return HTTP 200 rather than an HTML error page.
+
+The application sends a nonce-based Content Security Policy and other browser security headers. After deployment, inspect a normal page response and confirm that the hosting proxy has preserved `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, and `Cross-Origin-Opener-Policy`. HTTPS responses also include HSTS. Keep the entire site on HTTPS before relying on secure cookies or HSTS, and do not add inline scripts without the server-provided CSP nonce.
 
 The `TEST_PAID` subscriptions and `TEST.PAYMENT.COMPLETED` events created by `clarity:reset-local-data` are pre-launch fixtures accepted only in the local environment. Never run that command on cPanel and never import those records as production billing. Production access must come from a trial, a `FREE_ACTIVE` zero-price package subscription, or a provider-verified PayPal subscription.
 

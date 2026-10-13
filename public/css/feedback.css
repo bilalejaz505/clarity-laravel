@@ -85,6 +85,20 @@
     color: #64748b;
     font-size: 22px;
 }
+.field-error {
+    display: block;
+    margin-top: 6px;
+    color: #b42345;
+    font-size: 12px;
+    font-weight: 550;
+    line-height: 1.45;
+}
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+    border-color: #d64e6b !important;
+    box-shadow: 0 0 0 3px rgb(214 78 107 / 12%) !important;
+}
 @media (prefers-reduced-motion: reduce) {
     .swal2-popup {
         animation: none !important;

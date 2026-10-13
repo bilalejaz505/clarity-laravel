@@ -60,6 +60,8 @@ class AdminActionRequest extends FormRequest
                 'openaiKey' => 'nullable|string|max:300|regex:/^sk-[A-Za-z0-9_-]{15,}$/',
                 'paypalSecret' => 'nullable|string|max:500',
                 'smtpPassword' => 'nullable|string|max:500',
+                'clearSecrets' => 'sometimes|array',
+                'clearSecrets.*' => 'required|in:openai,paypal,smtp|distinct',
                 'action' => 'required|in:settings',
             ],
             'user-status' => [

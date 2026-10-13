@@ -70,7 +70,7 @@ class WorkspaceValidationTest extends TestCase
         $this->actingAs($user)
             ->get('/chats')
             ->assertForbidden()
-            ->assertSee('Choose your next step.');
+            ->assertSee('Choose Your Next Step');
     }
 
     public function test_database_maintenance_mode_covers_public_and_member_pages_but_not_admin(): void

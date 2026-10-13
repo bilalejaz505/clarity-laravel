@@ -19,8 +19,8 @@ class AdminAccessTest extends TestCase
         $this->get('/admin')->assertRedirect('/admin/login');
         $this->get('/admin/login')
             ->assertOk()
-            ->assertSee('Admin sign in.')
-            ->assertDontSee('Create an account');
+            ->assertSee('Admin Sign In')
+            ->assertDontSee('Create an Account');
     }
 
     public function test_member_credentials_cannot_start_an_admin_session(): void

@@ -44,8 +44,8 @@ class FeedbackAndContractsTest extends TestCase
             ->get('/contracts')
             ->assertOk()
             ->assertViewHas('product', 'freelance')
-            ->assertSee('Contract tracker')
-            ->assertSee('Contract summary')
+            ->assertSee('Contract Tracker')
+            ->assertSee('Contract Summary')
             ->assertDontSee('Agreement tracker');
         $this->get('/agreements')
             ->assertOk()

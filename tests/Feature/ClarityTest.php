@@ -41,7 +41,7 @@ class ClarityTest extends TestCase
         $this->assertAuthenticatedAs($user);
         $this->get('/')
             ->assertSeeText('Dashboard')
-            ->assertDontSeeText('Log in');
+            ->assertDontSeeText('Log In');
         $this->post('/logout')->assertRedirect('/login');
         $this->assertGuest();
     }
@@ -169,13 +169,13 @@ class ClarityTest extends TestCase
             ->get('/chats')
             ->assertForbidden()
             ->assertSee('id="member-sidebar"', false)
-            ->assertSeeText('Choose your next step.');
+            ->assertSeeText('Choose Your Next Step');
 
         $unsubscribed->forceFill(['email_verified_at' => null])->save();
         $this->get('/email/verify')
             ->assertOk()
             ->assertSee('id="member-sidebar"', false)
-            ->assertSeeText('Verify your email');
+            ->assertSeeText('Verify Your Email');
     }
 
     public function test_dashboard_entry_and_product_switch_follow_the_users_package(): void
@@ -374,6 +374,20 @@ class ClarityTest extends TestCase
         $this->assertSame(
             'smtp-private-password',
             $settings->secret('smtp'),
+        );
+        $this->postJson('/api/admin', [
+            'action' => 'settings',
+            'revision' => 1,
+            'config' => $settings->get(),
+            'openaiKey' => '',
+            'paypalSecret' => '',
+            'smtpPassword' => '',
+            'clearSecrets' => ['paypal'],
+        ])->assertOk();
+        $this->assertSame('', $settings->secret('paypal'));
+        $this->assertSame(
+            'sk-abcdefghijklmnopqrstuv',
+            $settings->secret('openai'),
         );
         $this->postJson('/api/admin', $body)->assertStatus(409);
     }

@@ -12,11 +12,6 @@ class PrivateResponse
     {
         $response = $next($request);
         $response->headers->set('Cache-Control', 'private, no-store');
-        $response->headers->set('X-Content-Type-Options', 'nosniff');
-        $response->headers->set(
-            'Referrer-Policy',
-            'strict-origin-when-cross-origin',
-        );
 
         return $response;
     }

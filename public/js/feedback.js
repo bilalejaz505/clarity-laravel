@@ -100,7 +100,152 @@
         }
     }
 
-    window.ClarityFeedback = { notify, confirm };
+    async function requestText(title, value = "", multiline = false) {
+        if (!window.Swal) {
+            notify(
+                "error",
+                "The editor could not be loaded. Reload the page and try again.",
+            );
+            return null;
+        }
+        const result = await window.Swal.fire({
+            titleText: String(title),
+            input: multiline ? "textarea" : "text",
+            inputValue: String(value ?? ""),
+            inputAttributes: { maxlength: multiline ? "100000" : "200" },
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#5165ed",
+            cancelButtonColor: "#64748b",
+            allowOutsideClick: false,
+            inputValidator: (input) =>
+                String(input ?? "").trim()
+                    ? undefined
+                    : "This field is required.",
+            customClass: { popup: "clarity-confirm" },
+        });
+
+        return result.isConfirmed ? String(result.value).trim() : null;
+    }
+
+    function fieldFor(form, name) {
+        return [...form.elements].find(
+            (field) =>
+                !field.disabled &&
+                (field.name === name ||
+                    field.dataset.setting === name ||
+                    field.id === name),
+        );
+    }
+
+    function clearFieldError(field) {
+        if (!field) return;
+        field.removeAttribute("aria-invalid");
+        const errorId = field.getAttribute("aria-errormessage");
+        if (errorId) document.getElementById(errorId)?.remove();
+        field.removeAttribute("aria-errormessage");
+    }
+
+    function clearFieldErrors(form) {
+        form.querySelectorAll(".field-error").forEach((item) => item.remove());
+        form.querySelectorAll('[aria-invalid="true"]').forEach((field) => {
+            field.removeAttribute("aria-invalid");
+            field.removeAttribute("aria-errormessage");
+        });
+    }
+
+    function showFieldErrors(form, errors, resolver) {
+        clearFieldErrors(form);
+        let firstField = null;
+        let unmatched = 0;
+
+        Object.entries(errors || {}).forEach(([name, messages], index) => {
+            const field = resolver?.(name) || fieldFor(form, name);
+            const message = Array.isArray(messages) ? messages[0] : messages;
+            if (!field || !message) {
+                unmatched += 1;
+                return;
+            }
+
+            const error = document.createElement("span");
+            error.className = "field-error";
+            error.id = `field-error-${Date.now()}-${index}`;
+            error.setAttribute("role", "alert");
+            error.textContent = String(message);
+            field.setAttribute("aria-invalid", "true");
+            field.setAttribute("aria-errormessage", error.id);
+            field.insertAdjacentElement("afterend", error);
+            firstField ||= field;
+        });
+
+        firstField?.focus({ preventScroll: true });
+        firstField?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        return { matched: Boolean(firstField), unmatched };
+    }
+
+    function validationMessage(field) {
+        const label =
+            field.closest("label")?.childNodes[0]?.textContent?.trim() ||
+            field.getAttribute("aria-label") ||
+            "This field";
+        const validity = field.validity;
+        if (validity.valueMissing) return `${label} is required.`;
+        if (validity.typeMismatch)
+            return `${label} must contain a valid value.`;
+        if (validity.tooShort)
+            return `${label} must be at least ${field.minLength} characters.`;
+        if (validity.tooLong)
+            return `${label} must be no more than ${field.maxLength} characters.`;
+        if (validity.rangeUnderflow)
+            return `${label} must be at least ${field.min}.`;
+        if (validity.rangeOverflow)
+            return `${label} must be no more than ${field.max}.`;
+        if (validity.stepMismatch) return `${label} has an invalid amount.`;
+        if (validity.patternMismatch) return `${label} has an invalid format.`;
+        return `${label} is invalid.`;
+    }
+
+    function validateForm(form) {
+        const errors = {};
+        [...form.elements].forEach((field) => {
+            const name =
+                field.name || field.dataset.setting || field.id || "field";
+            if (
+                field.willValidate &&
+                !field.validity.valid &&
+                !errors[name]
+            ) {
+                errors[name] = [validationMessage(field)];
+            }
+        });
+        if (!Object.keys(errors).length) {
+            clearFieldErrors(form);
+            return true;
+        }
+        showFieldErrors(form, errors);
+        return false;
+    }
+
+    document.addEventListener("input", (event) => {
+        if (event.target.form) clearFieldError(event.target);
+    });
+    document.addEventListener("change", (event) => {
+        if (event.target.form) clearFieldError(event.target);
+    });
+    document.querySelectorAll("form").forEach((form) => {
+        form.noValidate = true;
+    });
+
+    window.ClarityFeedback = {
+        notify,
+        confirm,
+        requestText,
+        clearFieldErrors,
+        showFieldErrors,
+        validateForm,
+    };
     const initial = window.clarityFeedbackMessages || {};
     if (initial.error) {
         notify(

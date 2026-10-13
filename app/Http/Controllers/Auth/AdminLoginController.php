@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminLoginController extends Controller
 {
@@ -35,7 +36,7 @@ class AdminLoginController extends Controller
     public function login(
         LoginRequest $request,
         EntitlementService $access,
-    ): RedirectResponse {
+    ): Response {
         $credentials = [
             'email' => $request->validated('email'),
             'password' => $request->validated('password'),
@@ -48,6 +49,15 @@ class AdminLoginController extends Controller
                 $request->boolean('remember'),
             )
         ) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Unable to sign in to administration. Check your administrator credentials.',
+                    'errors' => [
+                        'email' => ['Unable to sign in to administration. Check your administrator credentials.'],
+                    ],
+                ], 422);
+            }
+
             return back()
                 ->withErrors([
                     'email' => 'Unable to sign in to administration. Check your administrator credentials.',
@@ -62,6 +72,11 @@ class AdminLoginController extends Controller
             ->forceFill(['last_seen' => now()])
             ->save();
 
-        return redirect()->route('admin.dashboard');
+        return $request->expectsJson()
+            ? response()->json([
+                'message' => 'Administrator signed in successfully.',
+                'redirect' => route('admin.dashboard'),
+            ])
+            : redirect()->route('admin.dashboard');
     }
 }
