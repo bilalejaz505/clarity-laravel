@@ -1107,10 +1107,23 @@ document.querySelectorAll("[data-switch-product]").forEach(
                         a.dataset.switchProduct === product,
                     ),
                 );
+            const workspacePath =
+                product === "freelance" ? "/contracts" : "/chats";
+            document
+                .querySelectorAll("[data-account-link]")
+                .forEach(
+                    (accountLink) =>
+                        (accountLink.href = `/account?product=${product}`),
+                );
+            document
+                .querySelectorAll("[data-privacy-link]")
+                .forEach(
+                    (privacyLink) =>
+                        (privacyLink.href = `${workspacePath}?view=settings`),
+                );
             const url = new URL(location.href);
             if (!boot.demo)
-                url.pathname =
-                    product === "freelance" ? "/contracts" : "/chats";
+                url.pathname = workspacePath;
             else url.searchParams.set("product", product);
             history.replaceState({}, "", url);
             mem.selected = "";

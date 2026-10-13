@@ -35,15 +35,8 @@
         @if ($memberProducts)
             <x-product-navigation :product="$memberProduct" :products="$memberProducts" />
         @endif
-        <div class="sidebar-bottom">
-            <a href="/account" class="nav-link {{ request()->is('account', 'email/verify') ? 'active' : '' }}"><i
-                    class="bi bi-person-circle" aria-hidden="true"></i>My account</a>
-            @if (app(\App\Services\EntitlementService::class)->admin(auth()->user()))
-                <a href="/admin" class="nav-link"><i class="bi bi-speedometer2" aria-hidden="true"></i>Admin panel</a>
-            @endif
-            <a href="/pricing" class="nav-link"><i class="bi bi-card-list" aria-hidden="true"></i>Plans</a>
-            <a href="/" class="nav-link"><i class="bi bi-globe2" aria-hidden="true"></i>Public area</a>
-        </div>
+        <x-member-utility-navigation :product="$memberProduct" :account-active="request()->is('account', 'email/verify')"
+            :show-privacy="(bool) $memberProducts" />
     </aside>
     <div class="main-shell member-main-shell">
         <header class="topbar">

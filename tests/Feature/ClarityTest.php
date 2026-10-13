@@ -121,6 +121,8 @@ class ClarityTest extends TestCase
             ->assertSeeText('Conversations')
             ->assertSeeText('Conversation insights')
             ->assertSeeText('Chat statistics')
+            ->assertSeeText('Privacy & connections')
+            ->assertSeeText('Plans')
             ->assertSee('/chats?view=overview', false)
             ->assertDontSeeText('Chat dashboard')
             ->assertDontSeeText('Contracts dashboard');
@@ -130,6 +132,10 @@ class ClarityTest extends TestCase
             ->assertSeeText('Client conversations')
             ->assertSeeText('Contract tracker')
             ->assertSeeText('Tasks & milestones')
+            ->assertSeeText('Privacy & connections')
+            ->assertSeeText('Plans')
+            ->assertSee('/contracts?view=settings', false)
+            ->assertSee('/account?product=freelance', false)
             ->assertSee('/contracts?view=overview', false);
 
         $this->get('/chats')

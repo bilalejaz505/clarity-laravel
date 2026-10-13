@@ -21,20 +21,16 @@
             <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
         <x-product-navigation :product="$product" :products="$availableProducts" :demo="$demo" />
-        <div class="sidebar-bottom">
-            <a href="?view=settings" data-view="settings" class="nav-link"><i class="bi bi-shield-check"
-                    aria-hidden="true"></i>Privacy & connections</a>
-            @auth
-                <a href="/account?product={{ $product }}" class="nav-link"><i class="bi bi-person-circle"
-                        aria-hidden="true"></i>My account</a>
-                @if (app(\App\Services\EntitlementService::class)->admin(auth()->user()))
-                    <a href="/admin" class="nav-link"><i class="bi bi-speedometer2" aria-hidden="true"></i>Admin panel</a>
-                @endif
-            @else
+        @auth
+            <x-member-utility-navigation :product="$product" />
+        @else
+            <div class="sidebar-bottom">
+                <a href="?view=settings" data-view="settings" class="nav-link"><i class="bi bi-shield-check"
+                        aria-hidden="true"></i>Privacy & connections</a>
                 <a href="/login" class="nav-link"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>Log in</a>
-            @endauth
-            <a href="/" class="nav-link"><i class="bi bi-globe2" aria-hidden="true"></i>Public area</a>
-        </div>
+                <a href="/" class="nav-link"><i class="bi bi-globe2" aria-hidden="true"></i>Public area</a>
+            </div>
+        @endauth
     </aside>
     <div class="main-shell">
         <header class="topbar">
