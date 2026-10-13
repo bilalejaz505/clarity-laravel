@@ -52,8 +52,11 @@ class PayPalService
         );
         if (! $response->successful()) {
             throw new RuntimeException(
-                'PayPal request failed ('.$response->status().').',
-            );
+                'PayPal request failed ('.
+                $response->status().
+                '): '.
+                json_encode($response->json()),
+    );
         }
 
         return $response->status() === 204 ? [] : $response->json() ?? [];
