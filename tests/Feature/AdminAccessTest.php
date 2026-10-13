@@ -33,6 +33,28 @@ class AdminAccessTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_administrator_credentials_cannot_start_a_member_session(): void
+    {
+        $admin = User::factory()->create([
+            'is_admin' => true,
+            'password' => 'admin-password',
+        ]);
+
+        $this->post('/login', [
+            'email' => $admin->email,
+            'password' => 'admin-password',
+        ])->assertSessionHasErrors('email');
+        $this->assertGuest();
+
+        $this->postJson('/login', [
+            'email' => $admin->email,
+            'password' => 'admin-password',
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('email');
+        $this->assertGuest();
+    }
+
     public function test_verified_admin_credentials_go_directly_to_administration(): void
     {
         $admin = User::factory()->create([

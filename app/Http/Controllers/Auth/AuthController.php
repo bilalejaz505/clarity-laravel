@@ -41,7 +41,6 @@ class AuthController extends Controller
             [
                 '/account',
                 '/dashboard',
-                '/admin',
                 '/chats',
                 '/contracts',
                 '/agreements',
@@ -56,12 +55,13 @@ class AuthController extends Controller
     public function login(LoginRequest $request): Response
     {
         if (
-            ! Auth::attempt(
+            ! Auth::attemptWhen(
                 [
                     'email' => strtolower($request->email),
                     'password' => $request->password,
                     'status' => 'active',
                 ],
+                fn (User $user): bool => ! $this->access->admin($user),
                 $request->boolean('remember'),
             )
         ) {

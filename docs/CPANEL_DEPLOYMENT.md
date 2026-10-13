@@ -65,7 +65,7 @@ Monitor `storage/logs`, MySQL backups, SMTP delivery, and webhook failures. Keep
 
 Maintain this guide whenever PHP requirements, schema, environment variables, paths, authentication, or billing behavior change.
 
-Administrator sign-in is `/admin/login`; regular member sign-in is `/login`. The roles have separate dashboards and cannot enter each other's protected routes. Logging out returns each role to its own login page. Initial local passwords/accounts are development-only and are never created by the production default seeder. Use `clarity:admin` to create your own production administrator with a private password. Do not deploy local credential files or the local-reset SQL backup.
+Administrator sign-in is `/admin/login`; regular member sign-in is `/login`. Each login endpoint rejects the other role, and the roles have separate dashboards and cannot enter each other's protected routes. Logging out returns each role to its own login page. Initial local passwords/accounts are development-only and are never created by the production default seeder. Use `clarity:admin` to create your own production administrator with a private password. Do not deploy local credential files or the local-reset SQL backup.
 
 The current release's original migrations define numeric application record IDs and matching integer ownership references. This schema was installed through an explicitly requested fresh local reset. For a new cPanel database, run the original migrations normally. An older populated UUID-schema database cannot be upgraded by simply running these revised, already-recorded migrations; use a planned conversion or restore/recreate only with explicit authorization and a backup. Never run `migrate:fresh` as a routine production update.
 
