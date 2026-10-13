@@ -20,9 +20,12 @@ class AppSettingsService
 
     public function get(): array
     {
+        $defaults = $this->defaults();
+        $saved = AppSetting::where('key', 'application')->first()?->data ?? [];
+
         return array_replace(
-            $this->defaults(),
-            AppSetting::where('key', 'application')->first()?->data ?? [],
+            $defaults,
+            array_intersect_key($saved, $defaults),
         );
     }
 

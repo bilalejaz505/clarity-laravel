@@ -46,7 +46,7 @@ Seeding creates application defaults, never a shared login. `composer dev` also 
 
 ## Admin-Managed Configuration
 
-Site identity, maintenance mode, customer notices, usage limits, trials, SMTP, OpenAI, PayPal, and packages are configured in `/admin`. They are stored in MySQL; OpenAI, PayPal, and SMTP passwords are encrypted and never returned to the browser. When SMTP delivery is disabled, verification and reset messages use Laravel's log mailer and appear in `storage/logs/laravel.log`. Enable SMTP and use **Send Test Email** before relying on email delivery. Console-created admins are verified. Localhost follows the same trial and package-subscription rules used by the deployed application.
+Site identity, maintenance mode, customer notices, usage limits, trials, SMTP, OpenAI, PayPal, and packages are configured in `/admin`. They are stored in MySQL; OpenAI, PayPal, and SMTP passwords are encrypted and never returned to the browser. Local defaults use Mailpit at `127.0.0.1:1025`, with no encryption, username, or password, and messages can be viewed in Mailpit at `http://127.0.0.1:8025`. SMTP is selected automatically whenever a host and sender address are saved; clearing either uses Laravel's log mailer instead. Use **Send Test Email** before relying on email delivery. Console-created admins are verified. Localhost follows the same trial and package-subscription rules used by the deployed application.
 
 In `/admin`, save the OpenAI key and model, then test the connection. The app's local observations and statistics work without a key; AI requests require one.
 

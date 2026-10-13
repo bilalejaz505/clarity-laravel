@@ -14,7 +14,7 @@ Clarity is now a Laravel 13 / MySQL / Blade application. Source is `E:\laragon\w
 | Freelance | Candidate contract review and history, scope/change items, task statuses/dates, ICS export, invoice records with currency-separated totals and CSV |
 | Document studio | Editable SOW, proposal, contract summary, change request and follow-up drafts; TXT and browser print/PDF |
 | Storage | Memory by default, optional account-scoped device storage, version-one JSON backup/restore, owner-only MySQL snapshots |
-| Administration | Separate administrator authentication and dashboard, users/status, settings revision conflict checks, encrypted OpenAI/PayPal/SMTP secrets, provider tests, packages/prices/product access, zero-price activation, quotas/trials, site identity, maintenance mode, customer notices, and audit records |
+| Administration | Separate administrator authentication and dashboard, users/status, settings revision conflict checks, encrypted OpenAI/PayPal/SMTP secrets, automatic SMTP selection, provider tests, packages/prices/product access, zero-price activation, quotas/trials, site identity, maintenance mode, customer notices, and actor/area-aware audit records |
 | Billing | Paid/trial/free-package entitlements, checkout locks, immutable plan snapshot, verified provider reconciliation/webhook deduplication, cancellation/refund rules |
 
 These are the existing app's features, not a claim that every possible competitor feature exists. Document drafts are not electronic signatures. Invoice records do not collect your clients' payments. OCR must be reviewed; interpretations of intentions or personality remain uncertain and evidence-based, not facts about a person.

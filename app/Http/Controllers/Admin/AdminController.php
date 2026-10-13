@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminActionRequest;
 use App\Models\User;
 use App\Services\AppSettingsService;
+use App\Services\AuditLogService;
 use App\Services\EntitlementService;
 use App\Services\MailSettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
@@ -19,6 +21,7 @@ class AdminController extends Controller
     public function index(
         Request $request,
         AppSettingsService $settings,
+        AuditLogService $audit,
     ): Response {
         $search = mb_substr((string) $request->query('search', ''), 0, 100);
 
@@ -50,10 +53,7 @@ class AdminController extends Controller
                 ->orderByDesc('created_at')
                 ->limit(200)
                 ->get(),
-            'audit' => DB::table('audit_logs')
-                ->orderByDesc('created_at')
-                ->limit(100)
-                ->get(),
+            'audit' => $audit->entries(),
             'secrets' => DB::table('app_secrets')->get([
                 'id',
                 'provider',
@@ -79,6 +79,7 @@ class AdminController extends Controller
     public function save(
         AdminActionRequest $request,
         AppSettingsService $settings,
+        AuditLogService $audit,
         EntitlementService $access,
     ): Response {
         if ($request->action === 'user-status') {
@@ -92,7 +93,7 @@ class AdminController extends Controller
             $settings->audit(
                 $request->user()->id,
                 'user.status',
-                "$user->id: $request->status",
+                "$user->name ($user->email) changed to $request->status.",
             );
 
             return response()->json(['ok' => true]);
@@ -104,8 +105,8 @@ class AdminController extends Controller
                 ->delete();
             $settings->audit(
                 $request->user()->id,
-                'secret.removed',
-                $request->provider,
+                "secret.$request->provider.removed",
+                Str::headline($request->provider).' credential removed.',
             );
 
             return response()->json(['ok' => true]);
@@ -113,7 +114,7 @@ class AdminController extends Controller
 
         $data = $request->validated();
         $config = $data['config'];
-        DB::transaction(function () use ($request, $settings, $config) {
+        DB::transaction(function () use ($request, $settings, $audit, $config) {
             DB::table('app_settings')->insertOrIgnore([
                 'key' => 'application',
                 'data' => json_encode($settings->defaults()),
@@ -129,6 +130,14 @@ class AdminController extends Controller
                 $row->revision === (int) $request->revision,
                 409,
                 'Settings changed in another session. Reload before saving.',
+            );
+            $changes = $audit->settingsChanges(
+                json_decode($row->data, true, 512, JSON_THROW_ON_ERROR),
+                $config,
+                collect(['openaiKey', 'paypalSecret', 'smtpPassword'])
+                    ->filter(fn (string $field): bool => $request->filled($field))
+                    ->values()
+                    ->all(),
             );
             DB::table('app_settings')
                 ->where('key', 'application')
@@ -148,11 +157,13 @@ class AdminController extends Controller
                     $settings->saveSecret($id, $request->input($field));
                 }
             }
-            $settings->audit(
-                $request->user()->id,
-                'settings.updated',
-                'Application settings revision '.($row->revision + 1),
-            );
+            foreach ($changes as $area => $fields) {
+                $settings->audit(
+                    $request->user()->id,
+                    "settings.$area.updated",
+                    implode(', ', $fields).' updated.',
+                );
+            }
         }, 3);
 
         return response()->json(['ok' => true]);
@@ -170,11 +181,9 @@ class AdminController extends Controller
         if ($provider === 'smtp') {
             $config = $settings->get();
             abort_unless(
-                $config['smtpEnabled'] &&
-                    $config['smtpHost'] &&
-                    $config['smtpFromAddress'],
+                $config['smtpHost'] && $config['smtpFromAddress'],
                 422,
-                'Save and enable the SMTP settings first.',
+                'Save the SMTP host and sender address first.',
             );
             $mail->apply($config);
             Mail::raw(

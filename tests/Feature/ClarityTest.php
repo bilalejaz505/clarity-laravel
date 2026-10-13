@@ -6,6 +6,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Services\AppSettingsService;
 use App\Services\EntitlementService;
+use App\Services\MailSettingsService;
 use App\Services\PayPalService;
 use App\Services\UsageMeter;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -334,6 +335,21 @@ class ClarityTest extends TestCase
             ->assertDontSee('sk-abcdefghijklmnopqrstuv')
             ->assertDontSee('paypal-private-secret')
             ->assertDontSee('smtp-private-password')
+            ->assertJsonFragment([
+                'actor_name' => $admin->name,
+                'actor_email' => $admin->email,
+                'area' => 'OpenAI',
+                'activity' => 'Settings Updated',
+                'detail' => 'OpenAI Key updated.',
+            ])
+            ->assertJsonFragment([
+                'area' => 'PayPal & Plans',
+                'detail' => 'PayPal Secret updated.',
+            ])
+            ->assertJsonFragment([
+                'area' => 'Email & SMTP',
+                'detail' => 'SMTP Password updated.',
+            ])
             ->assertJsonPath('revision', 1);
         $ciphertexts = DB::table('app_secrets')
             ->pluck('ciphertext')
@@ -360,6 +376,26 @@ class ClarityTest extends TestCase
             $settings->secret('smtp'),
         );
         $this->postJson('/api/admin', $body)->assertStatus(409);
+    }
+
+    public function test_default_smtp_configuration_uses_local_mailpit_automatically(): void
+    {
+        $settings = app(AppSettingsService::class)->defaults();
+
+        $this->assertArrayNotHasKey('smtpEnabled', $settings);
+        $this->assertSame('127.0.0.1', $settings['smtpHost']);
+        $this->assertSame(1025, $settings['smtpPort']);
+        $this->assertSame('none', $settings['smtpEncryption']);
+
+        app(MailSettingsService::class)->apply($settings);
+
+        $this->assertSame('smtp', config('mail.default'));
+        $this->assertSame('127.0.0.1', config('mail.mailers.smtp.host'));
+        $this->assertSame(1025, config('mail.mailers.smtp.port'));
+        $this->assertSame(
+            'hello@clarity.test',
+            config('mail.from.address'),
+        );
     }
 
     public function test_admin_can_configure_a_zero_price_package(): void

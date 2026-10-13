@@ -19,12 +19,11 @@
     "paypalEnvironment": "sandbox",
     "paypalClientId": "",
     "paypalWebhookId": "",
-    "smtpEnabled": false,
-    "smtpHost": "",
-    "smtpPort": 587,
+    "smtpHost": "127.0.0.1",
+    "smtpPort": 1025,
     "smtpUsername": "",
-    "smtpEncryption": "tls",
-    "smtpFromAddress": "",
+    "smtpEncryption": "none",
+    "smtpFromAddress": "hello@clarity.test",
     "smtpFromName": "Clarity",
     "plans": [
         {

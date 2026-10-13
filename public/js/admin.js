@@ -12,28 +12,40 @@ const $ = (id) => document.getElementById(id),
                 })[c],
         );
 let state = null;
+const labels = {
+    created_at: "Created At",
+    actor_name: "Actor Name",
+    actor_email: "Actor Email",
+    paid_until: "Paid Until",
+    plan_key: "Plan",
+};
+const label = (value) =>
+    labels[value] ||
+    String(value)
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, (character) => character.toUpperCase());
 const sections = {
     overview: {
         title: "Overview",
-        heading: "System overview",
+        heading: "System Overview",
         description:
             "Monitor access, subscriptions, usage, and platform health.",
     },
     users: {
         title: "Users",
-        heading: "People and access",
+        heading: "People & Access",
         description:
             "Review member accounts and control access to the platform.",
     },
     ai: {
         title: "OpenAI",
-        heading: "OpenAI configuration",
+        heading: "OpenAI Configuration",
         description:
             "Manage the model, encrypted credential, and response limits.",
     },
     paypal: {
         title: "PayPal & Plans",
-        heading: "Billing and Packages",
+        heading: "Billing & Packages",
         description:
             "Configure merchant access, prices, quotas, and product entitlements.",
     },
@@ -98,7 +110,7 @@ function tab(name) {
 }
 function table(rows, fields) {
     return rows.length
-        ? `<div class="table-scroll"><table><thead><tr>${fields.map((f) => `<th>${escape(f.replaceAll("_", " "))}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${fields.map((f) => `<td>${escape(row[f])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`
+        ? `<div class="table-scroll"><table><thead><tr>${fields.map((field) => `<th>${escape(label(field))}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${fields.map((field) => `<td>${escape(row[field])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`
         : '<p class="muted">No records yet.</p>';
 }
 async function load(search = "") {
@@ -110,8 +122,8 @@ async function load(search = "") {
     }
     $("admin-totals").innerHTML = Object.entries(state.totals)
         .map(
-            ([label, n]) =>
-                `<div class="metric card"><span>${escape(label)}</span><strong>${Number(n).toLocaleString()}</strong></div>`,
+            ([metricName, total]) =>
+                `<div class="metric card"><span>${escape(label(metricName))}</span><strong>${Number(total).toLocaleString()}</strong></div>`,
         )
         .join("");
     $("admin-health").textContent =
@@ -135,8 +147,10 @@ async function load(search = "") {
     ]);
     $("admin-audit").innerHTML = table(state.audit, [
         "created_at",
-        "actor",
-        "action",
+        "actor_name",
+        "actor_email",
+        "area",
+        "activity",
         "detail",
     ]);
     $("admin-users").innerHTML = state.users
@@ -169,11 +183,25 @@ async function load(search = "") {
                     }
                 }),
         );
+    const planFields = [
+        ["name", "Package Name"],
+        ["description", "Description"],
+        ["price", "Monthly Price"],
+        ["currency", "Currency"],
+        ["messages", "Message Units per Period"],
+        ["requests", "AI Requests per Period"],
+        ["paypalPlanId", "PayPal Plan ID (Paid Packages Only)"],
+    ];
     $("admin-plans").innerHTML = state.config.plans
-        .map(
-            (p, index) =>
-                `<article class="plan-editor" data-plan="${index}"><h3>${escape(p.name)}</h3><div class="form-grid">${["name", "description", "price", "currency", "messages", "requests", "paypalPlanId"].map((field) => `<label>${escape(field === "paypalPlanId" ? "PayPal plan ID (paid plans only)" : field)}<input data-plan-field="${field}" type="${["price", "messages", "requests"].includes(field) ? "number" : "text"}" ${field === "price" ? 'min="0" step="0.01"' : ""} value="${escape(p[field])}"></label>`).join("")}<label class="checkbox-line"><input type="checkbox" data-plan-field="enabled" ${p.enabled ? "checked" : ""}>Enabled</label><label class="checkbox-line"><input type="checkbox" data-product="chat" ${p.products.includes("chat") ? "checked" : ""}>Chat Insights</label><label class="checkbox-line"><input type="checkbox" data-product="freelance" ${p.products.includes("freelance") ? "checked" : ""}>Freelance Tracker</label></div><p class="muted">Set the price to 0 to let members subscribe immediately without PayPal.</p></article>`,
-        )
+        .map((plan, index) => {
+            const fields = planFields
+                .map(
+                    ([field, fieldLabel]) =>
+                        `<label class="${field === "paypalPlanId" ? "admin-field-full" : ""}">${escape(fieldLabel)}<input data-plan-field="${field}" type="${["price", "messages", "requests"].includes(field) ? "number" : "text"}" ${field === "price" ? 'min="0" step="0.01"' : ""} value="${escape(plan[field])}"></label>`,
+                )
+                .join("");
+            return `<article class="plan-editor" data-plan="${index}"><h3>${escape(plan.name)}</h3><div class="form-grid admin-setting-grid">${fields}<fieldset class="admin-options-row plan-access-options"><legend>Package Availability & Product Access</legend><label class="checkbox-line"><input type="checkbox" data-plan-field="enabled" ${plan.enabled ? "checked" : ""}>Package Enabled</label><label class="checkbox-line"><input type="checkbox" data-product="chat" ${plan.products.includes("chat") ? "checked" : ""}>Chat Insights</label><label class="checkbox-line"><input type="checkbox" data-product="freelance" ${plan.products.includes("freelance") ? "checked" : ""}>Freelance Tracker</label></fieldset></div><p class="plan-help muted">Set the price to 0 to let members subscribe immediately without PayPal.</p></article>`;
+        })
         .join("");
 }
 document

@@ -11,7 +11,9 @@ class MailSettingsService
     public function apply(?array $config = null): void
     {
         $config ??= $this->settings->get();
-        $mailer = $config['smtpEnabled'] ? 'smtp' : 'log';
+        $mailer = $config['smtpHost'] && $config['smtpFromAddress']
+            ? 'smtp'
+            : 'log';
 
         config()->set([
             'mail.default' => $mailer,

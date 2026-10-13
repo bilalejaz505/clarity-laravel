@@ -951,6 +951,80 @@ textarea:focus,
 .admin-app-content .detail-card h3 {
     color: #18243b;
 }
+.admin-app-content .detail-card h2 {
+    margin: 0 0 10px;
+}
+.admin-app-content .definition {
+    margin: 0 0 24px;
+}
+.admin-app-content .admin-setting-grid {
+    gap: 22px 20px;
+    margin: 0;
+}
+.admin-app-content .admin-setting-grid > label:not(.checkbox-line) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 9px;
+    margin: 0;
+    color: #273753;
+    font-size: 12px;
+    font-weight: 650;
+}
+.admin-app-content .admin-setting-grid input,
+.admin-app-content .admin-setting-grid select,
+.admin-app-content .admin-setting-grid textarea {
+    box-sizing: border-box;
+    min-height: 44px;
+    margin: 0;
+    font-weight: 400;
+}
+.admin-app-content .admin-setting-grid textarea {
+    min-height: 92px;
+    resize: vertical;
+}
+.admin-app-content .admin-field-full,
+.admin-app-content .admin-options-row {
+    grid-column: 1 / -1;
+}
+.admin-app-content .admin-options-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 0;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: #f7f9fe;
+}
+.admin-app-content .admin-options-row legend {
+    padding: 0 6px;
+    color: #4a5a76;
+    font-size: 11px;
+    font-weight: 700;
+}
+.admin-app-content .admin-options-row .checkbox-line {
+    box-sizing: border-box;
+    min-height: 44px;
+    margin: 0;
+    padding: 11px 13px;
+    border: 1px solid #e1e7f2;
+    border-radius: 9px;
+    background: white;
+    color: #273753;
+    font-size: 12px;
+    font-weight: 600;
+}
+.admin-app-content .admin-options-row .checkbox-line input {
+    flex: 0 0 auto;
+    margin: 0;
+}
+.admin-app-content .admin-subsection-title {
+    margin: 30px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
 .admin-app-content table th {
     color: #7584a1;
 }
@@ -961,8 +1035,19 @@ textarea:focus,
     border-color: var(--border);
     background: #fbfcff;
     border-radius: 13px;
-    padding: 22px;
-    margin-top: 18px;
+    padding: 24px;
+    margin-top: 20px;
+}
+.admin-app-content .plan-editor > h3 {
+    margin: 0 0 22px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e8ecf4;
+    font-size: 17px;
+}
+.admin-app-content .plan-editor .plan-help {
+    margin: 18px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #e8ecf4;
 }
 .admin-app-content .sticky-save {
     position: sticky;
@@ -1072,6 +1157,9 @@ textarea:focus,
     }
 }
 @media (max-width: 650px) {
+    .admin-app-content .admin-options-row {
+        grid-template-columns: 1fr;
+    }
     .admin-dashboard-link,
     .member-main-shell .topbar-right .badge {
         display: none;

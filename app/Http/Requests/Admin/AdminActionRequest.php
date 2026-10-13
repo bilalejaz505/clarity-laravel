@@ -18,7 +18,7 @@ class AdminActionRequest extends FormRequest
         return match ($this->input('action')) {
             'settings' => [
                 'revision' => 'required|integer|min:0',
-                'config' => 'required|array:appName,siteTagline,supportEmail,maintenance,maintenanceTitle,maintenanceMessage,notice,maxUploadMB,maxImportMessages,demoEnabled,trialEnabled,trialDays,trialMessages,trialRequests,aiEnabled,aiModel,aiMaxOutput,paypalEnvironment,paypalClientId,paypalWebhookId,smtpEnabled,smtpHost,smtpPort,smtpUsername,smtpEncryption,smtpFromAddress,smtpFromName,plans',
+                'config' => 'required|array:appName,siteTagline,supportEmail,maintenance,maintenanceTitle,maintenanceMessage,notice,maxUploadMB,maxImportMessages,demoEnabled,trialEnabled,trialDays,trialMessages,trialRequests,aiEnabled,aiModel,aiMaxOutput,paypalEnvironment,paypalClientId,paypalWebhookId,smtpHost,smtpPort,smtpUsername,smtpEncryption,smtpFromAddress,smtpFromName,plans',
                 'config.appName' => 'required|string|max:80',
                 'config.siteTagline' => 'required|string|max:160',
                 'config.supportEmail' => 'nullable|email|max:254',
@@ -39,7 +39,6 @@ class AdminActionRequest extends FormRequest
                 'config.paypalEnvironment' => 'required|in:sandbox,live',
                 'config.paypalClientId' => 'present|string|max:200',
                 'config.paypalWebhookId' => 'present|string|max:100',
-                'config.smtpEnabled' => 'required|boolean',
                 'config.smtpHost' => 'present|string|max:255',
                 'config.smtpPort' => 'required|integer|between:1,65535',
                 'config.smtpUsername' => 'present|string|max:255',
