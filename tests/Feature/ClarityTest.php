@@ -132,6 +132,31 @@ class ClarityTest extends TestCase
             ->assertSeeText('Tasks & milestones')
             ->assertSee('/contracts?view=overview', false);
 
+        $this->get('/chats')
+            ->assertOk()
+            ->assertSee('data-product-nav="chat"', false)
+            ->assertSee('data-product-nav="freelance"', false)
+            ->assertSeeInOrder(
+                [
+                    'data-product-nav="freelance"',
+                    'aria-label="Freelance Tracker"',
+                    'hidden',
+                ],
+                false,
+            );
+
+        $this->get('/contracts')
+            ->assertOk()
+            ->assertSeeInOrder(
+                [
+                    'data-product-nav="chat"',
+                    'aria-label="Chat Insights"',
+                    'hidden',
+                ],
+                false,
+            )
+            ->assertSee('data-product-nav="freelance"', false);
+
         $unsubscribed = User::factory()->create();
         $this->actingAs($unsubscribed)
             ->get('/chats')

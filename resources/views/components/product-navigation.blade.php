@@ -25,8 +25,10 @@
         'documents' => ['Document studio', 'file-earmark-richtext'],
         'ask' => ['Ask your project', 'stars'],
     ];
-    $navigation = $product === 'freelance' ? $freelanceNavigation : $chatNavigation;
-    $baseUrl = $demo ? "/demo?product={$product}&view=" : ($product === 'freelance' ? '/contracts?view=' : '/chats?view=');
+    $navigationByProduct = [
+        'chat' => $chatNavigation,
+        'freelance' => $freelanceNavigation,
+    ];
 @endphp
 
 <div class="product-switch">
@@ -43,10 +45,23 @@
 </div>
 
 <span class="eyebrow">{{ $product === 'chat' ? 'YOUR CONVERSATIONS' : 'YOUR CLIENT WORK' }}</span>
-<nav data-product-nav="{{ $product }}" aria-label="{{ $product === 'chat' ? 'Chat Insights' : 'Freelance Tracker' }}">
-    @foreach ($navigation as $view => [$label, $icon])
-        <a href="{{ $baseUrl }}{{ $view }}" data-view="{{ $view }}" class="nav-link">
-            <i class="bi bi-{{ $icon }}" aria-hidden="true"></i>{{ $label }}
-        </a>
-    @endforeach
-</nav>
+@foreach ($navigationByProduct as $navigationProduct => $navigation)
+    @if (in_array($navigationProduct, $products, true))
+        @php
+            $baseUrl = $demo
+                ? "/demo?product={$navigationProduct}&view="
+                : ($navigationProduct === 'freelance'
+                    ? '/contracts?view='
+                    : '/chats?view=');
+        @endphp
+        <nav data-product-nav="{{ $navigationProduct }}"
+            aria-label="{{ $navigationProduct === 'chat' ? 'Chat Insights' : 'Freelance Tracker' }}"
+            @if ($product !== $navigationProduct) hidden @endif>
+            @foreach ($navigation as $view => [$label, $icon])
+                <a href="{{ $baseUrl }}{{ $view }}" data-view="{{ $view }}" class="nav-link">
+                    <i class="bi bi-{{ $icon }}" aria-hidden="true"></i>{{ $label }}
+                </a>
+            @endforeach
+        </nav>
+    @endif
+@endforeach
