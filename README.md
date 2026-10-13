@@ -18,10 +18,10 @@ Open http://127.0.0.1:8000. Register and log in normally. Grant your account adm
 
 The local database is initialized with one administrator plus chat-only, contracts-only, and complete members. Use `/admin/login` for administration and `/login` for member access; generated passwords are in the private `Clarity-Local-Accounts-Current.txt` deliverable. See the current-account section in the localhost guide for plans and starter records.
 
-- [Localhost setup](LOCALHOST_SETUP.md): existing/fresh setup, authentication, email and troubleshooting.
-- [cPanel deployment](CPANEL_DEPLOYMENT.md): PHP/MySQL requirements, secure public root, releases and backups.
-- [Billing architecture](BILLING_ARCHITECTURE.md): PayPal activation, entitlements, quotas and credential storage.
-- [Migration inventory](FEATURE_PARITY.md): preserved features, source structure, data migration and verification limits.
+- [Localhost setup](docs/LOCALHOST_SETUP.md): existing/fresh setup, authentication, email and troubleshooting.
+- [cPanel deployment](docs/CPANEL_DEPLOYMENT.md): PHP/MySQL requirements, secure public root, releases and backups.
+- [Billing architecture](docs/BILLING_ARCHITECTURE.md): PayPal activation, entitlements, quotas and credential storage.
+- [Migration inventory](docs/FEATURE_PARITY.md): preserved features, source structure, data migration and verification limits.
 
 ## Development
 

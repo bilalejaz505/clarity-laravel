@@ -50,7 +50,7 @@ Local `MAIL_MAILER=log` writes verification/reset emails to `storage/logs/larave
 
 In `/admin`, save the OpenAI key and model, then test the connection. Keys are encrypted in MySQL and never returned to the browser. The app's local observations and statistics work without a key; AI requests require one.
 
-PayPal settings remain inactive until you supply a Business account's sandbox or live credentials, webhook ID, and matching monthly plan IDs. Use sandbox first. Packages priced at zero activate without PayPal. See `BILLING_ARCHITECTURE.md`.
+PayPal settings remain inactive until you supply a Business account's sandbox or live credentials, webhook ID, and matching monthly plan IDs. Use sandbox first. Packages priced at zero activate without PayPal. See [Billing architecture](BILLING_ARCHITECTURE.md).
 
 ## Verification and troubleshooting
 

@@ -136,5 +136,5 @@ Before relying on a package's API, confirm its installed version:
 - Use one table per migration, dedicated Form Requests, named services, Eloquent models/casts, and formatted Blade/PHP/browser code.
 - Preserve existing feature behavior and version-one workspace backups. Protect owner isolation, session/CSRF authentication, verified payment access, and exactly-once quota credits.
 - Never expose provider secrets or include .env, real accounts, logs, SQL backups, or decrypted keys in deliverables. Keep APP_KEY stable on existing installations.
-- Maintain LOCALHOST_SETUP.md, CPANEL_DEPLOYMENT.md, BILLING_ARCHITECTURE.md, and FEATURE_PARITY.md when setup, deployment, schema, auth, or billing changes.
+- Maintain `docs/LOCALHOST_SETUP.md`, `docs/CPANEL_DEPLOYMENT.md`, `docs/BILLING_ARCHITECTURE.md`, and `docs/FEATURE_PARITY.md` when setup, deployment, schema, auth, or billing changes.
 - No new required paid services beyond OpenAI. Use existing hosting SMTP and MySQL; PayPal processing is configured by the merchant.
