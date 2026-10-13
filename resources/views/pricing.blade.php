@@ -9,6 +9,9 @@
             @foreach ($settings['plans'] as $plan)
                 @if ($plan['enabled'])
                     <article class="card pricing-card {{ $plan['key'] === 'bundle' ? 'featured' : '' }}">
+                        @if ($plan['key'] === 'bundle')
+                            <span class="plan-badge"><i class="bi bi-stars" aria-hidden="true"></i> Recommended</span>
+                        @endif
                         <h2>{{ $plan['name'] }}</h2>
                         <p>{{ $plan['description'] }}</p>
                         <div class="price">
@@ -31,7 +34,7 @@
                         </ul>
                         <button class="primary full" data-checkout="{{ $plan['key'] }}"
                             @disabled((float) $plan['price'] > 0 && (!$plan['paypalPlanId'] || !$settings['paypalClientId']))>
-                            {{ (float) $plan['price'] === 0.0 ? 'Subscribe free' : ($plan['paypalPlanId'] && $settings['paypalClientId'] ? 'Continue to PayPal' : 'Checkout coming soon') }}
+                            {{ (float) $plan['price'] === 0.0 ? 'Subscribe free' : ($plan['paypalPlanId'] && $settings['paypalClientId'] ? 'Continue to PayPal' : 'PayPal setup pending') }}
                         </button>
                     </article>
                 @endif
@@ -46,9 +49,6 @@
             </div><a href="/account" class="secondary">Start trial <i
                     class="bi bi-arrow-right" aria-hidden="true"></i></a>
         </div>
-        <p class="definition">Prices are draft launch settings until merchant plans are configured. Each analysis batch,
-            question, or reply counts as one request; supplied messages count toward the allowance. Failed AI requests are
-            credited back.</p>
     </main>
 @endsection
 @section('scripts')
