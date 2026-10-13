@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
+use App\Services\EntitlementService;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
@@ -21,6 +22,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
+    public function __construct(public EntitlementService $access) {}
+
     public function form(Request $request, string $mode = 'login'): View
     {
         return view('auth.form', [
@@ -37,6 +40,7 @@ class AuthController extends Controller
             $next,
             [
                 '/account',
+                '/dashboard',
                 '/admin',
                 '/chats',
                 '/contracts',
@@ -46,7 +50,7 @@ class AuthController extends Controller
             true,
         )
             ? $next
-            : '/account';
+            : '/dashboard';
     }
 
     public function login(LoginRequest $request): Response
@@ -73,7 +77,15 @@ class AuthController extends Controller
             ->forceFill(['last_seen' => now()])
             ->save();
 
-        return redirect()->intended($this->next($request->input('next')));
+        $next = $this->next($request->input('next'));
+        if ($next === '/dashboard') {
+            $next = $this->access->dashboardPath(
+                $request->user(),
+                $this->access->local($request),
+            );
+        }
+
+        return redirect()->intended($next);
     }
 
     public function register(RegisterRequest $request): Response
@@ -142,7 +154,7 @@ class AuthController extends Controller
     {
         $request->fulfill();
 
-        return redirect('/account')->with('status', 'Email verified.');
+        return redirect('/dashboard')->with('status', 'Email verified.');
     }
 
     public function resend(Request $request): Response

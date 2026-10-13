@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Subscription;
 use App\Models\User;
 use App\Services\AppSettingsService;
 use App\Services\EntitlementService;
@@ -38,7 +39,7 @@ class ClarityTest extends TestCase
         ])->assertRedirect('/account');
         $this->assertAuthenticatedAs($user);
         $this->get('/')
-            ->assertSeeText('My account')
+            ->assertSeeText('Dashboard')
             ->assertDontSeeText('Log in');
         $this->post('/logout')->assertRedirect('/');
         $this->assertGuest();
@@ -96,6 +97,82 @@ class ClarityTest extends TestCase
         $this->getJson('/api/auth')->assertJson(['authenticated' => false]);
         $user = User::factory()->create();
         $this->actingAs($user)->getJson('/api/admin')->assertForbidden();
+    }
+
+    public function test_authenticated_account_and_access_pages_use_the_workspace_shell(): void
+    {
+        $user = User::factory()->create();
+        $bundle = collect(app(AppSettingsService::class)->defaults()['plans'])
+            ->firstWhere('key', 'bundle');
+        Subscription::factory()->for($user)->create([
+            'plan_key' => 'bundle',
+            'status' => 'ACTIVE',
+            'paid_until' => now()->addMonth(),
+            'plan_snapshot' => $bundle,
+        ]);
+
+        $this->actingAs($user)
+            ->get('/account')
+            ->assertOk()
+            ->assertSee('id="member-sidebar"', false)
+            ->assertSee('class="product-switch"', false)
+            ->assertSeeText('Chat Insights')
+            ->assertSeeText('Freelance Tracker')
+            ->assertDontSeeText('Chat dashboard')
+            ->assertDontSeeText('Contracts dashboard');
+
+        $unsubscribed = User::factory()->create();
+        $this->actingAs($unsubscribed)
+            ->get('/chats')
+            ->assertForbidden()
+            ->assertSee('id="member-sidebar"', false)
+            ->assertSeeText('Choose your next step.');
+
+        $unsubscribed->forceFill(['email_verified_at' => null])->save();
+        $this->get('/email/verify')
+            ->assertOk()
+            ->assertSee('id="member-sidebar"', false)
+            ->assertSeeText('Verify your email');
+    }
+
+    public function test_dashboard_entry_and_product_switch_follow_the_users_package(): void
+    {
+        $plans = collect(app(AppSettingsService::class)->defaults()['plans']);
+
+        foreach (
+            [
+                'chat' => ['/chats', true, false],
+                'freelance' => ['/contracts', false, true],
+                'bundle' => ['/chats', true, true],
+            ] as $planKey => [$destination, $showsChat, $showsContracts]
+        ) {
+            $user = User::factory()->create([
+                'email' => "{$planKey}@example.com",
+                'password' => 'correct-password',
+            ]);
+            Subscription::factory()->for($user)->create([
+                'plan_key' => $planKey,
+                'status' => 'ACTIVE',
+                'paid_until' => now()->addMonth(),
+                'plan_snapshot' => $plans->firstWhere('key', $planKey),
+            ]);
+
+            $this->post('/login', [
+                'email' => $user->email,
+                'password' => 'correct-password',
+            ])->assertRedirect($destination);
+
+            $this->get('/dashboard')->assertRedirect($destination);
+            $workspace = $this->get($destination)->assertOk();
+            $showsChat
+                ? $workspace->assertSeeText('Chat Insights')
+                : $workspace->assertDontSeeText('Chat Insights');
+            $showsContracts
+                ? $workspace->assertSeeText('Freelance Tracker')
+                : $workspace->assertDontSeeText('Freelance Tracker');
+
+            $this->post('/logout');
+        }
     }
 
     public function test_production_loopback_has_no_free_plan_and_unverified_accounts_are_denied(): void

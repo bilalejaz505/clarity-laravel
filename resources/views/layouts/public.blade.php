@@ -24,8 +24,8 @@
                 <a href="/demo">Try the demo</a>
                 <a href="/pricing">Plans</a>
                 @auth
-                    <a href="/account" class="secondary"><i class="bi bi-person-circle" aria-hidden="true"></i> My
-                        account</a>
+                    <a href="/dashboard" class="secondary"><i class="bi bi-speedometer2" aria-hidden="true"></i>
+                        Dashboard</a>
                 @else
                     <a href="/login" class="secondary"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
                         Log in</a>

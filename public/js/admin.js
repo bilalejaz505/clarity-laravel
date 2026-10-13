@@ -12,6 +12,44 @@ const $ = (id) => document.getElementById(id),
                 })[c],
         );
 let state = null;
+const sections = {
+    overview: {
+        title: "Overview",
+        heading: "System overview",
+        description:
+            "Monitor access, subscriptions, usage, and platform health.",
+    },
+    users: {
+        title: "Users",
+        heading: "People and access",
+        description:
+            "Review member accounts and control access to the platform.",
+    },
+    ai: {
+        title: "OpenAI",
+        heading: "OpenAI configuration",
+        description:
+            "Manage the model, encrypted credential, and response limits.",
+    },
+    paypal: {
+        title: "PayPal & plans",
+        heading: "Billing and packages",
+        description:
+            "Configure merchant access, prices, quotas, and product entitlements.",
+    },
+    general: {
+        title: "Application settings",
+        heading: "Application settings",
+        description:
+            "Control customer notices, imports, maintenance, demos, and trials.",
+    },
+    audit: {
+        title: "Audit log",
+        heading: "Audit log",
+        description:
+            "Review administrative and billing activity across the system.",
+    },
+};
 async function api(url, body) {
     const r = await fetch(url, {
         method: body ? "POST" : "GET",
@@ -34,6 +72,7 @@ function notice(text) {
     window.ClarityFeedback.notify("success", text);
 }
 function tab(name) {
+    const section = sections[name];
     document
         .querySelectorAll("[data-admin-panel]")
         .forEach((p) => (p.hidden = p.dataset.adminPanel !== name));
@@ -41,6 +80,10 @@ function tab(name) {
     document
         .querySelectorAll("[data-tab]")
         .forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+    $("admin-view-title").textContent = section.title;
+    $("admin-section-heading").textContent = section.heading;
+    $("admin-section-description").textContent = section.description;
+    $("admin-sidebar").classList.remove("mobile-open");
 }
 function table(rows, fields) {
     return rows.length
@@ -125,6 +168,10 @@ async function load(search = "") {
 document
     .querySelectorAll("[data-tab]")
     .forEach((b) => (b.onclick = () => tab(b.dataset.tab)));
+$("admin-nav-open").onclick = () =>
+    $("admin-sidebar").classList.add("mobile-open");
+$("admin-nav-close").onclick = () =>
+    $("admin-sidebar").classList.remove("mobile-open");
 $("user-search-form").onsubmit = async (e) => {
     e.preventDefault();
     try {

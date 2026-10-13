@@ -820,6 +820,159 @@ textarea:focus,
     color: #b44862;
     border-radius: 10px;
 }
+.admin-app,
+.member-app {
+    min-height: 100vh;
+    background: var(--page);
+}
+.admin-app-sidebar .eyebrow,
+.member-app-sidebar .eyebrow {
+    margin: 10px 0 12px;
+}
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+.admin-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font-family: inherit;
+}
+.admin-nav .nav-link i,
+.sidebar-bottom .nav-link i {
+    width: 17px;
+    flex: 0 0 17px;
+    text-align: center;
+    color: #8fa6ea;
+}
+.admin-nav .nav-link.active i {
+    color: #c9d3ff;
+}
+.admin-main-shell,
+.member-main-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.admin-main-shell .topbar,
+.member-main-shell .topbar {
+    flex: 0 0 auto;
+}
+.admin-main-shell .main-footer,
+.member-main-shell .main-footer {
+    margin-top: auto;
+}
+.admin-main-shell .topbar form,
+.member-main-shell .topbar form {
+    margin: 0;
+}
+.admin-app-content,
+.member-app-content {
+    width: 100%;
+    padding-bottom: 64px;
+}
+.admin-page-heading,
+.dashboard-page-heading {
+    margin: 18px 0 32px;
+}
+.admin-page-heading h1,
+.dashboard-page-heading h1 {
+    margin: 10px 0 8px;
+    font-size: 38px;
+    color: #18243b;
+}
+.admin-page-heading p,
+.dashboard-page-heading p {
+    margin: 0;
+    color: #68758c;
+    font-size: 14px;
+}
+.admin-app-content [data-admin-panel] > .detail-card,
+.admin-app-content #admin-settings-form > .detail-card,
+.account-content > .detail-card,
+#subscriptions > .detail-card {
+    padding: 26px;
+}
+.admin-app-content .metrics {
+    margin-bottom: 18px;
+}
+.admin-app-content .metrics + .detail-card {
+    margin-bottom: 18px;
+}
+.admin-app-content .two-col {
+    margin-top: 18px;
+}
+.admin-app-content .detail-card h2,
+.admin-app-content .detail-card h3 {
+    color: #18243b;
+}
+.admin-app-content table th {
+    color: #7584a1;
+}
+.admin-app-content table td {
+    color: #34435d;
+}
+.admin-app-content .plan-editor {
+    border-color: var(--border);
+    background: #fbfcff;
+    border-radius: 13px;
+    padding: 22px;
+    margin-top: 18px;
+}
+.admin-app-content .sticky-save {
+    position: sticky;
+    bottom: 18px;
+    z-index: 12;
+    margin-top: 22px;
+    padding: 16px 18px;
+    box-shadow: 0 12px 35px #17223b14;
+}
+.member-app-content .account-content {
+    max-width: 1050px;
+}
+.account-content > .detail-card {
+    margin-bottom: 18px;
+}
+.account-content #account-reason {
+    color: #68758c;
+}
+.dashboard-gate {
+    min-height: calc(100vh - 230px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 720px;
+    padding-bottom: 60px;
+}
+.dashboard-gate-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    background: #e9edff;
+    color: #5366da;
+    font-size: 22px;
+}
+.dashboard-gate h1 {
+    margin: 12px 0;
+    font-size: 42px;
+}
+.dashboard-gate > p {
+    max-width: 620px;
+    margin: 0 0 24px;
+    color: #68758c;
+    font-size: 15px;
+}
 @media (max-width: 1000px) {
     .landing-hero {
         gap: 30px;
@@ -878,6 +1031,27 @@ textarea:focus,
     }
     .auth-card {
         padding: 26px;
+    }
+}
+@media (max-width: 650px) {
+    .admin-dashboard-link,
+    .member-main-shell .topbar-right .badge {
+        display: none;
+    }
+    .admin-page-heading,
+    .dashboard-page-heading {
+        margin-top: 8px;
+    }
+    .admin-page-heading h1,
+    .dashboard-page-heading h1,
+    .dashboard-gate h1 {
+        font-size: 30px;
+    }
+    .admin-app-content [data-admin-panel] > .detail-card,
+    .admin-app-content #admin-settings-form > .detail-card,
+    .account-content > .detail-card,
+    #subscriptions > .detail-card {
+        padding: 20px;
     }
 }
 @media (prefers-reduced-motion: reduce) {

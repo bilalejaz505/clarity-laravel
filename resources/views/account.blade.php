@@ -1,10 +1,12 @@
-@extends('layouts.public')
+@extends('layouts.member')
+@section('title', 'Your account · Clarity')
+@section('section-title', 'My account')
 @section('content')
-    <main class="public-content account-content">
-        <div class="public-heading">
-            <h1>Your account</h1>
-            <p>Manage access, usage, and subscriptions.</p>
-        </div>
+    <div class="page-heading dashboard-page-heading"><span class="eyebrow">ACCOUNT CENTER</span>
+        <h1>Your account</h1>
+        <p>Manage access, usage, and subscriptions.</p>
+    </div>
+    <div class="account-content">
         @if (!auth()->user()->hasVerifiedEmail())
             <div class="progress-banner">Verify your email for hosted access. <a href="/email/verify">Send a verification
                     email</a></div>
@@ -19,11 +21,9 @@
             <p id="account-reason"></p>
             <div id="account-usage" class="metrics"></div>
             <div id="account-actions" class="toolbar"></div>
-            <form method="POST" action="/logout">@csrf<button class="text-btn"><i class="bi bi-box-arrow-right"
-                        aria-hidden="true"></i>Log out</button></form>
         </div>
         <div id="subscriptions"></div>
-    </main>
+    </div>
 @endsection
 @section('scripts')
     <script src="{{ asset('js/public.js') }}?v={{ filemtime(public_path('js/public.js')) }}" defer></script>

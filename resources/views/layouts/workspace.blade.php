@@ -35,6 +35,7 @@
             'documents' => ['Document studio', 'file-earmark-richtext'],
             'ask' => ['Ask your project', 'stars'],
         ];
+        $availableProducts = $availableProducts ?? ['chat', 'freelance'];
     @endphp
     <aside class="sidebar" id="sidebar">
         <a href="/" class="sidebar-brand"><x-brand-mark /> Clarity</a>
@@ -42,13 +43,16 @@
             <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
         <div class="product-switch">
-            <a data-switch-product="chat" href="{{ $demo ? '/demo?product=chat' : '/chats' }}"
-                class="{{ $product === 'chat' ? 'active' : '' }}"><i class="bi bi-chat-dots" aria-hidden="true"></i>
-                Chat Insights</a>
-            <a data-switch-product="freelance" href="{{ $demo ? '/demo?product=freelance' : '/contracts' }}"
-                class="{{ $product === 'freelance' ? 'active' : '' }}"><i class="bi bi-briefcase"
-                    aria-hidden="true"></i>
-                Freelance Tracker</a>
+            @if (in_array('chat', $availableProducts, true))
+                <a data-switch-product="chat" href="{{ $demo ? '/demo?product=chat' : '/chats' }}"
+                    class="{{ $product === 'chat' ? 'active' : '' }}"><i class="bi bi-chat-dots"
+                        aria-hidden="true"></i>Chat Insights</a>
+            @endif
+            @if (in_array('freelance', $availableProducts, true))
+                <a data-switch-product="freelance" href="{{ $demo ? '/demo?product=freelance' : '/contracts' }}"
+                    class="{{ $product === 'freelance' ? 'active' : '' }}"><i class="bi bi-briefcase"
+                        aria-hidden="true"></i>Freelance Tracker</a>
+            @endif
         </div>
         <span class="eyebrow">{{ $product === 'chat' ? 'YOUR CONVERSATIONS' : 'YOUR CLIENT WORK' }}</span>
         @foreach (['chat' => $chatNavigation, 'freelance' => $freelanceNavigation] as $navigationProduct => $items)

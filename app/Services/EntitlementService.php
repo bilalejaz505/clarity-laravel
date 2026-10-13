@@ -184,4 +184,21 @@ class EntitlementService
 
         return $e;
     }
+
+    public function dashboardPath(User $user, bool $local): string
+    {
+        $entitlement = $this->entitlement($user, $local);
+
+        if (! $user->hasVerifiedEmail() && ! $local) {
+            return '/email/verify';
+        }
+
+        if (! $entitlement['allowed']) {
+            return '/account';
+        }
+
+        return in_array('chat', $entitlement['products'], true)
+            ? '/chats'
+            : '/contracts';
+    }
 }

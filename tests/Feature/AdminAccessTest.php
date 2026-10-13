@@ -47,6 +47,19 @@ class AdminAccessTest extends TestCase
         $this->get('/admin/login')->assertRedirect('/admin');
     }
 
+    public function test_admin_dashboard_uses_the_workspace_design_shell(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('id="admin-sidebar"', false)
+            ->assertSee('class="main-shell admin-main-shell"', false)
+            ->assertSeeText('PayPal & plans')
+            ->assertSeeText('Member dashboard');
+    }
+
     public static function restrictedAdminStates(): array
     {
         return [

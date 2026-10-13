@@ -6,6 +6,7 @@ use App\Models\Workspace;
 use App\Services\AppSettingsService;
 use App\Services\EntitlementService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -70,12 +71,23 @@ class PageController extends Controller
 
         return view('workspace', [
             'product' => $product,
+            'availableProducts' => $e['products'],
             'demo' => false,
             'initialStore' => Workspace::where(
                 'user_id',
                 $request->user()->id,
             )->first()?->data,
         ]);
+    }
+
+    public function dashboard(Request $request): RedirectResponse
+    {
+        return redirect(
+            $this->access->dashboardPath(
+                $request->user(),
+                $this->access->local($request),
+            ),
+        );
     }
 
     public function account(): View|Response

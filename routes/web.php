@@ -79,6 +79,9 @@ Route::middleware('private')->group(function () {
             ->middleware('throttle:3,1')
             ->name('verification.send');
         Route::get('/account', [PageController::class, 'account']);
+        Route::get('/dashboard', [PageController::class, 'dashboard'])->name(
+            'dashboard',
+        );
         Route::get('/api/account', [AccountController::class, 'show']);
         Route::post('/api/account', [
             AccountController::class,
