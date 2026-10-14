@@ -10,25 +10,32 @@ const escapeText = (value) =>
                 "'": "&#39;",
             })[c],
     );
-async function api(url, body) {
-    const r = await fetch(url, {
-        method: body ? "POST" : "GET",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector("meta[name=csrf-token]")
-                .content,
-        },
-        ...(body ? { body: JSON.stringify(body) } : {}),
-        credentials: "same-origin",
-    });
-    const data = await r.json();
-    if (r.status === 401) {
-        location.href = "/login?next=/account";
-        throw Error("Log in to continue.");
+async function api(url, body, loadingMessage = "Loading Your Account…") {
+    window.ClarityFeedback.showLoading(loadingMessage);
+    try {
+        const r = await fetch(url, {
+            method: body ? "POST" : "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    "meta[name=csrf-token]",
+                ).content,
+            },
+            ...(body ? { body: JSON.stringify(body) } : {}),
+            credentials: "same-origin",
+        });
+        const data = await r.json();
+        if (r.status === 401) {
+            location.href = "/login?next=/account";
+            throw Error("Log in to continue.");
+        }
+        if (!r.ok)
+            throw Error(data.error || data.message || "Request failed.");
+        return data;
+    } finally {
+        window.ClarityFeedback.hideLoading();
     }
-    if (!r.ok) throw Error(data.error || data.message || "Request failed.");
-    return data;
 }
 function showError(e) {
     window.ClarityFeedback.notify("error", e.message);
@@ -38,10 +45,15 @@ document.querySelectorAll("[data-checkout]").forEach(
         (button.onclick = async () => {
             button.disabled = true;
             try {
-                const result = await api("/api/billing", {
-                    action: "checkout",
-                    planKey: button.dataset.checkout,
-                });
+                const result = await api(
+                    "/api/billing",
+                    {
+                        action: "checkout",
+                        planKey: button.dataset.checkout,
+                    },
+                    "Preparing Secure PayPal Checkout…",
+                );
+                window.ClarityFeedback.showLoading("Opening PayPal…");
                 location.assign(result.redirectUrl || result.approvalUrl);
             } catch (e) {
                 showError(e);
@@ -123,4 +135,37 @@ async function loadAccount() {
         showError(e);
     }
 }
-loadAccount();
+
+async function completeCheckoutReturn() {
+    const url = new URL(location.href);
+    if (
+        url.searchParams.get("checkout") !== "returned" ||
+        !url.searchParams.get("subscription_id")
+    ) {
+        await loadAccount();
+        return;
+    }
+
+    try {
+        const result = await api(
+            "/api/billing",
+            {
+                action: "complete",
+                paypalSubscriptionId: url.searchParams.get("subscription_id"),
+            },
+            "Confirming Your PayPal Subscription…",
+        );
+        window.ClarityFeedback.notify(
+            result.paidUntil ? "success" : "info",
+            result.paidUntil
+                ? "Payment confirmed. Your package is now active."
+                : "PayPal approval was received. Payment confirmation is still processing.",
+        );
+        history.replaceState({}, "", "/account");
+    } catch (error) {
+        showError(error);
+    }
+    await loadAccount();
+}
+
+completeCheckoutReturn();

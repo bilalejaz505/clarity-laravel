@@ -75,24 +75,32 @@ const sections = {
     },
 };
 async function api(url, body) {
-    const r = await fetch(url, {
-        method: body ? "POST" : "GET",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector("meta[name=csrf-token]")
-                .content,
-        },
-        ...(body ? { body: JSON.stringify(body) } : {}),
-        credentials: "same-origin",
-    });
-    const d = await r.json();
-    if (!r.ok) {
-        const requestError = Error(d.error || d.message || "Request failed.");
-        requestError.errors = d.errors || null;
-        throw requestError;
+    window.ClarityFeedback.showLoading("Updating Administration…");
+    try {
+        const r = await fetch(url, {
+            method: body ? "POST" : "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    "meta[name=csrf-token]",
+                ).content,
+            },
+            ...(body ? { body: JSON.stringify(body) } : {}),
+            credentials: "same-origin",
+        });
+        const d = await r.json();
+        if (!r.ok) {
+            const requestError = Error(
+                d.error || d.message || "Request failed.",
+            );
+            requestError.errors = d.errors || null;
+            throw requestError;
+        }
+        return d;
+    } finally {
+        window.ClarityFeedback.hideLoading();
     }
-    return d;
 }
 function error(e) {
     window.ClarityFeedback.notify("error", e.message);

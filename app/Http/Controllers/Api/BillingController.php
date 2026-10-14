@@ -168,6 +168,22 @@ class BillingController extends Controller
             }
         }
 
+        if ($request->action === 'complete') {
+            $subscription = DB::table('subscriptions')
+                ->where('paypal_id', $request->paypalSubscriptionId)
+                ->where('user_id', $u->id)
+                ->first();
+            abort_unless(
+                $subscription,
+                404,
+                'The returned PayPal subscription was not found for this account.',
+            );
+
+            return response()->json(
+                $paypal->reconcile((int) $subscription->id),
+            );
+        }
+
         $sub = DB::table('subscriptions')
             ->where('id', $request->subscriptionId)
             ->where('user_id', $u->id)

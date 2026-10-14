@@ -51,12 +51,11 @@ class PayPalService
             $body === null ? [] : ['json' => $body],
         );
         if (! $response->successful()) {
+            $providerMessage = trim((string) $response->json('message'));
             throw new RuntimeException(
-                'PayPal request failed ('.
-                $response->status().
-                '): '.
-                json_encode($response->json()),
-    );
+                'PayPal request failed ('.$response->status().').'.
+                    ($providerMessage ? ' '.$providerMessage : ''),
+            );
         }
 
         return $response->status() === 204 ? [] : $response->json() ?? [];

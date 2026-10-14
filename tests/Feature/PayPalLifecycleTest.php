@@ -208,6 +208,41 @@ class PayPalLifecycleTest extends TestCase
         );
     }
 
+    public function test_paypal_return_completes_the_owning_subscription(): void
+    {
+        $this->freezeTime();
+        $user = User::factory()->create();
+        $plan = $this->merchant();
+        $this->subscription($user, $plan);
+        $this->fakeProvider($this->remote($user, $plan));
+
+        $this->actingAs($user)
+            ->postJson('/api/billing', [
+                'action' => 'complete',
+                'paypalSubscriptionId' => 'I-fixture',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'ACTIVE');
+
+        $this->assertDatabaseHas('subscriptions', [
+            'paypal_id' => 'I-fixture',
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+        ]);
+        $this->assertTrue(
+            app(EntitlementService::class)->entitlement($user, false)[
+                'allowed'
+            ],
+        );
+
+        $this->actingAs(User::factory()->create())
+            ->postJson('/api/billing', [
+                'action' => 'complete',
+                'paypalSubscriptionId' => 'I-fixture',
+            ])
+            ->assertNotFound();
+    }
+
     public function test_refund_blocks_paid_access_and_late_activation_cannot_regrant_old_payment(): void
     {
         $this->freezeTime();

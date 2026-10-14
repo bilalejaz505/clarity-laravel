@@ -14,9 +14,16 @@ class SubscriptionActionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'action' => 'required|in:checkout,refresh,cancel',
+            'action' => 'required|in:checkout,complete,refresh,cancel',
             'planKey' => 'nullable|in:chat,freelance,bundle',
-            'subscriptionId' => 'required_unless:action,checkout|nullable|integer|min:1',
+            'subscriptionId' => 'required_if:action,refresh,cancel|nullable|integer|min:1',
+            'paypalSubscriptionId' => [
+                'required_if:action,complete',
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^I-[A-Z0-9]+$/i',
+            ],
         ];
     }
 }

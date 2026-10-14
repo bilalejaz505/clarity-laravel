@@ -3,6 +3,8 @@
     let queuedNotice = null;
     let lastNotice = "";
     let lastNoticeAt = 0;
+    let loadingDepth = 0;
+    let loadingOverlay = null;
 
     function fallback(icon, message) {
         document.querySelector(".feedback-fallback-toast")?.remove();
@@ -129,6 +131,29 @@
         return result.isConfirmed ? String(result.value).trim() : null;
     }
 
+    function showLoading(message = "Working On Your Request…") {
+        loadingDepth += 1;
+        if (!loadingOverlay) {
+            loadingOverlay = document.createElement("div");
+            loadingOverlay.className = "clarity-loader-overlay";
+            loadingOverlay.setAttribute("role", "status");
+            loadingOverlay.setAttribute("aria-live", "polite");
+            loadingOverlay.innerHTML =
+                '<div class="clarity-loader-card"><span class="clarity-loader-mark" aria-hidden="true"><span></span><span></span><span></span></span><strong></strong><small>Please keep this page open.</small></div>';
+            document.body.append(loadingOverlay);
+        }
+        loadingOverlay.querySelector("strong").textContent = String(message);
+        loadingOverlay.hidden = false;
+        document.body.setAttribute("aria-busy", "true");
+    }
+
+    function hideLoading(force = false) {
+        loadingDepth = force ? 0 : Math.max(0, loadingDepth - 1);
+        if (loadingDepth || !loadingOverlay) return;
+        loadingOverlay.hidden = true;
+        document.body.removeAttribute("aria-busy");
+    }
+
     function fieldFor(form, name) {
         return [...form.elements].find(
             (field) =>
@@ -242,6 +267,8 @@
         notify,
         confirm,
         requestText,
+        showLoading,
+        hideLoading,
         clearFieldErrors,
         showFieldErrors,
         validateForm,

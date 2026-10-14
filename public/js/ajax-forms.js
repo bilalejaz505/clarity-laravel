@@ -8,6 +8,9 @@
         const submitter = form.querySelector('[type="submit"]');
         submitter?.setAttribute("disabled", "disabled");
         form.setAttribute("aria-busy", "true");
+        window.ClarityFeedback.showLoading(
+            form.dataset.loadingMessage || "Submitting Your Request…",
+        );
         try {
             const response = await fetch(form.action, {
                 method: (form.method || "POST").toUpperCase(),
@@ -52,6 +55,7 @@
         } catch (error) {
             window.ClarityFeedback.notify("error", error.message);
         } finally {
+            window.ClarityFeedback.hideLoading();
             submitter?.removeAttribute("disabled");
             form.removeAttribute("aria-busy");
         }

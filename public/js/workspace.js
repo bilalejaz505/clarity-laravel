@@ -105,32 +105,38 @@ function download(name, text, type = "text/plain") {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 async function api(url, { method = "GET", body, signal } = {}) {
-    const response = await fetch(url, {
-        method,
-        signal,
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector("meta[name=csrf-token]")
-                .content,
-        },
-        ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-        credentials: "same-origin",
-    });
-    let data;
+    window.ClarityFeedback.showLoading("Working On Your Request…");
     try {
-        data = await response.json();
-    } catch {
-        throw Error("The server did not return a valid response.");
+        const response = await fetch(url, {
+            method,
+            signal,
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    "meta[name=csrf-token]",
+                ).content,
+            },
+            ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+            credentials: "same-origin",
+        });
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            throw Error("The server did not return a valid response.");
+        }
+        if (!response.ok) {
+            const requestError = Error(
+                data.error || data.message || "Request failed.",
+            );
+            requestError.errors = data.errors || null;
+            throw requestError;
+        }
+        return data;
+    } finally {
+        window.ClarityFeedback.hideLoading();
     }
-    if (!response.ok) {
-        const requestError = Error(
-            data.error || data.message || "Request failed.",
-        );
-        requestError.errors = data.errors || null;
-        throw requestError;
-    }
-    return data;
 }
 function button(text, attrs = "") {
     return `<button class="text-btn" ${attrs}>${text}</button>`;
@@ -709,6 +715,7 @@ $("open-import").onclick = () => {
         boot.product === "freelance" ? "freelance" : "personal";
 };
 $("extract-ocr").onclick = async () => {
+    window.ClarityFeedback.showLoading("Reading Screenshot Text…");
     try {
         if (!$("ocr-files").files.length)
             throw Error("Choose screenshots first.");
@@ -724,10 +731,12 @@ $("extract-ocr").onclick = async () => {
     } catch (e) {
         error(e.message);
     } finally {
+        window.ClarityFeedback.hideLoading();
         $("extract-ocr").disabled = false;
     }
 };
 $("preview-import").onclick = async () => {
+    window.ClarityFeedback.showLoading("Reviewing Your Conversation…");
     try {
         $("confirm-import").disabled = true;
         const form = $("import-form");
@@ -786,6 +795,8 @@ $("preview-import").onclick = async () => {
         notice("Review sender names and sample messages, then save.");
     } catch (e) {
         error(e.message);
+    } finally {
+        window.ClarityFeedback.hideLoading();
     }
 };
 $("import-form").onsubmit = (e) => {
